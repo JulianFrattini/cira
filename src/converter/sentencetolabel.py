@@ -100,6 +100,10 @@ class MultiLabelRoBERTaCustomModel(CustomModel):
           attentions=outputs.attentions,
       )
 
+def use_GPU(use):
+    global USE_GPU
+    USE_GPU = use
+
 TOKENIZER = None
 model = None
 
