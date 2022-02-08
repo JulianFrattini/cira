@@ -39,9 +39,18 @@ def generate_nodes(causal_labels, alllabels, sentence: str):
 def generate_node(eventlabel, causal_labels, alllabels, sentence: str):
     variable = obtain_event_attribute(eventlabel, causal_labels, alllabels, sentence, "Variable", "it")
     condition = obtain_event_attribute(eventlabel, causal_labels, alllabels, sentence, "Condition", "is present")
-    print(str(variable['value']) + ' ' + str(condition['value']))
 
-    return None
+    node = {
+        'variable': variable['value'],
+        'condition': condition['value'],
+        'label': causal_labels[eventlabel],
+        'incomingConnections': [],
+        'outgoingConnections': [],
+        'variableassumed': variable['assumed'],
+        'conditionassumed': condition['assumed']
+    }
+
+    return node
 
 # obtain either the variable or the condition of an event
 def obtain_event_attribute(eventlabel, causal_labels, alllabels, sentence: str, attribute: str, default: str):
