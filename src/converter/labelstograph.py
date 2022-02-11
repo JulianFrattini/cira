@@ -1,32 +1,21 @@
-from matplotlib.pyplot import isinteractive
-
-
 min_event_index = 1
 max_event_index = 3
 
 def transform(sentence, labels):
     # get all causal labels
-    causal_labels = get_causal_labels(labels)
+    #causal_labels = get_causal_labels(labels)
+    causal_labels = sentence.get_causal_labels()
+    print(causal_labels)
 
     # generate a CEG node for each label
-    nodes = generate_nodes(causal_labels, labels, sentence)
+    #nodes = generate_nodes(causal_labels, labels, sentence)
 
     # generate the edges between the nodes
-    ceg = generate_edges(nodes, labels, sentence)
+    #ceg = generate_edges(nodes, labels, sentence)
 
-    return ceg
+    #return ceg
+    return None
 
-def get_causal_labels(allabels):
-    # obtain all labels that begin with 'Cause' or 'Effect'
-    all_causal_labels = get_labels_of_type(allabels, 'Cause') + get_labels_of_type(allabels, 'Effect')
-
-    # group all labels that represent the same event but are distinct (e.g., because an event is split within a sentence)
-    causal_labels = {}
-    for event in all_causal_labels:
-        if event['label'] not in causal_labels.keys():
-            causal_labels[event['label']] = []
-        causal_labels[event['label']].append(event)
-    return causal_labels
 
 def get_labels_of_type(labels, type: str):
     relevant_labels = []
@@ -269,7 +258,6 @@ def identify_additional_negations(labels, nodes, causejunctors, sentence):
 
 
 def get_naked_negations(labels, nodes, sentence):
-    negations = get_labels_of_type(labels, 'Negation')
     causal_nodes = list(filter(lambda node: (node['label'][0]['label'].startswith('Cause') or node['label'][0]['label'].startswith('Effect')), nodes))
     # determine the covered space, i.e., the ranges, which are already covered by causal nodes
     covered_space = []
