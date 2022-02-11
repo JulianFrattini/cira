@@ -32,22 +32,76 @@ class Sentence:
         causal = list(filter(lambda l: (l['label'].startswith('Cause')) or (l['label'].startswith('Effect')), self.labels))
         return causal
 
+    def get_labels_of_level(self, toplevel: bool):
+        if toplevel:
+            return list(filter(lambda l: (l['label'].startswith('Cause')) or (l['label'].startswith('Effect') or (l['label'] in ['Conjunction', 'Disjunction'])), self.labels))
+        else: 
+            return list(filter(lambda l: (l['label'] in ['Variable', 'Condition', 'Negation']), self.labels))
+
     def __str__(self):
         if len(self.labels) == 0:
             return self.sentence
         else: 
             colored = self.sentence
 
-            io = 0
+            color_annotations = []
             bgc = None
-            for label in self.get_causal_labels():
+            bgcdefault = Back.BLACK
+            for label in self.get_labels_of_level(True):
                 if label['label'].startswith('Cause'):
-                    bgc = Back.MAGENTA
+                    bgc = Back.RED
                 elif label['label'].startswith('Effect'):
-                    bgc = Back.CYAN
+                    bgc = Back.BLUE
+                elif label['label'] == 'Conjunction':
+                    bgc = Back.LIGHTBLUE_EX
+                elif label['label'] == 'Disjunction':
+                    bgc = Back.LIGHTGREEN_EX
 
-                colored = colored[:label['begin']+io] + bgc + Fore.BLACK + colored[label['begin']+io:label['end']+io] + Back.RESET + Fore.RESET + colored[label['end']+io:]
-                io = io + 20
+                color_annotations.append({
+                    'index': label['begin'],
+                    'color': bgc + Style.BRIGHT}
+                    )
+                color_annotations.append({
+                    'index': label['end'],
+                    'color': bgcdefault + Style.RESET_ALL}
+                    )
+
+            fgc = None
+            fgcdefault = Fore.WHITE
+            for label in self.get_labels_of_level(False):
+                if label['label'] == 'Variable':
+                    fgc = Fore.LIGHTBLUE_EX
+                elif label['label'] == 'Condition':
+                    fgc = Fore.LIGHTGREEN_EX
+                elif label['label'] == 'Negation':
+                    fgc = Fore.RED
+
+                color_annotations.append({
+                    'index': label['begin'],
+                    'color': fgc + Style.BRIGHT}
+                    )
+                color_annotations.append({
+                    'index': label['end'],
+                    'color': fgcdefault + Style.NORMAL}
+                    )
+
+            # order the color annotations
+            color_annotations.sort(key=lambda a: a['index'], reverse=False)
+            
+            offset = 0
+            for annotation in color_annotations:
+                colored = colored[:annotation['index']+offset:] + annotation['color'] + colored[annotation['index']+offset:]
+                offset += len(annotation['color'])
+
+            #io = 0
+            #bgc = None
+            #for label in self.get_causal_labels():
+            #    if label['label'].startswith('Cause'):
+            #        bgc = Back.MAGENTA
+            #    elif label['label'].startswith('Effect'):
+            #        bgc = Back.CYAN
+            #    colored = colored[:label['begin']+io] + bgc + Fore.BLACK + colored[label['begin']+io:label['end']+io] + Back.RESET + Fore.RESET + colored[label['end']+io:]
+            #    io = io + 20
 
             colored = colored + Fore.RESET + Back.RESET
             return colored

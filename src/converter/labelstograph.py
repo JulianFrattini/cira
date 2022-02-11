@@ -5,7 +5,6 @@ def transform(sentence, labels):
     # get all causal labels
     #causal_labels = get_causal_labels(labels)
     causal_labels = sentence.get_causal_labels()
-    print(causal_labels)
 
     # generate a CEG node for each label
     #nodes = generate_nodes(causal_labels, labels, sentence)
