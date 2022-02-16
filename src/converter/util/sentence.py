@@ -2,12 +2,15 @@ from colorama import Fore, Back, Style
 
 class Sentence:
 
-    def __init__(self, sen: str, lab=[]):
-        self.sentence = sen
+    def __init__(self, t: str, lab=[]):
+        self.text = t
         self.labels = lab
 
     def get_labels(self):
         return self.labels
+
+    def get_text(self):
+        return self.text
 
     def get_causal_labels(self):
         # obtain all labels that begin with 'Cause' or 'Effect'
@@ -28,9 +31,18 @@ class Sentence:
                 relevant_labels.append(label)
         return relevant_labels
 
-    def get_causal_labels(self):
-        causal = list(filter(lambda l: (l['label'].startswith('Cause')) or (l['label'].startswith('Effect')), self.labels))
-        return causal
+    def get_encompassed_labels(self, alllabels, type: str, encompassing):
+        relevant_labels = []
+        for label in encompassing:
+            relevant_labels = relevant_labels + self.get_labels_inbetween(alllabels, type, label['begin'], label['end'])
+        return relevant_labels
+
+    def get_labels_inbetween(self, alllabels, type, begin: int, end: int):
+        relevant_labels = []
+        for label in alllabels:
+            if label['begin'] >= begin and label['end'] <= end and label['label'] == type:
+                relevant_labels.append(label)
+        return relevant_labels
 
     def get_labels_of_level(self, toplevel: bool):
         if toplevel:
@@ -40,9 +52,9 @@ class Sentence:
 
     def __str__(self):
         if len(self.labels) == 0:
-            return self.sentence
+            return self.text
         else: 
-            colored = self.sentence
+            colored = self.text
 
             color_annotations = []
             bgc = None
@@ -92,16 +104,6 @@ class Sentence:
             for annotation in color_annotations:
                 colored = colored[:annotation['index']+offset:] + annotation['color'] + colored[annotation['index']+offset:]
                 offset += len(annotation['color'])
-
-            #io = 0
-            #bgc = None
-            #for label in self.get_causal_labels():
-            #    if label['label'].startswith('Cause'):
-            #        bgc = Back.MAGENTA
-            #    elif label['label'].startswith('Effect'):
-            #        bgc = Back.CYAN
-            #    colored = colored[:label['begin']+io] + bgc + Fore.BLACK + colored[label['begin']+io:label['end']+io] + Back.RESET + Fore.RESET + colored[label['end']+io:]
-            #    io = io + 20
 
             colored = colored + Fore.RESET + Back.RESET
             return colored
