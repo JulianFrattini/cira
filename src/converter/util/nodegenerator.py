@@ -1,12 +1,10 @@
-import enum
-from xmlrpc.client import Boolean
 from converter.util.sentence import Sentence
 
 min_event_index = 1
 max_event_index = 3
 
 class Node:
-    def __init__(self, var: str, cond: str, labels, type: str, varassumed: bool = False, condassumed: bool = False):
+    def __init__(self, var: str="", cond: str="", labels=None, type: str=None, varassumed: bool = False, condassumed: bool = False):
         if var and cond:
             self.intermediate = False
             self.variable = var
@@ -21,8 +19,30 @@ class Node:
         self.variableassumed = varassumed
         self.conditionassumed = condassumed
 
+    def getLabels(self):
+        return self.labels
+
+    def isCauseNode(self):
+        if self.isIntermediate():
+            return False
+        return self.labels[0]['label'].startswith('Cause')
+
+    def isEffectNode(self):
+        if self.isIntermediate():
+            return False
+        return self.labels[0]['label'].startswith('Effect')
+
     def isIntermediate(self):
         return self.intermediate
+
+    def getConnections(self, incoming: bool=True):
+        if incoming:
+            return self.incomingConnections
+        else:
+            return self.outgoingConnections
+
+    def getType(self):
+        return self.type
 
     def __str__(self):
         if self.intermediate:
@@ -37,12 +57,11 @@ def generate_node(eventlabel, causal_labels, alllabels, sentence: Sentence):
     condition = obtain_event_attribute(eventlabel, causal_labels, alllabels, sentence, "Condition", "is present")
 
     node = Node(
-        variable['value'], 
-        condition['value'], 
-        causal_labels[eventlabel], 
-        None, 
-        variable['assumed'],
-        condition['assumed']
+        var=variable['value'], 
+        cond=condition['value'], 
+        labels=causal_labels[eventlabel], 
+        varassumed=variable['assumed'],
+        condassumed=condition['assumed']
     )
 
     return node
