@@ -3,7 +3,6 @@ from converter.util.nodegenerator import generate_node, Node
 
 def transform(sentence: Sentence, labels):
     # get all causal labels
-    #causal_labels = get_causal_labels(labels)
     causal_labels = sentence.get_causal_labels()
 
     # generate a CEG node for each label
