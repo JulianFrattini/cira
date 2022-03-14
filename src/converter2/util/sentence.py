@@ -3,7 +3,7 @@ class Sentence:
         self.text = t
         self.labels = lab
 
-    def get_labels(self):
+    def getLabels(self):
         return self.labels
 
     def getText(self):
