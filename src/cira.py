@@ -39,6 +39,6 @@ if __name__ == "__main__":
 
     labels = [{"id": "T1", "label": "Variable", "begin": 3, "end": 9}, {"id": "T2", "label": "Cause1", "begin": 3, "end": 36}, {"id": "T3", "label": "Condition", "begin": 10, "end": 36}, {"id": "T4", "label": "Conjunction", "begin": 37, "end": 40}, {"id": "T5", "label": "Negation", "begin": 48, "end": 50}, {"id": "T6", "label": "Variable", "begin": 51, "end": 58}, {"id": "T7", "label": "Cause2", "begin": 48, "end": 69}, {"id": "T8", "label": "Condition", "begin": 59, "end": 69}, {"id": "T9", "label": "Disjunction", "begin": 70, "end": 72}, {"id": "T10", "label": "Variable", "begin": 73, "end": 83}, {"id": "T11", "label": "Cause3", "begin": 73, "end": 98}, {"id": "T12", "label": "Condition", "begin": 84, "end": 98}, {"id": "T13", "label": "Variable", "begin": 100, "end": 112}, {"id": "T14", "label": "Effect1", "begin": 100, "end": 134}, {"id": "T15", "label": "Condition", "begin": 113, "end": 134}]
 
-    ll = fromJson(labels)
-    s = Sentence(sentence, ll)
+    labellist = fromJson(labels)
+    s = Sentence(sentence, labellist)
     graph = labelstograph.transform(s)
