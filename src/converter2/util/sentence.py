@@ -1,7 +1,8 @@
-from converter2.util.labels import LabelList
+from converter2.util.labels import Label
+from typing import List
 
 class Sentence:
-    def __init__(self, text: str, labels: LabelList):
+    def __init__(self, text: str, labels: List[Label]):
         self.text = text
         self.labels = labels
 
