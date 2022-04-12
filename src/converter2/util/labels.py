@@ -2,11 +2,13 @@ from typing import List
 from abc import abstractmethod
 
 class Label:
-    def __init__(self, id: str, name: str, begin: int, end: int):
+    def __init__(self, id: str, name: str, begin: int, end: int, sentence: str=None):
         self.id = id
         self.name = name
         self.begin = begin
         self.end = end
+        if sentence:
+            self.text = sentence[begin:end]
 
     def getName(self):
         return self.name
@@ -19,6 +21,9 @@ class Label:
     
     def verbatim(self, text: str):
         return text[self.begin:self.end]
+
+    def getText(self):
+        return self.text
 
     #@abstractmethod
     def isCausal(self):
@@ -41,6 +46,11 @@ class EventLabel(Label):
         super().__init__(id, name, begin, end)
         self.children = children
 
+    def getChildren(self, type: str=None):
+        if type and type=='variable':
+            return list(filter(lambda c: c.getName() == 'Variable', self.children))
+        return self.children
+
     def isCausal(self):
         return True
         
@@ -51,12 +61,12 @@ class EventLabel(Label):
         return result
 
 # convert a list of json labels into a list of labels using the Label class
-def fromJson(labels: List[object]):
+def fromJson(labels: List[object], text: str):
     result = []
 
     # start py parsing all non-event labels
     for label in filter(lambda l: l['label'] in ['Conjunction', 'Disjunction'], labels):
-        result.append(Label(id=label['id'], name=label['label'], begin=label['begin'], end=label['end']))
+        result.append(Label(id=label['id'], name=label['label'], begin=label['begin'], end=label['end'], sentence=text))
 
     # filter for sublabels (variables, conditions, and negations) which are mostly children of events
     sublabels = list(filter(lambda l: l['label'] in ['Variable', 'Condition', 'Negation'], labels))
@@ -64,7 +74,7 @@ def fromJson(labels: List[object]):
     for event in events:
         children = []
         for sublabel in filter(lambda sl: sl['begin'] >= event['begin'] and sl['end'] <= event['end'], sublabels):
-            children.append(Label(id=sublabel['id'], name=sublabel['label'], begin=sublabel['begin'], end=sublabel['end']))
+            children.append(Label(id=sublabel['id'], name=sublabel['label'], begin=sublabel['begin'], end=sublabel['end'], sentence=text))
 
         result.append(EventLabel(id=event['id'], name=event['label'], begin=event['begin'], end=event['end'], children=children))
 

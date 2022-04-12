@@ -1,44 +1,59 @@
-from converter2.util.sentence import Sentence
-from converter2.util.labels import Label
-from converter2.util.event import Event, EventList
-from converter2.util.graph import Node, EventNode, IntermediateNode
+from .util.sentence import Sentence
+from .util.labels import Label
+from .util.event import Event, EventList
+from .util.graph import Node, EventNode, IntermediateNode, Graph
 
 def transform(sentence: Sentence):
-    # get all causal nodes (assume that they appear next to each other with no effect node in the middle)
+    # get all causal nodes
     labels = sentence.getLabels()
     
     # generate the events from the labels and filter for all cause events
     eventlist = EventList(labels)
-    causes = eventlist.getEvents(justCauses=True)
+    causes = eventlist.getEvents(ce='causes')
 
     # generate nodes for each cause
     causenodes = {}
     for cause in causes:
-        causenodes[cause.getName()] = EventNode(variable=cause.getName())
-    intermediatenodes = []
+        causenodes[cause.getName()] = EventNode(cause=True, variable=cause.getVariable())
     
-    previousJunctorType = 'Conjunction'
-    # get all junctors between each adjacent pair of cause nodes
+    # resolve junctors between the causes
     if len(causes) > 1:
-        for one, two in zip(causes[::-1][1:], causes[::-1][:-1]):
-            # obtain all junctors between the two causes
-            junctors = eventlist.getJunctorsBetweenEvents(one, two, labels)
+        constructIntermediateNodes(causes, eventlist, causenodes, labels)
+        unifyIntermediates(causenodes)
 
-            junctor = None
-            if len(junctors) == 1:
-                # standard case: there is exactly one junctor between the two 
-                junctor = junctors[0].getName()
-            elif len(junctors) == 0:
-                # implicit case: there is no junctor, hence take the previously defined one
-                junctor = previousJunctorType
-            previousJunctorType = junctor
+    root = causenodes['Cause1'].getRoot()
 
-            # create the appropriate intermediate node
-            children = [causenodes[one.getName()], causenodes[two.getName()]]
-            intermediateNode = IntermediateNode((junctor == 'Conjunction'), children=children)
-            intermediatenodes.append(intermediateNode)
+    # add effect nodes to the graph
+    effectNodes = []
+    for effect in eventlist.getEvents(ce='effects'):
+        effectNodes.append(EventNode(cause=False, variable=effect.getName()))
 
-    # process all event nodes which still have more than one parent
+    return Graph(rootcause=root, effects=effectNodes)
+
+def constructIntermediateNodes(causes, eventlist, causenodes, labels):
+    previousJunctorType = 'Conjunction'
+    intermediatenodes = []
+
+    for one, two in zip(causes[::-1][1:], causes[::-1][:-1]):
+        # obtain all junctors between the two causes
+        junctors = eventlist.getJunctorsBetweenEvents(one, two, labels)
+
+        junctor = None
+        if len(junctors) == 1:
+            # standard case: there is exactly one junctor between the two 
+            junctor = junctors[0].getName()
+        elif len(junctors) == 0:
+            # implicit case: there is no junctor, hence take the previously defined one
+            junctor = previousJunctorType
+        previousJunctorType = junctor
+
+        # create the appropriate intermediate node
+        children = [causenodes[one.getName()], causenodes[two.getName()]]
+        intermediateNode = IntermediateNode((junctor == 'Conjunction'), children=children)
+        intermediatenodes.append(intermediateNode)
+
+def unifyIntermediates(causenodes):
+    # unify the graph to a common root node
     while len(list(filter(lambda node: len(node.getParents()) > 1, causenodes.values()))) > 0:
         multiparents = list(filter(lambda node: len(node.getParents()) > 1, causenodes.values()))
 
@@ -61,18 +76,3 @@ def transform(sentence: Sentence):
         else:
             # todo: handle the case with only conjunctions
             break
-
-    node = causenodes['Cause1']
-    while len(node.getParents()) > 0:
-        node = node.getParents()[0]
-    print(node)
-
-    # resolve the junctors following precedence rules: either > and > or
-
-    # resolve additional negations
-
-    # add effect nodes to the graph
-
-    # resolve each causal node, i.e., "fill" each node with its values
-
-    return None

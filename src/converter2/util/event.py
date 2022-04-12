@@ -1,5 +1,5 @@
 from typing import List
-from converter2.util.labels import Label, EventLabel
+from .labels import Label, EventLabel
 
 class Event:
     def __init__(self, name: str, labels: List[EventLabel]):
@@ -16,12 +16,49 @@ class Event:
         return self.labels
 
     # predecessor and successors
+    def getPredecessor(self):
+        return self.predecessor
+
     def setPredecessor(self, predecessor: 'Event'):
         self.predecessor = predecessor
     
     # predecessor and successors
     def setSuccessor(self, successor: 'Event'):
         self.successor = successor
+
+    def getVariable(self):
+        variables = []
+        for label in self.labels:
+            varLabels = label.getChildren(type='variable')
+            for varLabel in varLabels:
+                variables.append(varLabel.getText())
+
+        if len(variables) > 0:
+            return " ".join(variables)
+        else:
+            eligibleNeighbors = self.getNeighborsByDegreeOfRelation(preferBacktracking=True)
+
+            for event in eligibleNeighbors:
+                variable = event.getVariable()
+                if variable != None:
+                    return variable
+
+        return None
+    
+    def isCause(self):
+        return self.name.startswith('Cause')
+
+    def getNeighborsByDegreeOfRelation(self, preferBacktracking: bool):
+        """Generate an ordered list of neighboring events
+        """
+        result = []
+
+        predecessor = self.predecessor
+        while predecessor != None:
+            result.append(predecessor)
+            predecessor = predecessor.getPredecessor()
+
+        return result
 
     def __str__(self):
         result = f'{self.name}: {list(map(lambda label: str(label), self.labels))}'
@@ -49,17 +86,19 @@ class EventList:
             # create an event from these labels
             event = Event(name=eventName, labels=relevantLabels)
             # for all causes, if this is not the first cause: define the predecessors and successors
-            if predecessor is not None and eventName.startswith('Cause'):
+            if predecessor is not None: #and eventName.startswith('Cause'):
                 predecessor.setSuccessor(successor=event)
                 event.setPredecessor(predecessor=predecessor)
             
             predecessor = event
             self.events.append(event)
 
-    def getEvents(self, justCauses=False):
-        if not justCauses:
-            return self.events 
-        return list(filter(lambda event: event.getName().startswith('Cause'), self.events))
+    def getEvents(self, ce: str=None):
+        if ce and ce == 'causes':
+            return list(filter(lambda event: event.getName().startswith('Cause'), self.events))
+        elif ce and ce == 'effects':
+            return list(filter(lambda event: event.getName().startswith('Effect'), self.events))
+        return self.events 
 
     # find a conjunction between two lists of labels, where each list is associated to one node name
     def getJunctorsBetweenEvents(self, one: Event, two: Event, labels: List[Label]):

@@ -1,4 +1,4 @@
-from converter2.util.labels import Label
+from .labels import Label
 from typing import List
 
 class Sentence:
