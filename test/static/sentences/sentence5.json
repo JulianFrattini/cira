@@ -1,0 +1,78 @@
+{
+    "title": "Three disjunctive causes, single effect",
+    "text": "If the user is over 18 years old or the current time is during working hours or the current day is a work day then the door opens.",
+    "classification": {
+        "causal": true,
+        "confidence": 0.9
+    },
+    "labels": [
+        {"id": "T1", "label": "Keyword", "begin": 0, "end": 2},
+
+        {"id": "T2", "label": "Cause1", "begin": 3, "end": 32},
+        {"id": "T3", "label": "Variable", "begin": 3, "end": 11},
+        {"id": "T4", "label": "Condition", "begin": 12, "end": 32},
+
+        {"id": "T5", "label": "Disjunction", "begin": 33, "end": 35},
+        
+        {"id": "T6", "label": "Cause2", "begin": 36, "end": 76},
+        {"id": "T7", "label": "Variable", "begin": 36, "end": 52},
+        {"id": "T9", "label": "Condition", "begin": 53, "end": 76},
+        
+        {"id": "T10", "label": "Disjunction", "begin": 77, "end": 79},
+
+        {"id": "T11", "label": "Cause3", "begin": 80, "end": 109},
+        {"id": "T13", "label": "Variable", "begin": 80, "end": 95},
+        {"id": "T14", "label": "Condition", "begin": 96, "end": 109},
+        
+        {"id": "T15", "label": "Keyword", "begin": 110, "end": 114},
+
+        {"id": "T16", "label": "Effect1", "begin": 115, "end": 129},
+        {"id": "T17", "label": "Variable", "begin": 115, "end": 123},
+        {"id": "T18", "label": "Condition", "begin": 124, "end": 129}
+    ],
+    "graph": {
+        "desc": "In this case, three cause labels are connected by the same disjunction. The disjunction between Cause1 and Cause2 is implicitly assumed as the connective phrase is usually omitted in natural language.",
+        "nodes": [
+            {"id": 1, "variable": "the user", "condition": "is over 18 years old"},
+            {"id": 2, "variable": "the current time", "condition": "is during working hours"},
+            {"id": 3, "variable": "the current day", "condition": "is a workday"},
+            {"id": 4, "variable": "", "condition": "", "type": "OR"},
+            {"id": 5, "variable": "the door", "condition": "opens"}
+        ],
+        "edges": [
+            {"source": 1, "target": 4, "negate": false},
+            {"source": 2, "target": 4, "negate": false},
+            {"source": 3, "target": 4, "negate": false},
+            {"source": 4, "target": 5, "negate": false}
+        ]
+    },
+    "testsuite": {
+        "inputparams": [
+            {"id": 1, "text": "the user"},
+            {"id": 2, "text": "the current time"},
+            {"id": 3, "text": "the current day"}
+        ],
+        "outputparams": [
+            {"id": 4, "text": "the door"}
+        ],
+        "testcases": [
+            {
+                "id": 1, 
+                "configurations": [{"inputid": 1, "text": "not is over 18 years old"}, {"inputid": 2, "text": "not is during working hours"}, {"inputid": 3, "text": "not is a workday"}],
+                "outcome": [{"outputid": 4, "text": "not opens"}]
+            }, {
+                "id": 2, 
+                "configurations": [{"inputid": 1, "text": "is over 18 years old"}, {"inputid": 2, "text": "not is during working hours"}, {"inputid": 3, "text": "not is a workday"}],
+                "outcome": [{"outputid": 4, "text": "opens"}]
+            }, {
+                "id": 3, 
+                "configurations": [{"inputid": 1, "text": "not is over 18 years old"}, {"inputid": 2, "text": "is during working hours"}, {"inputid": 3, "text": "not is a workday"}],
+                "outcome": [{"outputid": 4, "text": "opens"}]
+            }, {
+                "id": 4, 
+                "configurations": [{"inputid": 1, "text": "not is over 18 years old"}, {"inputid": 2, "text": "not is during working hours"}, {"inputid": 3, "text": "is a workday"}],
+                "outcome": [{"outputid": 4, "text": "opens"}]
+            }
+        ]
+    }
+}

@@ -1,0 +1,79 @@
+{
+    "title": "Three causes (conjunction + disjunction) with overruled precedence, single effect",
+    "text": "When the applicant can present an identity card and either is not underage or can present a parent's permission, then an account can be opened with the bank.",
+    "classification": {
+        "causal": true,
+        "confidence": 0.9
+    },
+    "labels": [
+        {"id": "T1", "label": "Cause1", "begin": 5, "end": 47},
+        {"id": "T2", "label": "Variable", "begin": 5, "end": 18},
+        {"id": "T3", "label": "Condition", "begin": 19, "end": 47},
+
+        {"id": "T4", "label": "Conjunction", "begin": 48, "end": 51},
+        {"id": "T5", "label": "Disjunction", "begin": 52, "end": 58},
+
+        {"id": "T6", "label": "Cause2", "begin": 59, "end": 74},
+        {"id": "T7", "label": "Negation", "begin": 59, "end": 65},
+        {"id": "T8", "label": "Condition", "begin": 66, "end": 74},
+
+        {"id": "T9", "label": "Disjunction", "begin": 75, "end": 77},
+        
+        {"id": "T10", "label": "Cause3", "begin": 78, "end": 111},
+        {"id": "T11", "label": "Condition", "begin": 78, "end": 111},
+
+        {"id": "T12", "label": "Effect1", "begin": 118, "end": 156},
+        {"id": "T13", "label": "Variable", "begin": 118, "end": 128},
+        {"id": "T14", "label": "Condition", "begin": 129, "end": 156}
+    ],
+    "graph": {
+        "nodes": [
+            {"id": 1, "variable": "the applicant", "condition": "can present an identity card"},
+            {"id": 2, "variable": "the applicant", "condition": "underage"},
+            {"id": 3, "variable": "the applicant", "condition": "can present a parent's permission"},
+            {"id": 4, "variable": "", "condition": "", "type": "OR"},
+            {"id": 5, "variable": "", "condition": "", "type": "AND"},
+            {"id": 6, "variable": "an account", "condition": "can be opened with the bank"}
+        ],
+        "edges": [
+            {"source": 1, "target": 5, "negate": false},
+            {"source": 2, "target": 4, "negate": true},
+            {"source": 3, "target": 4, "negate": false},
+            {"source": 4, "target": 5, "negate": false},
+            {"source": 5, "target": 6, "negate": false}
+        ]
+    },
+    "testsuite": {
+        "inputparams": [
+            {"id": 1, "text": "the applicant"},
+            {"id": 2, "text": "the applicant"},
+            {"id": 3, "text": "the applicant"}
+        ],
+        "outputparams": [
+            {"id": 4, "text": "an account"}
+        ],
+        "testcases": [
+            {
+                "id": 1, 
+                "configurations": [{"inputid": 1, "text": "can present an identity card"}, {"inputid": 2, "text": "not underage"}, {"inputid": 3, "text": "not can present a parent's permission"}],
+                "outcome": [{"outputid": 4, "text": "can be opened with the bank"}]
+            }, {
+                "id": 2, 
+                "configurations": [{"inputid": 1, "text": "can present an identity card"}, {"inputid": 2, "text": "underage"}, {"inputid": 3, "text": "can present a parent's permission"}],
+                "outcome": [{"outputid": 4, "text": "can be opened with the bank"}]
+            }, {
+                "id": 3, 
+                "configurations": [{"inputid": 1, "text": "can present an identity card"}, {"inputid": 2, "text": "underage"}, {"inputid": 3, "text": "not can present a parent's permission"}],
+                "outcome": [{"outputid": 4, "text": "can be opened with the bank"}]
+            }, {
+                "id": 4, 
+                "configurations": [{"inputid": 1, "text": "not can present an identity card"}, {"inputid": 2, "text": "not underage"}, {"inputid": 3, "text": "not can present a parent's permission"}],
+                "outcome": [{"outputid": 4, "text": "can be opened with the bank"}]
+            }, {
+                "id": 5, 
+                "configurations": [{"inputid": 1, "text": "not can present an identity card"}, {"inputid": 2, "text": "underage"}, {"inputid": 3, "text": "can present a parent's permission"}],
+                "outcome": [{"outputid": 4, "text": "can be opened with the bank"}]
+            }
+        ]
+    }
+}

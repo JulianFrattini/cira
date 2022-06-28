@@ -1,0 +1,50 @@
+{
+    "title": "Single negated cause, single negated effect",
+    "text": "When the red button is not pushed the system does not shut down.",
+    "classification": {
+        "causal": true,
+        "confidence": 0.9
+    },
+    "labels": [
+        {"id": "T1", "label": "Keyword", "begin": 0, "end": 4},
+
+        {"id": "T2", "label": "Cause1", "begin": 5, "end": 33},
+        {"id": "T3", "label": "Variable", "begin": 5, "end": 19},
+        {"id": "T4", "label": "Negation", "begin": 20, "end": 26},
+        {"id": "T5", "label": "Condition", "begin": 27, "end": 33},
+        
+        {"id": "T6", "label": "Effect1", "begin": 34, "end": 63},
+        {"id": "T7", "label": "Variable", "begin": 34, "end": 44},
+        {"id": "T8", "label": "Negation", "begin": 45, "end": 53},
+        {"id": "T9", "label": "Condition", "begin": 54, "end": 63}
+    ],
+    "graph": {
+        "desc": "In this case, both the cause and the effect node in a two-event causality are negated. The two negations cancel each other, hence a regular, positive edge connects the two nodes.",
+        "nodes": [
+            {"id": 1, "variable": "the red button", "condition": "pushed"},
+            {"id": 2, "variable": "the system", "condition": "shut down"}
+        ],
+        "edges": [
+            {"source": 1, "target": 2, "negate": false}
+        ]
+    },
+    "testsuite": {
+        "inputparams": [
+            {"id": 1, "text": "the red button"}
+        ],
+        "outputparams": [
+            {"id": 2, "text": "the system"}
+        ],
+        "testcases": [
+            {
+                "id": 1, 
+                "configurations": [{"inputid": 1, "text": "pushed"}],
+                "outcome": [{"outputid": 2, "text": "shut down"}]
+            }, {
+                "id": 2, 
+                "configurations": [{"inputid": 1, "text": "not pushed"}],
+                "outcome": [{"outputid": 2, "text": "not shut down"}]
+            }
+        ]
+    }
+}

@@ -1,0 +1,84 @@
+{
+    "title": "Three disjunctive causes with implicit variables, two effects with implicit conditions",
+    "text": "Where it is impractical to substantially eliminate or reduce the hazard or where the condition of the hazard indicates additional emphasis, special operating procedures and training will be used.",
+    "classification": {
+        "causal": true,
+        "confidence": 0.9
+    },
+    "labels": [
+        {"id": "T1", "label": "Keyword", "begin": 0, "end": 5},
+
+        {"id": "T2", "label": "Cause1", "begin": 6, "end": 50},
+        {"id": "T3", "label": "Variable", "begin": 6, "end": 8},
+        {"id": "T4", "label": "Condition", "begin": 9, "end": 50},
+        
+        {"id": "T5", "label": "Disjunction", "begin": 51, "end": 53},
+        
+        {"id": "T6", "label": "Cause2", "begin": 54, "end": 71},
+        {"id": "T7", "label": "Condition", "begin": 54, "end": 71},
+        
+        {"id": "T8", "label": "Disjunction", "begin": 72, "end": 74},
+        
+        {"id": "T9", "label": "Keyword", "begin": 75, "end": 80},
+        
+        {"id": "T10", "label": "Cause3", "begin": 81, "end": 138},
+        {"id": "T11", "label": "Variable", "begin": 81, "end": 108},
+        {"id": "T12", "label": "Condition", "begin": 109, "end": 138},
+
+        {"id": "T13", "label": "Effect1", "begin": 140, "end": 168},
+        {"id": "T14", "label": "Variable", "begin": 140, "end": 168},
+
+        {"id": "T15", "label": "Conjunction", "begin": 169, "end": 172},
+
+        {"id": "T16", "label": "Effect2", "begin": 173, "end": 194},
+        {"id": "T17", "label": "Variable", "begin": 173, "end": 181},
+        {"id": "T18", "label": "Condition", "begin": 182, "end": 194}
+    ],
+    "graph": {
+        "nodes": [
+            {"id": 1, "variable": "it", "condition": "is impractical to substantially eliminate"},
+            {"id": 2, "variable": "it", "condition": "reduce the hazard"},
+            {"id": 3, "variable": "the condition of the hazard", "condition": "indicates additional emphasis"},
+            {"id": 4, "variable": "", "condition": "", "type": "OR"},
+            {"id": 5, "variable": "special operating procedures", "condition": "will be used"},
+            {"id": 6, "variable": "training", "condition": "will be used"}
+        ],
+        "edges": [
+            {"source": 1, "target": 4, "negate": false},
+            {"source": 2, "target": 4, "negate": false},
+            {"source": 3, "target": 4, "negate": false},
+            {"source": 4, "target": 5, "negate": false},
+            {"source": 4, "target": 6, "negate": false}
+        ]
+    },
+    "testsuite": {
+        "inputparams": [
+            {"id": 1, "text": "it"},
+            {"id": 2, "text": "it"},
+            {"id": 3, "text": "the condition of the hazard"}
+        ],
+        "outputparams": [
+            {"id": 4, "text": "special operating procedures"},
+            {"id": 5, "text": "training"}
+        ],
+        "testcases": [
+            {
+                "id": 1, 
+                "configurations": [{"inputid": 1, "text": "not is impractical to substantially eliminate"}, {"inputid": 2, "text": "not reduce the hazard"}, {"inputid": 3, "text": "not indicates additional emphasis"}],
+                "outcome": [{"outputid": 4, "text": "not will be used"}, {"outputid": 5, "text": "not will be used"}]
+            }, {
+                "id": 2, 
+                "configurations": [{"inputid": 1, "text": "is impractical to substantially eliminate"}, {"inputid": 2, "text": "not reduce the hazard"}, {"inputid": 3, "text": "not indicates additional emphasis"}],
+                "outcome": [{"outputid": 4, "text": "will be used"}, {"outputid": 5, "text": "will be used"}]
+            }, {
+                "id": 3, 
+                "configurations": [{"inputid": 1, "text": "not is impractical to substantially eliminate"}, {"inputid": 2, "text": "reduce the hazard"}, {"inputid": 3, "text": "not indicates additional emphasis"}],
+                "outcome": [{"outputid": 4, "text": "will be used"}, {"outputid": 5, "text": "will be used"}]
+            }, {
+                "id": 4, 
+                "configurations": [{"inputid": 1, "text": "not is impractical to substantially eliminate"}, {"inputid": 2, "text": "not reduce the hazard"}, {"inputid": 3, "text": "indicates additional emphasis"}],
+                "outcome": [{"outputid": 4, "text": "will be used"}, {"outputid": 5, "text": "will be used"}]
+            }
+        ]
+    }
+}

@@ -1,0 +1,49 @@
+{
+    "title": "Single cause, single negated effect",
+    "text": "When the green button is pushed the system does not shut down.",
+    "classification": {
+        "causal": true,
+        "confidence": 0.9
+    },
+    "labels": [
+        {"id": "T1", "label": "Keyword", "begin": 0, "end": 4},
+
+        {"id": "T2", "label": "Cause1", "begin": 5, "end": 31},
+        {"id": "T3", "label": "Variable", "begin": 5, "end": 21},
+        {"id": "T4", "label": "Condition", "begin": 22, "end": 31},
+        
+        {"id": "T5", "label": "Effect1", "begin": 32, "end": 61},
+        {"id": "T6", "label": "Variable", "begin": 32, "end": 42},
+        {"id": "T7", "label": "Negation", "begin": 43, "end": 51},
+        {"id": "T8", "label": "Condition", "begin": 52, "end": 61}
+    ],
+    "graph": {
+        "desc": "If a negation node is contained within an event node, then the edge leading from or to this node is negated (indicated by the dashed line).",
+        "nodes": [
+            {"id": 1, "variable": "the green button", "condition": "is pushed"},
+            {"id": 2, "variable": "the system", "condition": "shut down"}
+        ],
+        "edges": [
+            {"source": 1, "target": 2, "negate": true}
+        ]
+    },
+    "testsuite": {
+        "inputparams": [
+            {"id": 1, "text": "the green button"}
+        ],
+        "outputparams": [
+            {"id": 2, "text": "the system"}
+        ],
+        "testcases": [
+            {
+                "id": 1, 
+                "configurations": [{"inputid": 1, "text": "is pushed"}],
+                "outcome": [{"outputid": 2, "text": "not shut down"}]
+            }, {
+                "id": 2, 
+                "configurations": [{"inputid": 1, "text": "not is pushed"}],
+                "outcome": [{"outputid": 2, "text": "shut down"}]
+            }
+        ]
+    }
+}

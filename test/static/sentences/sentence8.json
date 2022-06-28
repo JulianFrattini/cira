@@ -1,0 +1,56 @@
+{
+    "title": "Single cause, two effects",
+    "text": "When the red button is pushed the system shuts down and energy is saved.",
+    "classification": {
+        "causal": true,
+        "confidence": 0.9
+    },
+    "labels": [
+        {"id": "T1", "label": "Keyword", "begin": 0, "end": 4},
+
+        {"id": "T2", "label": "Cause1", "begin": 5, "end": 29},
+        {"id": "T3", "label": "Variable", "begin": 5, "end": 19},
+        {"id": "T4", "label": "Condition", "begin": 20, "end": 29},
+        
+        {"id": "T5", "label": "Effect1", "begin": 30, "end": 51},
+        {"id": "T6", "label": "Variable", "begin": 30, "end": 40},
+        {"id": "T7", "label": "Condition", "begin": 41, "end": 51},
+
+        {"id": "T8", "label": "Conjunction", "begin": 52, "end": 55},
+        
+        {"id": "T9", "label": "Effect2", "begin": 56, "end": 71},
+        {"id": "T10", "label": "Variable", "begin": 56, "end": 62},
+        {"id": "T11", "label": "Condition", "begin": 63, "end": 71}
+    ],
+    "graph": {
+        "nodes": [
+            {"id": 1, "variable": "the red button", "condition": "is pushed"},
+            {"id": 2, "variable": "the system", "condition": "shuts down"},
+            {"id": 3, "variable": "energy", "condition": "is saved"}
+        ],
+        "edges": [
+            {"source": 1, "target": 2, "negate": false},
+            {"source": 1, "target": 3, "negate": false}
+        ]
+    },
+    "testsuite": {
+        "inputparams": [
+            {"id": 1, "text": "the red button"}
+        ],
+        "outputparams": [
+            {"id": 2, "text": "the system"},
+            {"id": 3, "text": "energy"}
+        ],
+        "testcases": [
+            {
+                "id": 1, 
+                "configurations": [{"inputid": 1, "text": "is pushed"}],
+                "outcome": [{"outputid": 2, "text": "shuts down"}, {"outputid": 3, "text": "is saved"}]
+            }, {
+                "id": 2, 
+                "configurations": [{"inputid": 1, "text": "not is pushed"}],
+                "outcome": [{"outputid": 2, "text": "not shuts down"}, {"outputid": 3, "text": "not is saved"}]
+            }
+        ]
+    }
+}

@@ -1,0 +1,46 @@
+{
+    "title": "Single cause in relative clause, single effect",
+    "text": "Users which are older than 18 years, are allowed to drive.",
+    "classification": {
+        "causal": true,
+        "confidence": 0.9
+    },
+    "labels": [
+        {"id": "T1", "label": "Cause1", "begin": 0, "end": 5},
+        {"id": "T2", "label": "Variable", "begin": 0, "end": 5},
+
+        {"id": "T3", "label": "Cause1", "begin": 12, "end": 35},
+        {"id": "T4", "label": "Condition", "begin": 12, "end": 35},
+        
+        {"id": "T5", "label": "Effect1", "begin": 37, "end": 57},
+        {"id": "T6", "label": "Condition", "begin": 37, "end": 57}
+    ],
+    "graph": {
+        "nodes": [
+            {"id": 1, "variable": "Users", "condition": "are older than 18 years"},
+            {"id": 2, "variable": "Users", "condition": "are allowed to drive"}
+        ],
+        "edges": [
+            {"source": 1, "target": 2, "negate": false}
+        ]
+    },
+    "testsuite": {
+        "inputparams": [
+            {"id": 1, "text": "Users"}
+        ],
+        "outputparams": [
+            {"id": 2, "text": "Users"}
+        ],
+        "testcases": [
+            {
+                "id": 1, 
+                "configurations": [{"inputid": 1, "text": "are older than 18 years"} ],
+                "outcome": [{"outputid": 2, "text": "are allowed to drive"}]
+            }, {
+                "id": 2, 
+                "configurations": [{"inputid": 1, "text": "not are older than 18 years"} ],
+                "outcome": [{"outputid": 2, "text": "not are allowed to drive"}]
+            }
+        ]
+    }
+}

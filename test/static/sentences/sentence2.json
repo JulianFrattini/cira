@@ -1,0 +1,64 @@
+{
+    "title": "Two conjunctive causes, single effect",
+    "text": "When the red button is pushed and the power fails the system shuts down.",
+    "classification": {
+        "causal": true,
+        "confidence": 0.9
+    },
+    "labels": [
+        {"id": "T1", "label": "Keyword", "begin": 0, "end": 4},
+
+        {"id": "T2", "label": "Cause1", "begin": 5, "end": 29},
+        {"id": "T3", "label": "Variable", "begin": 5, "end": 19},
+        {"id": "T4", "label": "Condition", "begin": 20, "end": 29},
+
+        {"id": "T5", "label": "Conjunction", "begin": 30, "end": 33},
+
+        {"id": "T6", "label": "Cause2", "begin": 34, "end": 49},
+        {"id": "T7", "label": "Variable", "begin": 34, "end": 43},
+        {"id": "T8", "label": "Condition", "begin": 44, "end": 49},
+
+        {"id": "T9", "label": "Effect1", "begin": 50, "end": 71},
+        {"id": "T10", "label": "Variable", "begin": 50, "end": 60},
+        {"id": "T12", "label": "Condition", "begin": 61, "end": 71}
+    ],
+    "graph": {
+        "desc": "If two causes and a conjunction between them is detected, then the two cause nodes are connected with an intermediate node representing the conjunction. The conjunction represents that both events must be true in order for the effect to occur.",
+        "nodes": [
+            {"id": 1, "variable": "the red button", "condition": "is pushed"},
+            {"id": 2, "variable": "the power", "condition": "fails"},
+            {"id": 3, "variable": "", "condition": "", "type": "AND"},
+            {"id": 4, "variable": "the system", "condition": "shuts down"}
+        ],
+        "edges": [
+            {"source": 1, "target": 3, "negate": false},
+            {"source": 2, "target": 3, "negate": false},
+            {"source": 3, "target": 4, "negate": false}
+        ]
+    },
+    "testsuite": {
+        "desc": "For this acceptance test, next to the trivial positive test case two negative test cases are created, one for each cause to be responsible for the conjunction to be evaluated to false. It is unnecessary to also test the fourth possible case, where both causes are evaluated to false, as the existing two negative test cases already verify that each cause can be responsible for evaluating the conjunction to false.",
+        "inputparams": [
+            {"id": 1, "text": "the red button"},
+            {"id": 2, "text": "the power"}
+        ],
+        "outputparams": [
+            {"id": 3, "text": "the system"}
+        ],
+        "testcases": [
+            {
+                "id": 1, 
+                "configurations": [{"inputid": 1, "text": "is pushed"}, {"inputid": 2, "text": "fails"}],
+                "outcome": [{"outputid": 3, "text": "shuts down"}]
+            }, {
+                "id": 2, 
+                "configurations": [{"inputid": 1, "text": "is pushed"}, {"inputid": 2, "text": "not fails"}],
+                "outcome": [{"outputid": 3, "text": "not shuts down"}]
+            }, {
+                "id": 3, 
+                "configurations": [{"inputid": 1, "text": "not is pushed"}, {"inputid": 2, "text": "fails"}],
+                "outcome": [{"outputid": 3, "text": "not shuts down"}]
+            }
+        ]
+    }
+}

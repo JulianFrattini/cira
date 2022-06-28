@@ -1,0 +1,49 @@
+{
+    "title": "Single cause, single effect",
+    "text": "When the red button is pushed the system shuts down.",
+    "classification": {
+        "causal": true,
+        "confidence": 0.9
+    },
+    "labels": [
+        {"id": "T1", "label": "Keyword", "begin": 0, "end": 4},
+
+        {"id": "T2", "label": "Cause1", "begin": 5, "end": 29},
+        {"id": "T3", "label": "Variable", "begin": 5, "end": 19},
+        {"id": "T4", "label": "Condition", "begin": 20, "end": 29},
+        
+        {"id": "T5", "label": "Effect1", "begin": 30, "end": 51},
+        {"id": "T6", "label": "Variable", "begin": 30, "end": 40},
+        {"id": "T7", "label": "Condition", "begin": 41, "end": 51}
+    ],
+    "graph": {
+        "desc": "In this very explicit case with only one cause and one effect, the CEG consists of exactly two nodes connected by a normal edge.",
+        "nodes": [
+            {"id": 1, "variable": "the red button", "condition": "is pushed"},
+            {"id": 2, "variable": "the system", "condition": "shuts down"}
+        ],
+        "edges": [
+            {"source": 1, "target": 2, "negate": false}
+        ]
+    },
+    "testsuite": {
+        "desc": "Two test cases are generated based on the cause-effect graph: the positive, explicit case that happens, when the cause is true, and the negative, implicit case, that happens when the effect ist false.",
+        "inputparams": [
+            {"id": 1, "text": "the red button"}
+        ],
+        "outputparams": [
+            {"id": 2, "text": "the system"}
+        ],
+        "testcases": [
+            {
+                "id": 1, 
+                "configurations": [{"inputid": 1, "text": "is pushed"}],
+                "outcome": [{"outputid": 2, "text": "shuts down"}]
+            }, {
+                "id": 2, 
+                "configurations": [{"inputid": 1, "text": "not is pushed"}],
+                "outcome": [{"outputid": 2, "text": "not shuts down"}]
+            }
+        ]
+    }
+}

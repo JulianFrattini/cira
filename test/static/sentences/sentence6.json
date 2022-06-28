@@ -1,0 +1,85 @@
+{
+    "title": "Three causes (conjunction + disjunction), single effect",
+    "text": "If an error is present and the debugger is active or an exception is triggered then a log entry will be created.",
+    "classification": {
+        "causal": true,
+        "confidence": 0.9
+    },
+    "labels": [
+        {"id": "T1", "label": "Keyword", "begin": 0, "end": 2},
+
+        {"id": "T2", "label": "Cause1", "begin": 3, "end": 22},
+        {"id": "T3", "label": "Variable", "begin": 3, "end": 11},
+        {"id": "T4", "label": "Condition", "begin": 12, "end": 22},
+
+        {"id": "T5", "label": "Conjunction", "begin": 23, "end": 26},
+        
+        {"id": "T6", "label": "Cause2", "begin": 27, "end": 49},
+        {"id": "T7", "label": "Variable", "begin": 27, "end": 39},
+        {"id": "T8", "label": "Condition", "begin": 40, "end": 49},
+        
+        {"id": "T9", "label": "Disjunction", "begin": 50, "end": 52},
+
+        {"id": "T10", "label": "Cause3", "begin": 53, "end": 78},
+        {"id": "T11", "label": "Variable", "begin": 53, "end": 65},
+        {"id": "T12", "label": "Condition", "begin": 66, "end": 78},
+        
+        {"id": "T13", "label": "Keyword", "begin": 79, "end": 83},
+
+        {"id": "T14", "label": "Effect1", "begin": 84, "end": 111},
+        {"id": "T15", "label": "Variable", "begin": 84, "end": 95},
+        {"id": "T16", "label": "Condition", "begin": 96, "end": 111}
+    ],
+    "graph": {
+        "desc": "In a case, where three causes are connected by both conjunctions and disjunctions, they are interpreted as logical ANDs and ORs, where the logical AND has a higher precedence than the logical OR. Hence, the logical AND is binding stronger.",
+        "nodes": [
+            {"id": 1, "variable": "an error", "condition": "is present"},
+            {"id": 2, "variable": "the debugger", "condition": "is active"},
+            {"id": 3, "variable": "", "condition": "", "type": "AND"},
+            {"id": 4, "variable": "an exception", "condition": "is triggered"},
+            {"id": 5, "variable": "", "condition": "", "type": "OR"},
+            {"id": 6, "variable": "a log entry", "condition": "will be created"}
+        ],
+        "edges": [
+            {"source": 1, "target": 3, "negate": false},
+            {"source": 2, "target": 3, "negate": false},
+            {"source": 3, "target": 5, "negate": false},
+            {"source": 4, "target": 5, "negate": false},
+            {"source": 5, "target": 6, "negate": false}
+        ]
+    },
+    "testsuite": {
+        "desc": "For each of the two possible expected results (the effect being evaluated to true and to false), the relevant number of test cases is generated: in the positive case, the final causal node (in this case the final intermediate node representing the disjunction with an OR) has to be evaluated to true. Evaluating a disjunction to true entails creating one test case for each node contained in the disjunction to true, while the others are false. Hence, one test case is created where the intermediate node representing the conjunction with an AND is evaluated to true and the 'var3'' node to false - and the other way around. The test case creation rules are then cascaded for the second test case, where the 'var3' node is evaluated to true and consequently the conjunction is evaluated to false, for which again two distinct options exist. Therefore, three positive test cases are created.",
+        "inputparams": [
+            {"id": 1, "text": "an error"},
+            {"id": 2, "text": "the debugger"},
+            {"id": 3, "text": "an exception"}
+        ],
+        "outputparams": [
+            {"id": 4, "text": "a log entry"}
+        ],
+        "testcases": [
+            {
+                "id": 1, 
+                "configurations": [{"inputid": 1, "text": "is present"}, {"inputid": 2, "text": "is active"}, {"inputid": 3, "text": "not is triggered"}],
+                "outcome": [{"outputid": 4, "text": "will be created"}]
+            }, {
+                "id": 2, 
+                "configurations": [{"inputid": 1, "text": "not is present"}, {"inputid": 2, "text": "is active"}, {"inputid": 3, "text": "is triggered"}],
+                "outcome": [{"outputid": 4, "text": "will be created"}]
+            }, {
+                "id": 3, 
+                "configurations": [{"inputid": 1, "text": "is present"}, {"inputid": 2, "text": "not is active"}, {"inputid": 3, "text": "is triggered"}],
+                "outcome": [{"outputid": 4, "text": "will be created"}]
+            }, {
+                "id": 4, 
+                "configurations": [{"inputid": 1, "text": "not is present"}, {"inputid": 2, "text": "is active"}, {"inputid": 3, "text": "not is triggered"}],
+                "outcome": [{"outputid": 4, "text": "not will be created"}]
+            }, {
+                "id": 5, 
+                "configurations": [{"inputid": 1, "text": "is present"}, {"inputid": 2, "text": "not is active"}, {"inputid": 3, "text": "not is triggered"}],
+                "outcome": [{"outputid": 4, "text": "not will be created"}]
+            }
+        ]
+    }
+}

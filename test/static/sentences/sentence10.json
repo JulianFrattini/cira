@@ -1,0 +1,63 @@
+{
+    "title": "Two conjunctive, exceptive causes, single effect",
+    "text": "Unless the red button is pushed and the power fails the system continues to operate.",
+    "classification": {
+        "causal": true,
+        "confidence": 0.9
+    },
+    "labels": [
+        {"id": "T1", "label": "Keyword", "begin": 0, "end": 6},
+        {"id": "T2", "label": "Negation", "begin": 0, "end": 6},
+
+        {"id": "T3", "label": "Cause1", "begin": 7, "end": 31},
+        {"id": "T4", "label": "Variable", "begin": 7, "end": 21},
+        {"id": "T5", "label": "Condition", "begin": 22, "end": 31},
+
+        {"id": "T6", "label": "Conjunction", "begin": 32, "end": 35},
+
+        {"id": "T7", "label": "Cause2", "begin": 36, "end": 51},
+        {"id": "T8", "label": "Variable", "begin": 36, "end": 45},
+        {"id": "T9", "label": "Condition", "begin": 46, "end": 51},
+
+        {"id": "T10", "label": "Effect1", "begin": 52, "end": 83},
+        {"id": "T11", "label": "Variable", "begin": 52, "end": 62},
+        {"id": "T12", "label": "Condition", "begin": 63, "end": 83}
+    ],
+    "graph": {
+        "nodes": [
+            {"id": 1, "variable": "the red button", "condition": "is pushed"},
+            {"id": 2, "variable": "the power", "condition": "fails"},
+            {"id": 3, "variable": "", "condition": "", "type": "AND"},
+            {"id": 4, "variable": "the system", "condition": "continues to operate"}
+        ],
+        "edges": [
+            {"source": 1, "target": 3, "negate": true},
+            {"source": 2, "target": 3, "negate": true},
+            {"source": 3, "target": 4, "negate": false}
+        ]
+    },
+    "testsuite": {
+        "inputparams": [
+            {"id": 1, "text": "the red button"},
+            {"id": 2, "text": "the power"}
+        ],
+        "outputparams": [
+            {"id": 3, "text": "the system"}
+        ],
+        "testcases": [
+            {
+                "id": 1, 
+                "configurations": [{"inputid": 1, "text": "not is pushed"}, {"inputid": 2, "text": "not fails"}],
+                "outcome": [{"outputid": 3, "text": "continues to operate"}]
+            }, {
+                "id": 2, 
+                "configurations": [{"inputid": 1, "text": "is pushed"}, {"inputid": 2, "text": "not fails"}],
+                "outcome": [{"outputid": 3, "text": "not continues to operate"}]
+            }, {
+                "id": 3, 
+                "configurations": [{"inputid": 1, "text": "not is pushed"}, {"inputid": 2, "text": "fails"}],
+                "outcome": [{"outputid": 3, "text": "not continues to operate"}]
+            }
+        ]
+    }
+}

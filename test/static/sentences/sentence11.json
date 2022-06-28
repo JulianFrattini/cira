@@ -1,0 +1,84 @@
+{
+    "title": "Three exceptive causes (conjunction + disjunction), single effect",
+    "text": "Unless the director gives the orders and the red button is pressed or the power fails then the system remains active.",
+    "classification": {
+        "causal": true,
+        "confidence": 0.9
+    },
+    "labels": [
+        {"id": "T1", "label": "Keyword", "begin": 0, "end": 6},
+        {"id": "T2", "label": "Negation", "begin": 0, "end": 6},
+
+        {"id": "T3", "label": "Cause1", "begin": 7, "end": 36},
+        {"id": "T4", "label": "Variable", "begin": 7, "end": 19},
+        {"id": "T5", "label": "Condition", "begin": 20, "end": 36},
+
+        {"id": "T6", "label": "Conjunction", "begin": 37, "end": 40},
+
+        {"id": "T7", "label": "Cause2", "begin": 41, "end": 66},
+        {"id": "T8", "label": "Variable", "begin": 41, "end": 55},
+        {"id": "T9", "label": "Condition", "begin": 56, "end": 66},
+
+        {"id": "T10", "label": "Disjunction", "begin": 67, "end": 69},
+
+        {"id": "T11", "label": "Cause3", "begin": 70, "end": 85},
+        {"id": "T12", "label": "Variable", "begin": 70, "end": 79},
+        {"id": "T13", "label": "Condition", "begin": 80, "end": 85},
+
+        {"id": "T14", "label": "Keyword", "begin": 86, "end": 90},
+
+        {"id": "T15", "label": "Effect1", "begin": 91, "end": 116},
+        {"id": "T16", "label": "Variable", "begin": 91, "end": 101},
+        {"id": "T17", "label": "Condition", "begin": 102, "end": 116}
+    ],
+    "graph": {
+        "nodes": [
+            {"id": 1, "variable": "the director", "condition": "gives the orders"},
+            {"id": 2, "variable": "the red button", "condition": "is pressed"},
+            {"id": 3, "variable": "", "condition": "", "type": "AND"},
+            {"id": 4, "variable": "the power", "condition": "fails"},
+            {"id": 5, "variable": "", "condition": "", "type": "OR"},
+            {"id": 6, "variable": "the system", "condition": "remains active"}
+        ],
+        "edges": [
+            {"source": 1, "target": 3, "negate": true},
+            {"source": 2, "target": 3, "negate": true},
+            {"source": 3, "target": 5, "negate": false},
+            {"source": 4, "target": 5, "negate": false},
+            {"source": 5, "target": 6, "negate": false}
+        ]
+    },
+    "testsuite": {
+        "inputparams": [
+            {"id": 1, "text": "the director"},
+            {"id": 2, "text": "the red button"},
+            {"id": 3, "text": "the power"}
+        ],
+        "outputparams": [
+            {"id": 4, "text": "the system"}
+        ],
+        "testcases": [
+            {
+                "id": 1, 
+                "configurations": [{"inputid": 1, "text": "not gives the orders"}, {"inputid": 2, "text": "is pressed"}, {"inputid": 3, "text": "not fails"}],
+                "outcome": [{"outputid": 4, "text": "remains active"}]
+            }, {
+                "id": 2, 
+                "configurations": [{"inputid": 1, "text": "gives the orders"}, {"inputid": 2, "text": "not is pressed"}, {"inputid": 3, "text": "not fails"}],
+                "outcome": [{"outputid": 4, "text": "remains active"}]
+            }, {
+                "id": 3, 
+                "configurations": [{"inputid": 1, "text": "gives the orders"}, {"inputid": 2, "text": "is pressed"}, {"inputid": 3, "text": "not fails"}],
+                "outcome": [{"outputid": 4, "text": "not remains active"}]
+            }, {
+                "id": 4, 
+                "configurations": [{"inputid": 1, "text": "not gives the orders"}, {"inputid": 2, "text": "is pressed"}, {"inputid": 3, "text": "fails"}],
+                "outcome": [{"outputid": 4, "text": "not remains active"}]
+            }, {
+                "id": 5, 
+                "configurations": [{"inputid": 1, "text": "gives the orders"}, {"inputid": 2, "text": "not is pressed"}, {"inputid": 3, "text": "fails"}],
+                "outcome": [{"outputid": 4, "text": "not remains active"}]
+            }
+        ]
+    }
+}

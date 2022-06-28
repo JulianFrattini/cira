@@ -1,0 +1,72 @@
+{
+    "title": "Two disjunctive causes, two effects",
+    "text": "When the red button is pushed or the power fails the interface does not accept further inputs and the system shuts down.",
+    "classification": {
+        "causal": true,
+        "confidence": 0.9
+    },
+    "labels": [
+        {"id": "T1", "label": "Keyword", "begin": 0, "end": 4},
+
+        {"id": "T2", "label": "Cause1", "begin": 5, "end": 29},
+        {"id": "T3", "label": "Variable", "begin": 5, "end": 19},
+        {"id": "T4", "label": "Condition", "begin": 20, "end": 29},
+
+        {"id": "T5", "label": "Disjunction", "begin": 30, "end": 32},
+
+        {"id": "T6", "label": "Cause2", "begin": 33, "end": 48},
+        {"id": "T7", "label": "Variable", "begin": 33, "end": 42},
+        {"id": "T8", "label": "Condition", "begin": 43, "end": 48},
+
+        {"id": "T9", "label": "Effect1", "begin": 49, "end": 93},
+        {"id": "T10", "label": "Variable", "begin": 49, "end": 62},
+        {"id": "T11", "label": "Negation", "begin": 63, "end": 71},
+        {"id": "T12", "label": "Condition", "begin": 72, "end": 93},
+        
+        {"id": "T13", "label": "Conjunction", "begin": 94, "end": 97},
+
+        {"id": "T14", "label": "Effect2", "begin": 98, "end": 119},
+        {"id": "T15", "label": "Variable", "begin": 98, "end": 108},
+        {"id": "T16", "label": "Condition", "begin": 109, "end": 119}
+    ],
+    "graph": {
+        "nodes": [
+            {"id": 1, "variable": "the red button", "condition": "is pushed"},
+            {"id": 2, "variable": "the power", "condition": "fails"},
+            {"id": 3, "variable": "", "condition": "", "type": "OR"},
+            {"id": 4, "variable": "the interface", "condition": "accept further inputs"},
+            {"id": 5, "variable": "the system", "condition": "shuts down"}
+        ],
+        "edges": [
+            {"source": 1, "target": 3, "negate": false},
+            {"source": 2, "target": 3, "negate": false},
+            {"source": 3, "target": 4, "negate": true},
+            {"source": 3, "target": 5, "negate": false}
+        ]
+    },
+    "testsuite": {
+        "inputparams": [
+            {"id": 1, "text": "the red button"},
+            {"id": 2, "text": "the power"}
+        ],
+        "outputparams": [
+            {"id": 3, "text": "the interface"},
+            {"id": 4, "text": "the system"}
+        ],
+        "testcases": [
+            {
+                "id": 1, 
+                "configurations": [{"inputid": 1, "text": "not is pushed"}, {"inputid": 2, "text": "not fails"}],
+                "outcome": [{"outputid": 3, "text": "accept further inputs"}, {"outputid": 4, "text": "not shuts down"}]
+            }, {
+                "id": 2, 
+                "configurations": [{"inputid": 1, "text": "is pushed"}, {"inputid": 2, "text": "not fails"}],
+                "outcome": [{"outputid": 3, "text": "not accept further inputs"}, {"outputid": 4, "text": "shuts down"}]
+            }, {
+                "id": 3, 
+                "configurations": [{"inputid": 1, "text": "not is pushed"}, {"inputid": 2, "text": "fails"}],
+                "outcome": [{"outputid": 3, "text": "not accept further inputs"}, {"outputid": 4, "text": "shuts down"}]
+            }
+        ]
+    }
+}
