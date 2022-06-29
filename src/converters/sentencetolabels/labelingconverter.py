@@ -77,15 +77,19 @@ def merge_labels(sentence: str, token_labels: List[TokenLabel], label_ids_verbos
     """
     merged_labels: List[Label] = []
     id_counter = 0
+    # keep track of event borders (begin and end of an event label)
+    event_borders = []
 
     for ltype in label_ids_verbose:
         # get all labels of that type in the list of token labels
         all_of_type = [tl for tl in token_labels if tl.name==ltype]
         
-        # merge adjacent token labels
+        # merge adjacent token labels with one exception: if two second-level labels (Variable or Condition) are adjacent, but both belong to two different first-level (event) labels (Cause1/2/3, Event1/2/3), don't merge them
         if len(all_of_type) > 1:
             for index in range(len(all_of_type)-1, 0, -1):
-                if all_of_type[index].begin - all_of_type[index-1].end <= 1:
+                if all_of_type[index].begin - all_of_type[index-1].end <= 1 and \
+                        all_of_type[index].begin not in event_borders and \
+                        all_of_type[index-1].end not in event_borders:
                     b = all_of_type.pop(index)
                     a = all_of_type.pop(index-1)
                     merged = TokenLabel(begin=a.begin, end=b.end, event=a.event, name=a.name)
@@ -94,6 +98,8 @@ def merge_labels(sentence: str, token_labels: List[TokenLabel], label_ids_verbos
         for l in all_of_type:
             idv = f'L{id_counter}'
             merged_labels.append(Label(id=idv, name=l.name, begin=l.begin, end=l.end))
+            if l.name[:-1] in ['Cause', 'Effect']:
+                event_borders.extend([l.begin, l.end])
             id_counter += 1
 
     return merged_labels
