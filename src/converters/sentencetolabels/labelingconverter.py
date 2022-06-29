@@ -1,9 +1,6 @@
-from functools import reduce
-import functools
-from typing import List
-from xmlrpc.client import Boolean
-from src.data.labels import Label
 from dataclasses import dataclass
+
+from src.data.labels import Label, EventLabel, SubLabel
 
 @dataclass
 class TokenLabel:
@@ -12,17 +9,22 @@ class TokenLabel:
     event: bool
     name: str
 
-def convert(sentence: str, sentence_tokens, predictions, label_ids_verbose: List[str]) -> List[Label]: 
+def convert(sentence: str, sentence_tokens, predictions, label_ids_verbose: list[str]) -> list[Label]: 
     """Convert the list of sentence tokens and the list of predictions into a list of label objects"""
-    labels: List[Label] = []
+    labels: list[Label] = []
 
+    # convert the list of sentence tokens, predictions, and labels into a list of token labels, where each token is associated with up to two labels
     token_labels = get_token_labeling(sentence_tokens=sentence_tokens, predictions=predictions, label_ids_verbose=label_ids_verbose)
     
-    labels = merge_labels(sentence=sentence, token_labels=token_labels, label_ids_verbose=label_ids_verbose)
+    # merge all adjacent labels
+    labels = merge_labels(token_labels=token_labels, label_ids_verbose=label_ids_verbose)
+
+    # connect first-level and second-level labels with each other
+    connect_labels(labels)
 
     return labels
 
-def get_token_labeling(sentence_tokens, predictions, label_ids_verbose: List[str]) -> List[TokenLabel]:
+def get_token_labeling(sentence_tokens, predictions, label_ids_verbose: list[str]) -> list[TokenLabel]:
     """Convert the list of sentence tokens, predictions, and label ids into a list of tokens associated to all available labels
     
     parameters: 
@@ -65,17 +67,17 @@ def get_token_labeling(sentence_tokens, predictions, label_ids_verbose: List[str
         
     return token_labels
 
-def merge_labels(sentence: str, token_labels: List[TokenLabel], label_ids_verbose: List[str]) -> List[Label]:
+def merge_labels(token_labels: list[TokenLabel], label_ids_verbose: list[str]) -> list[Label]:
     """Convert the list of token labels, where every single token is associated to up to two labels, to a list of merged labels, where each label spans all tokens that belong to the same label.
 
     parameters:
-        sentence -- the literal sentence
         token_labels -- list of each token within the sentence associated to up to two labels
+        labels_ids_verbose -- list of used labels in order
 
     returns:
         list of merged labels 
     """
-    merged_labels: List[Label] = []
+    merged_labels: list[Label] = []
     id_counter = 0
     # keep track of event borders (begin and end of an event label)
     event_borders = []
@@ -97,12 +99,29 @@ def merge_labels(sentence: str, token_labels: List[TokenLabel], label_ids_verbos
                     
         for l in all_of_type:
             idv = f'L{id_counter}'
-            merged_labels.append(Label(id=idv, name=l.name, begin=l.begin, end=l.end))
+            label: Label = None
             if l.name[:-1] in ['Cause', 'Effect']:
+                label = EventLabel(id=idv, name=l.name, begin=l.begin, end=l.end)
                 event_borders.extend([l.begin, l.end])
+            else:
+                label = SubLabel(id=idv, name=l.name, begin=l.begin, end=l.end)
+            merged_labels.append(label)
             id_counter += 1
 
     return merged_labels
+
+def connect_labels(labels: list[Label]) -> None:
+    """Connect event labels with their connected child labels
+    
+    parameters:
+        labels -- list of unconnected labels (both EventLabels and SubLabels)
+    """
+    event_labels: list[EventLabel] = [label for label in labels if type(label) == EventLabel]
+    
+    for event_label in event_labels:
+        children = [label for label in labels if (type(label) == SubLabel and label.begin >= event_label.begin and label.end <= event_label.end)]
+        for child in children:
+            event_label.add_child(child)
 
 def advance_cursor(token: str) -> int:
     """Calculate the amount of characters the cursor needs to jump to the next token. The calculation takes into account that certain characters cause the token splitter to introduce more whitespaces than others.
