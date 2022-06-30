@@ -126,8 +126,7 @@ def connect_labels(labels: list[Label]) -> None:
     # assign neighboring event labels as predecessor and successor of each other
     event_labels.sort(key=(lambda l: l.begin), reverse=False)
     for index, _ in enumerate(event_labels[:-1]):
-        event_labels[index].successor = event_labels[index+1]
-        event_labels[index+1].predecessor = event_labels[index]
+        event_labels[index].set_successor(event_labels[index+1])
 
 
 def advance_cursor(token: str) -> int:
