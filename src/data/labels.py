@@ -9,11 +9,13 @@ class Label:
 
 @dataclass
 class SubLabel(Label):
-    parent: Label = field(default=None, init=False)
+    parent: 'EventLabel' = field(default=None, init=False)
 
 @dataclass
 class EventLabel(Label):
     children: list[SubLabel] = field(default_factory=list, init=False)
+    predecessor: 'EventLabel' = field(default=None, init=False)
+    successor: 'EventLabel' = field(default=None, init=False)
 
     def add_child(self, label: SubLabel):
         self.children.append(label)

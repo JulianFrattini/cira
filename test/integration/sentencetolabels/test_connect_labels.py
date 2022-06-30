@@ -41,3 +41,19 @@ def test_connect_childcount(two_labels, expected):
     if expected == 1:
         assert two_labels[0].children[0] == two_labels[1]
         assert two_labels[1].parent == two_labels[0]
+
+@pytest.mark.integration
+def test_connect_neighbors():
+    c1 = EventLabel(id='T1', name='Cause1', begin=0, end=5)
+    c2 = EventLabel(id='T2', name='Cause2', begin=6, end=10)
+    e1 = EventLabel(id='T4', name='Effect1', begin=11, end=20)
+    labels = [c2, e1, c1]
+
+    connect_labels(labels)
+
+    assert c1.predecessor == None
+    assert c1.successor == c2
+    assert c2.predecessor == c1
+    assert c2.successor == e1
+    assert e1.predecessor == c2
+    assert e1.successor == None

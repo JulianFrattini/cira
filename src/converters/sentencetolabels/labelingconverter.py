@@ -111,7 +111,7 @@ def merge_labels(token_labels: list[TokenLabel], label_ids_verbose: list[str]) -
     return merged_labels
 
 def connect_labels(labels: list[Label]) -> None:
-    """Connect event labels with their connected child labels
+    """Connect event labels with their connected child labels and their neighbors
     
     parameters:
         labels -- list of unconnected labels (both EventLabels and SubLabels)
@@ -122,6 +122,13 @@ def connect_labels(labels: list[Label]) -> None:
         children = [label for label in labels if (type(label) == SubLabel and label.begin >= event_label.begin and label.end <= event_label.end)]
         for child in children:
             event_label.add_child(child)
+
+    # assign neighboring event labels as predecessor and successor of each other
+    event_labels.sort(key=(lambda l: l.begin), reverse=False)
+    for index, _ in enumerate(event_labels[:-1]):
+        event_labels[index].successor = event_labels[index+1]
+        event_labels[index+1].predecessor = event_labels[index]
+
 
 def advance_cursor(token: str) -> int:
     """Calculate the amount of characters the cursor needs to jump to the next token. The calculation takes into account that certain characters cause the token splitter to introduce more whitespaces than others.
