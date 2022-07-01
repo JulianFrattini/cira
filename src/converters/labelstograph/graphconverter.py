@@ -1,24 +1,33 @@
 from src.data.labels import Label
 from src.data.graph import Graph, EventNode
 
-def generate_graph(sentence: str, labels: list[Label]) -> Graph:
-    """Convert a sentence and a list of labels into a graph
-    
-    parameters:
-        sentence -- literal sentence
-        labels -- list of interconnected labels
+from src.converters.labelstograph.eventresolver import EventResolver
+
+class GraphConverter:
+    def __init__(self, eventresolver: EventResolver):
+        self.eventresolver: EventResolver = eventresolver
+
+    def generate_graph(self, sentence: str, labels: list[Label]) -> Graph:
+        """Convert a sentence and a list of labels into a graph
         
-    returns: a graph representing the semantic structure of the sentence and labels"""
+        parameters:
+            sentence -- literal sentence
+            labels -- list of interconnected labels
+            
+        returns: a graph representing the semantic structure of the sentence and labels"""
 
-    events: list[EventNode] = generate_events(labels=labels)
+        # generate events
+        events: list[EventNode] = generate_events(labels=labels)
+        for event in events:
+            self.eventresolver.resolve_event(node=event, sentence=sentence)
 
-    # rewire cause nodes with intermediate nodes representing the junctors
+        # rewire cause nodes with intermediate nodes representing the junctors
 
-    # resolve negations
+        # resolve negations
 
-    # connect root-cause node with effect nodes
+        # connect root-cause node with effect nodes
 
-    return Graph(nodes=None, edges=None)
+        return Graph(nodes=None, edges=None)
 
 def generate_events(labels: list[Label]) -> list[EventNode]:
     """Generate an initial list of events from all event labels

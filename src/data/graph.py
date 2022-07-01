@@ -13,6 +13,9 @@ class EventNode(Node):
     variable: str = field(default="it", init=False)
     condition: str = field(default="is present", init=False)
 
+    def is_cause(self):
+        return self.label.name[:-1] == 'Cause'
+
 @dataclass
 class IntermediateNode(Node):
     conjunction: bool = True
