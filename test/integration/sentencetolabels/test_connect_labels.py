@@ -52,8 +52,24 @@ def test_connect_neighbors():
     connect_labels(labels)
 
     assert c1.predecessor == None
-    assert c1.successor == c2
-    assert c2.predecessor == c1
-    assert c2.successor == e1
-    assert e1.predecessor == c2
+    assert c1.successor.target == c2
+    assert c2.predecessor.origin == c1
+    assert c2.successor.target == e1
+    assert e1.predecessor.origin == c2
     assert e1.successor == None
+
+@pytest.mark.integration
+def test_junctors():
+    c1 = EventLabel(id='T1', name='Cause1', begin=0, end=5)
+    conj = SubLabel(id='T2', name='Conjunction', begin=6, end=9)
+    c2 = EventLabel(id='T3', name='Cause2', begin=10, end=15)
+    disj = SubLabel(id='T4', name='Disjunction', begin=16, end=18)
+    c3 = EventLabel(id='T5', name='Cause2', begin=19, end=24)
+    c4 = EventLabel(id='T5', name='Cause2', begin=25, end=30)
+    labels = [c1, conj, c2, disj, c3, c4]
+
+    connect_labels(labels)
+
+    assert c1.successor.conjunction == True
+    assert c2.successor.conjunction == False
+    assert c3.successor.conjunction == None

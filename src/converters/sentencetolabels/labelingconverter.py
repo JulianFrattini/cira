@@ -126,8 +126,26 @@ def connect_labels(labels: list[Label]) -> None:
     # assign neighboring event labels as predecessor and successor of each other
     event_labels.sort(key=(lambda l: l.begin), reverse=False)
     for index, _ in enumerate(event_labels[:-1]):
-        event_labels[index].set_successor(event_labels[index+1])
+        junctors: list[SubLabel] = get_junctors_between(labels=labels, first=event_labels[index], second=event_labels[index+1])
+        junctor: bool = None
+        if len(junctors) == 1:
+            junctor = (junctors[0].name == 'Conjunction')
+        event_labels[index].set_successor(successor=event_labels[index+1], conjunction=junctor)
+        
 
+def get_junctors_between(labels: list[Label], first: EventLabel, second: EventLabel) -> list[SubLabel]:
+    """Retrieve all junctors between the first and second event label
+    
+    parameters:
+        labels -- list of all labels
+        first -- event label from whose end point the search begins
+        second -- event label where the search ends
+        
+    returns: all conjunctions and disjunctions between the two event labels"""
+
+    junctors: list[SubLabel] = [label for label in labels if (label.begin >= first.end and label.end <= second.begin and label.name in ['Conjunction', 'Disjunction'])]
+
+    return junctors
 
 def advance_cursor(token: str) -> int:
     """Calculate the amount of characters the cursor needs to jump to the next token. The calculation takes into account that certain characters cause the token splitter to introduce more whitespaces than others.
