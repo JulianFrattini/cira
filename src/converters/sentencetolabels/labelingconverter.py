@@ -129,8 +129,8 @@ def connect_labels(labels: list[Label]) -> None:
         junctors: list[SubLabel] = get_junctors_between(labels=labels, first=event_labels[index], second=event_labels[index+1])
         junctor: bool = None
         if len(junctors) == 1:
-            junctor = (junctors[0].name == 'Conjunction')
-        event_labels[index].set_successor(successor=event_labels[index+1], conjunction=junctor)
+            junctor = 'AND' if junctors[0].name == 'Conjunction' else 'OR'
+        event_labels[index].set_successor(successor=event_labels[index+1], junctor=junctor)
         
 
 def get_junctors_between(labels: list[Label], first: EventLabel, second: EventLabel) -> list[SubLabel]:

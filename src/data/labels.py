@@ -15,7 +15,7 @@ class SubLabel(Label):
 class Neighbor:
     origin: 'EventLabel' = field(default=None)
     target: 'EventLabel' = field(default=None)
-    conjunction: bool = None
+    junctor: str = None
 
 @dataclass
 class EventLabel(Label):
@@ -27,8 +27,8 @@ class EventLabel(Label):
         self.children.append(label)
         label.parent = self
 
-    def set_successor(self, successor: 'EventLabel', conjunction: bool):
-        neighbor = Neighbor(origin=self, target=successor, conjunction=conjunction)
+    def set_successor(self, successor: 'EventLabel', junctor: str):
+        neighbor = Neighbor(origin=self, target=successor, junctor=junctor)
         self.successor = neighbor
         successor.predecessor = neighbor
     

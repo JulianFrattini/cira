@@ -70,6 +70,6 @@ def test_junctors():
 
     connect_labels(labels)
 
-    assert c1.successor.conjunction == True
-    assert c2.successor.conjunction == False
-    assert c3.successor.conjunction == None
+    assert c1.successor.junctor == 'AND'
+    assert c2.successor.junctor == 'OR'
+    assert c3.successor.junctor == None
