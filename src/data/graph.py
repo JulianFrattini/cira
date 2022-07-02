@@ -1,4 +1,4 @@
-from ast import List
+from abc import abstractmethod
 from dataclasses import dataclass, field
 
 from src.data.labels import EventLabel
@@ -12,6 +12,10 @@ class Node:
         if len(self.parents) == 0:
             return self
         return self.parents[0].origin.get_root()
+
+    @abstractmethod
+    def flatten(self) -> list['Node']:
+        pass
 
 @dataclass
 class EventNode(Node):
@@ -39,6 +43,9 @@ class EventNode(Node):
                 disjunction_edge = [parent for parent in self.parents if not parent.origin.conjunction][0]
                 disjunction_parent: IntermediateNode = disjunction_edge.origin
                 disjunction_parent.rewire(old_child=self, new_child=conjunction_parents[0].origin)
+
+    def flatten(self) -> list['Node']:
+        return [self]
 
     def __repr__(self):
         return f'[{self.variable}].({self.condition})'
@@ -71,6 +78,12 @@ class IntermediateNode(Node):
     def rewire(self, old_child: Node, new_child: Node):
         self.remove_child(old_child)
         self.add_child(new_child)
+
+    def flatten(self) -> list['Node']:
+        result = [self]
+        for child in self.children:
+            result = result + child.target.flatten()
+        return result
 
     def __repr__(self):
         cstring = [('NOT ' if child.negated else '') + str(child.target) for child in self.children]
