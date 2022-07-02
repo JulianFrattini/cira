@@ -8,6 +8,11 @@ class Node:
     id: str
     parents: list['Edge'] = field(default_factory=list, init=False)
 
+    def get_root(self):
+        if len(self.parents) == 0:
+            return self
+        return self.parents[0].origin.get_root()
+
 @dataclass
 class EventNode(Node):
     label: EventLabel = field(default=None)
@@ -19,6 +24,21 @@ class EventNode(Node):
 
     def is_negated(self):
         return len([label for label in self.label.children if label.name == 'Negation']) > 0
+
+    def condense(self):
+        """In case the event node has more than one parent, try to condense these parents. If they have the same junctor type, merge them. If not, rearrange them according to precedence rules (AND binds stronger than OR)"""
+        if len(self.parents) > 0:
+            conjunction_parents = [parent for parent in self.parents if parent.origin.conjunction]
+            if len(conjunction_parents) == len(self.parents) or len(conjunction_parents) == 0:
+                # simple case: all parents have the same junctor type
+                surviving_parent: IntermediateNode = self.parents[0].origin
+                for parent in self.parents[1:]:
+                    surviving_parent.merge(parent.origin)
+            else: 
+                # complex case: apply precedence rules
+                disjunction_edge = [parent for parent in self.parents if not parent.origin.conjunction][0]
+                disjunction_parent: IntermediateNode = disjunction_edge.origin
+                disjunction_parent.rewire(old_child=self, new_child=conjunction_parents[0].origin)
 
     def __repr__(self):
         return f'[{self.variable}].({self.condition})'
@@ -37,6 +57,20 @@ class IntermediateNode(Node):
         for edge in [edge for edge in self.children if edge.target==child]:
             edge.target.parents.remove(edge)
             self.children.remove(edge)
+
+    def merge(self, other: 'IntermediateNode'):
+        """Merge this node with another intermediate node"""
+        child_targets = [child.target for child in self.children]
+        for child in other.children:
+            if child.target not in child_targets:
+                child.origin = self
+                self.children.append(child)
+            else:
+                child.target.parents.remove(child)
+
+    def rewire(self, old_child: Node, new_child: Node):
+        self.remove_child(old_child)
+        self.add_child(new_child)
 
     def __repr__(self):
         cstring = [('NOT ' if child.negated else '') + str(child.target) for child in self.children]
