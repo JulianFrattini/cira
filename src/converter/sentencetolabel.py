@@ -1,6 +1,4 @@
-import sys
-import json
-from torch.nn import BCEWithLogitsLoss, MSELoss
+from torch.nn import BCEWithLogitsLoss
 from torch import nn
 from transformers.modeling_outputs import TokenClassifierOutput
 from transformers import RobertaModel
@@ -9,12 +7,8 @@ from transformers import BatchEncoding
 
 import pytorch_lightning as pl
 import torch
-from torch.utils.data import Dataset, DataLoader, RandomSampler, SequentialSampler
 import torch.nn as nn
-import numpy as np
 import abc
-import transformers
-from sklearn.metrics import classification_report
 
 # Dataset configuration variables
 LABEL_IDS = ['NOT_RELEVANT', 'CAUSE_1', 'CAUSE_2', 'CAUSE_3', 'EFFECT_1', 'EFFECT_2', 'EFFECT_3', 'AND', 'OR', 'VARIABLE', 'CONDITION', 'NEGATION']
@@ -24,8 +18,17 @@ MAX_LEN = 80
 DROPOUT = 0.13780087432114646
 
 MODEL_PATH = 'bin/multilabel.ckpt'
+
 # set  this variable to false if the machine, on which the python service is supposed to run, is not CUDA-capable
 USE_GPU = False
+def use_GPU(use: bool):
+    """Set the flag of whether the machine learning algorithm is supposed to use the GPU or not
+
+    parameters:
+        use: bool -- true, if a CUDA-capable GPU is available and shall be used
+    """
+    global USE_GPU
+    USE_GPU = use
 
 class CustomModel(pl.LightningModule):
 
@@ -99,10 +102,6 @@ class MultiLabelRoBERTaCustomModel(CustomModel):
           hidden_states=outputs.hidden_states,
           attentions=outputs.attentions,
       )
-
-def use_GPU(use):
-    global USE_GPU
-    USE_GPU = use
 
 TOKENIZER = None
 model = None

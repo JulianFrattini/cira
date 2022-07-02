@@ -1,7 +1,7 @@
 import pytest
 from unittest.mock import patch
 
-from src.converters.labelstograph.eventconnecter import generate_initial_nodenet as gin
+from src.converters.labelstograph.eventconnector import generate_initial_nodenet as gin
 
 from src.data.graph import EventNode, IntermediateNode
 from data.labels import SubLabel

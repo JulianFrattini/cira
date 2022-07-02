@@ -22,7 +22,9 @@ class Event:
     def setPredecessor(self, predecessor: 'Event'):
         self.predecessor = predecessor
     
-    # predecessor and successors
+    def getSuccessor(self):
+        return self.successor
+
     def setSuccessor(self, successor: 'Event'):
         self.successor = successor
 
@@ -53,10 +55,10 @@ class Event:
         """
         result = []
 
-        predecessor = self.predecessor
-        while predecessor != None:
-            result.append(predecessor)
-            predecessor = predecessor.getPredecessor()
+        candidate = self.predecessor if preferBacktracking else self.successor
+        while candidate != None:
+            result.append(candidate)
+            candidate = candidate.getPredecessor() if preferBacktracking else candidate.getSuccessor()
 
         return result
 
@@ -89,8 +91,8 @@ class EventList:
             if predecessor is not None: #and eventName.startswith('Cause'):
                 predecessor.setSuccessor(successor=event)
                 event.setPredecessor(predecessor=predecessor)
-            
             predecessor = event
+
             self.events.append(event)
 
     def getEvents(self, ce: str=None):

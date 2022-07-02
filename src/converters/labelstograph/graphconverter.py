@@ -2,7 +2,7 @@ from src.data.labels import Label
 from src.data.graph import Graph, Node, EventNode
 
 from src.converters.labelstograph.eventresolver import EventResolver
-from src.converters.labelstograph.eventconnecter import connect_events
+from src.converters.labelstograph.eventconnector import connect_events
 
 class GraphConverter:
     def __init__(self, eventresolver: EventResolver):

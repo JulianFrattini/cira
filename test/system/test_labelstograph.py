@@ -3,7 +3,7 @@ import pytest
 from src.cira import l2g
 from src.converter2.util.graph import EventNode, IntermediateNode, Graph
 
-@pytest.mark.system
+#@pytest.mark.system
 def test_sentence():
     text = "If a fire breaks out in the building and either no firemen are around or the people start to panic, the building needs to be evacuated."
 
