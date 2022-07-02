@@ -39,7 +39,7 @@ def get_events_in_order(label: EventLabel, attribute: str) -> list[EventLabel]:
     return candidates
 
 def get_all_neighbors_of_type(startlabel: EventLabel, direction: str, type: str) -> list[EventLabel]:
-    """Starting from a given label and going into a speccific direction, add all labels of the same type to a list
+    """Starting from a given label and going into a specific direction, add all labels of the same type to a list
 
     parameters:
         startlabel -- the label to start searching from (will not be added to the list)
@@ -52,7 +52,8 @@ def get_all_neighbors_of_type(startlabel: EventLabel, direction: str, type: str)
 
     next_label = startlabel
     while getattr(next_label, direction) != None:
-        next_label: EventLabel = getattr(next_label, direction)
+        neighbor = getattr(next_label, direction)
+        next_label: EventLabel = getattr(neighbor, 'target' if direction=='successor' else 'origin')
         if next_label.name.startswith(type):
             result.append(next_label)
 

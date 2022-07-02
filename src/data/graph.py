@@ -35,6 +35,7 @@ class IntermediateNode(Node):
 
     def remove_child(self, child: 'Node'):
         for edge in [edge for edge in self.children if edge.target==child]:
+            edge.target.parents.remove(edge)
             self.children.remove(edge)
 
     def __repr__(self):

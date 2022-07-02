@@ -7,7 +7,7 @@ from src.data.graph import EventNode, IntermediateNode
 from data.labels import SubLabel
 
 @pytest.mark.unit
-@patch('src.converters.labelstograph.eventconnecter.EventNode.is_negated')
+@patch('src.converters.labelstograph.eventconnector.EventNode.is_negated')
 def test_two_conjunction(mock_isnegated):
     mock_isnegated.return_value == False
     events = [EventNode(id='E1'), EventNode(id='E2')]
@@ -22,7 +22,7 @@ def test_two_conjunction(mock_isnegated):
 
 
 @pytest.mark.unit
-@patch('src.converters.labelstograph.eventconnecter.EventNode.is_negated')
+@patch('src.converters.labelstograph.eventconnector.EventNode.is_negated')
 def test_two_negation(mock_isnegated):
     mock_isnegated.return_value == True
     events: list[EventNode] = [EventNode(id='E1'), EventNode(id='E2')]
@@ -35,7 +35,7 @@ def test_two_negation(mock_isnegated):
     assert intermediates[0].children[1].negated == True
 
 @pytest.mark.unit
-@patch('src.converters.labelstograph.eventconnecter.EventNode.is_negated')
+@patch('src.converters.labelstograph.eventconnector.EventNode.is_negated')
 def test_three_conj_disj(mock_isnegated):
     mock_isnegated.return_value == False
     events = [EventNode(id='E1'), EventNode(id='E2'), EventNode(id='E3')]

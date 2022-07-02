@@ -1,6 +1,6 @@
 import pytest
 
-from src.converters.labelstograph.eventconnecter import get_junctors
+from src.converters.labelstograph.eventconnector import get_junctors
 
 from src.data.graph import EventNode
 from src.data.labels import EventLabel
