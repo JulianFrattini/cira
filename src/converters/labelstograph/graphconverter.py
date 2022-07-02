@@ -1,7 +1,8 @@
 from src.data.labels import Label
-from src.data.graph import Graph, EventNode
+from src.data.graph import Graph, Node, EventNode
 
 from src.converters.labelstograph.eventresolver import EventResolver
+from src.converters.labelstograph.eventconnecter import connect_events
 
 class GraphConverter:
     def __init__(self, eventresolver: EventResolver):
@@ -22,6 +23,8 @@ class GraphConverter:
             self.eventresolver.resolve_event(node=event, sentence=sentence)
 
         # rewire cause nodes with intermediate nodes representing the junctors
+        cause_nodes = [event for event in events if event.is_cause()]
+        causes: list[Node] = connect_events(events=cause_nodes)
 
         # resolve negations
 

@@ -42,12 +42,21 @@ def get_junctors(events: list[EventNode]) -> dict:
     return junctor_map
 
 def generate_initial_nodenet(events: list[Node], junctor_map: dict) -> list[IntermediateNode]:
+    """Generates the intermediate nodes that initially connect the list of events. The type of intermediate node (conjunction/disjunction) is derived from the junctor map.
+    
+    parameters: 
+        events -- list of events to connect
+        junctor_map -- dict which connects every two adjacent events with a junctor ('AND'/'OR')
+        
+    returns: a list of intermediate nodes connecting the event nodes"""
     junctors: list[IntermediateNode] = []
 
     for index, junctor in enumerate(junctor_map):
         intermediate = IntermediateNode(id=f'I{index}', conjunction=(junctor_map[junctor]=='AND'))
-        joined_nodes = [event for event in events if (event.id in junctor)]
-        intermediate.add_children(joined_nodes)
+        joined_nodes: list[EventNode] = [event for event in events if (event.id in junctor)]
+        for node in joined_nodes:
+            is_negated: bool = (bool) (node.is_negated())
+            intermediate.add_child(child=node, negated=is_negated)
         junctors.append(intermediate)
 
     return junctors
