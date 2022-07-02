@@ -6,6 +6,7 @@ from src.data.labels import EventLabel
 @dataclass
 class Node:
     id: str
+    parents: list['IntermediateNode'] = field(default_factory=list, init=False)
 
 @dataclass
 class EventNode(Node):
@@ -19,6 +20,17 @@ class EventNode(Node):
 @dataclass
 class IntermediateNode(Node):
     conjunction: bool = True
+    children: list[Node] = field(default_factory=list, init=False)
+
+    def add_children(self, children: list[Node]):
+        self.children = self.children + children
+        for child in children:
+            child.parents.append(self)
+
+    def remove_child(self, child: Node):
+        if child in self.children:
+            child.parents.remove(self)
+            self.children.remove(child)
 
 @dataclass
 class Edge:
