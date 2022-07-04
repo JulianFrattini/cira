@@ -24,7 +24,7 @@ class EventNode(Node):
     condition: str = field(default="is present", init=False)
 
     def is_cause(self):
-        return self.label.name[:-1] == 'Cause'
+        return self.label.is_cause()
 
     def is_negated(self):
         return len([label for label in self.label.children if label.name == 'Negation']) > 0
@@ -88,7 +88,9 @@ class IntermediateNode(Node):
     def __repr__(self):
         cstring = [('NOT ' if child.negated else '') + str(child.target) for child in self.children]
         jstring = ' && ' if self.conjunction else ' || '
-        return f'({jstring.join(cstring)})'
+
+        result = f'({jstring.join(cstring)})'
+        return result
 
 @dataclass
 class Edge:
@@ -102,4 +104,9 @@ class Edge:
 @dataclass
 class Graph:
     nodes: list[Node] = field(default_factory=list)
+    root: Node = None,
     edges: list[Edge] = field(default_factory=list)
+
+    def __repr__(self):
+        effects = " && ".join([('NOT ' if parent.negated else '') + str(parent.target) for parent in self.root.parents])
+        return f'{str(self.root)} ===> {effects}'

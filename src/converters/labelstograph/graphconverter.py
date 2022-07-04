@@ -1,5 +1,5 @@
 from src.data.labels import Label
-from src.data.graph import Graph, Node, EventNode
+from src.data.graph import Edge, Graph, Node, EventNode
 
 from src.converters.labelstograph.eventresolver import EventResolver
 from src.converters.labelstograph.eventconnector import connect_events
@@ -25,12 +25,15 @@ class GraphConverter:
         # rewire cause nodes with intermediate nodes representing the junctors
         cause_nodes = [event for event in events if event.is_cause()]
         causes: list[Node] = connect_events(events=cause_nodes)
+        cause_root: Node = causes[0]
 
-        # resolve negations
+        # connect root-cause node to effect nodes
+        effects = [event for event in events if not event.is_cause()]
+        for effect in effects:
+            effect_connection = Edge(origin=cause_root, target=effect, negated=effect.is_negated())
+            cause_root.parents.append(effect_connection)
 
-        # connect root-cause node with effect nodes
-
-        return Graph(nodes=None, edges=None)
+        return Graph(nodes=causes+effects, root=cause_root, edges=None)
 
 def generate_events(labels: list[Label]) -> list[EventNode]:
     """Generate an initial list of events from all event labels

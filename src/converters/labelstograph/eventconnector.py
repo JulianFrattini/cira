@@ -40,10 +40,18 @@ def get_junctors(events: list[EventNode]) -> dict:
     # get the starting node (the cause event node which has no predecessor)
     current_node: EventNode = [event for event in events if (event.label.predecessor == None)][0]
     while current_node.label.successor != None:
-        junctor_map[(current_node.label.id, current_node.label.successor.target.id)] = current_node.label.successor.junctor
-        # TODO: currently, the junctor map uses the ids of the labels, not the events, as an identifier
-        #junctor_map[(current_node.id, current_node.label.successor.target.id)] = current_node.label.successor.junctor
-        current_node = [event for event in events if event.label==current_node.label.successor.target][0]
+        label1 = current_node.label
+        label2 = current_node.label.successor.target
+        if label1.is_cause() == label2.is_cause():
+            # only determine junctors between labels of the same type
+            # TODO: currently, the junctor map uses the ids of the labels, not the events, as an identifier
+            #junctor_map[(current_node.id, current_node.label.successor.target.id)] = current_node.label.successor.junctor
+            junctor_map[(current_node.label.id, current_node.label.successor.target.id)] = current_node.label.successor.junctor
+            current_node = [event for event in events if event.label==current_node.label.successor.target][0]
+        else:
+            # if the the events do not contain the successor, then because the successor is outside ouf the events list
+            # for example: a cause label neighboring an effect label is not supposed to produce a junctor mapping
+            break
 
     # fill all implicit junctors
     previous = 'AND'

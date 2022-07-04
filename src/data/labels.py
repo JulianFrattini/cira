@@ -11,6 +11,9 @@ class Label:
 class SubLabel(Label):
     parent: 'EventLabel' = field(default=None, init=False)
 
+    def __repr__(self):
+        return f'({self.id})'
+
 @dataclass
 class Neighbor:
     origin: 'EventLabel' = field(default=None)
@@ -22,6 +25,9 @@ class EventLabel(Label):
     children: list[SubLabel] = field(default_factory=list, init=False)
     predecessor: Neighbor = field(default=None, init=False)
     successor: Neighbor = field(default=None, init=False)
+
+    def is_cause(self):
+        return self.name.startswith('Cause')
 
     def add_child(self, label: SubLabel):
         self.children.append(label)
@@ -38,3 +44,7 @@ class EventLabel(Label):
         if len(eligible_sublabels) >= 1:
             return " ".join([sentence[l.begin:l.end] for l in eligible_sublabels])
         return None
+    
+    
+    def __repr__(self):
+        return f'({self.id})'
