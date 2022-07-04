@@ -35,7 +35,7 @@
         "nodes": [
             {"id": 1, "variable": "the user", "condition": "is over 18 years old"},
             {"id": 2, "variable": "the current time", "condition": "is during working hours"},
-            {"id": 3, "variable": "the current day", "condition": "is a workday"},
+            {"id": 3, "variable": "the current day", "condition": "is a work day"},
             {"id": 4, "variable": "", "condition": "", "type": "OR"},
             {"id": 5, "variable": "the door", "condition": "opens"}
         ],

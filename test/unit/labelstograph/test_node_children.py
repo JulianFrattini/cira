@@ -1,24 +1,24 @@
-from data.labels import EventLabel, SubLabel
 import pytest
 
 from src.data.graph import Node, IntermediateNode, EventNode
+from src.data.labels import EventLabel, SubLabel
 
 @pytest.mark.unit
 def test_addchild():
     i = IntermediateNode(id='I1', conjunction=False)
     e = EventNode(id='E1')
 
-    i.add_child(e)
-    assert e.parents[0].origin == i
+    i.add_incoming(e)
+    assert e.outgoing[0].target == i
 
 @pytest.mark.unit
 def test_removechild():
     i = IntermediateNode(id='I1', conjunction=False)
     e = EventNode(id='E1')
-    i.add_child(e)
+    i.add_incoming(e)
 
-    i.remove_child(e)
-    assert len(e.parents) == 0
+    i.remove_incoming(e)
+    assert len(e.outgoing) == 0
 
 @pytest.mark.unit
 def test_addchildren():
@@ -26,10 +26,10 @@ def test_addchildren():
     e1 = EventNode(id='E1')
     e2 = EventNode(id='E2')
 
-    i.add_child(e1)
-    i.add_child(e2)
+    i.add_incoming(e1)
+    i.add_incoming(e2)
 
-    assert len(i.children) == 2
+    assert len(i.incoming) == 2
 
 @pytest.mark.unit
 def test_removeonechild():
@@ -37,12 +37,12 @@ def test_removeonechild():
     e1 = EventNode(id='E1')
     e2 = EventNode(id='E2')
 
-    i.add_child(e1)
-    i.add_child(e2)
+    i.add_incoming(e1)
+    i.add_incoming(e2)
 
-    i.remove_child(e1)
+    i.remove_incoming(e1)
 
-    assert len(i.children) == 1
+    assert len(i.incoming) == 1
 
 @pytest.mark.unit
 def test_negatednode():

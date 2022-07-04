@@ -13,7 +13,7 @@ def test_conjunction():
     nodes = [EventNode(id='E1', label=c1), EventNode(id='E2', label=c2)]
 
     junctors = get_junctors(events=nodes)
-    assert junctors[('L1', 'L2')] == 'AND'
+    assert junctors[('E1', 'E2')] == 'AND'
 
 def test_disjunction():
     c1 = EventLabel(id='L1', name='Cause1', begin=0, end=10)
@@ -23,7 +23,7 @@ def test_disjunction():
     nodes = [EventNode(id='E1', label=c1), EventNode(id='E2', label=c2)]
 
     junctors = get_junctors(events=nodes)
-    assert junctors[('L1', 'L2')] == 'OR'
+    assert junctors[('E1', 'E2')] == 'OR'
 
 def test_nojunction():
     c1 = EventLabel(id='L1', name='Cause1', begin=0, end=10)
@@ -34,7 +34,7 @@ def test_nojunction():
 
     # if no junctor is available at all, assume a conjunction
     junctors = get_junctors(events=nodes)
-    assert junctors[('L1', 'L2')] == 'AND'
+    assert junctors[('E1', 'E2')] == 'AND'
 
 def test_implicit_conjunction():
     c1 = EventLabel(id='L1', name='Cause1', begin=0, end=10)
@@ -46,4 +46,4 @@ def test_implicit_conjunction():
     nodes = [EventNode(id='E1', label=c1), EventNode(id='E2', label=c2), EventNode(id='E3', label=c3)]
 
     junctors = get_junctors(events=nodes)
-    assert junctors[('L1', 'L2')] == 'AND'
+    assert junctors[('E1', 'E2')] == 'AND'

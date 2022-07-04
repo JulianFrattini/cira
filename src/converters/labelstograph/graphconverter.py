@@ -22,18 +22,20 @@ class GraphConverter:
         for event in events:
             self.eventresolver.resolve_event(node=event, sentence=sentence)
 
-        # rewire cause nodes with intermediate nodes representing the junctors
+        # connect cause nodes with intermediate nodes representing the junctors
         cause_nodes = [event for event in events if event.is_cause()]
-        causes: list[Node] = connect_events(events=cause_nodes)
+        causes, edgelist = connect_events(events=cause_nodes)
         cause_root: Node = causes[0]
 
         # connect root-cause node to effect nodes
         effects = [event for event in events if not event.is_cause()]
         for effect in effects:
-            effect_connection = Edge(origin=cause_root, target=effect, negated=effect.is_negated())
-            cause_root.parents.append(effect_connection)
+            # check for double-negation
+            double_negative = (len(causes) == 1) and (causes[0].is_negated())
+            edge = effect.add_incoming(child=cause_root, negated=(effect.is_negated() != double_negative))
+            edgelist.append(edge)
 
-        return Graph(nodes=causes+effects, root=cause_root, edges=None)
+        return Graph(nodes=causes+effects, root=cause_root, edges=edgelist)
 
 def generate_events(labels: list[Label]) -> list[EventNode]:
     """Generate an initial list of events from all event labels

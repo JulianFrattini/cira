@@ -11,15 +11,15 @@ def test_pure_conjunction():
     c3.variable = 'var3'
 
     i1 = IntermediateNode(id='I1', conjunction=True)
-    i1.add_child(c1)
-    i1.add_child(c2)
+    i1.add_incoming(c1)
+    i1.add_incoming(c2)
     i2 = IntermediateNode(id='I2', conjunction=True)
-    i2.add_child(c2)
-    i2.add_child(c3)
+    i2.add_incoming(c2)
+    i2.add_incoming(c3)
 
-    assert len(c2.parents) == 2
+    assert len(c2.outgoing) == 2
     c2.condense()
-    assert len(c2.parents) == 1
+    assert len(c2.outgoing) == 1
 
     root: IntermediateNode = c3.get_root()
     assert root == i1
@@ -34,11 +34,11 @@ def test_pure_disjunction():
     c3.variable = 'var3'
 
     i1 = IntermediateNode(id='I1', conjunction=False)
-    i1.add_child(c1)
-    i1.add_child(c2)
+    i1.add_incoming(c1)
+    i1.add_incoming(c2)
     i2 = IntermediateNode(id='I2', conjunction=False)
-    i2.add_child(c2)
-    i2.add_child(c3)
+    i2.add_incoming(c2)
+    i2.add_incoming(c3)
 
     c2.condense()
 
@@ -56,15 +56,15 @@ def test_pure_mix():
     c3.variable = 'var3'
 
     i1 = IntermediateNode(id='I1', conjunction=False)
-    i1.add_child(c1)
-    i1.add_child(c2)
+    i1.add_incoming(c1)
+    i1.add_incoming(c2)
     i2 = IntermediateNode(id='I2', conjunction=True)
-    i2.add_child(c2)
-    i2.add_child(c3)
+    i2.add_incoming(c2)
+    i2.add_incoming(c3)
 
     c2.condense()
     root: IntermediateNode = c2.get_root()
     assert root.conjunction == False
 
-    child_junctor: IntermediateNode = [child.target for child in root.children if type(child.target)==IntermediateNode][0]
+    child_junctor: IntermediateNode = [inc.origin for inc in root.incoming if type(inc.origin)==IntermediateNode][0]
     assert child_junctor.conjunction == True

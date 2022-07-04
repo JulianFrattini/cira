@@ -36,7 +36,7 @@
         {"id": "T19", "label": "Conjunction", "begin": 123, "end": 126},
         
         {"id": "T20", "label": "Effect2", "begin": 127, "end": 152},
-        {"id": "T21", "label": "Variable", "begin": 126, "end": 142},
+        {"id": "T21", "label": "Variable", "begin": 127, "end": 142},
         {"id": "T22", "label": "Condition", "begin": 143, "end": 152}
     ],
     "graph": {

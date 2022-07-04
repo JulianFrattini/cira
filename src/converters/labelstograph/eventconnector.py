@@ -1,6 +1,7 @@
-from src.data.graph import  Node, EventNode, IntermediateNode
+from typing import Tuple
+from src.data.graph import  Node, EventNode, IntermediateNode, Edge
 
-def connect_events(events: list[EventNode]) -> list[Node]:
+def connect_events(events: list[EventNode]) -> Tuple[list[Node], list[Edge]]:
     """Connect a list of events based on the relationships between them to a tree, where the leaf nodes represent events and all intermediate nodes represent junctors
     
     parameters:
@@ -8,24 +9,25 @@ def connect_events(events: list[EventNode]) -> list[Node]:
 
     returns: minimal list of nodes representing a tree (with the root node at position 0)
     """
-    nodes: list[Node] = []
-
     if len(events) == 1:
         # in case there is only one event node, there are no junctors to resolve and events to connect
-        nodes.append(events[0])
+        return (events, [])
     else:
         # in case there are at least two event nodes, resolve the junctors by introducing intermediate nodes
         junctor_map: dict = get_junctors(events=events)
-        nodenet = generate_initial_nodenet(events=events, junctor_map=junctor_map)
+        _, edges = generate_initial_nodenet(events=events, junctor_map=junctor_map)
+        edgelist: list[Edge] = edges
 
         # ensure that every leaf node has exactly one parent
+        removable_edges: list[Edge] = []
         for event in events:
-            event.condense()
+            removable_edges += event.condense()
+        for edge in removable_edges:
+            edgelist.remove(edge)
         
         # obtain the root node:
         root = events[0].get_root()
-        nodes = root.flatten()
-    return nodes
+        return (root.flatten(), edgelist)
 
 def get_junctors(events: list[EventNode]) -> dict:
     """Obtain a map that maps two adjacent event nodes to their respective junctor (conjunction or disjunction). If no explicit junctor is given, take the junctor between the (recursively) next pair of event nodes
@@ -42,18 +44,17 @@ def get_junctors(events: list[EventNode]) -> dict:
     while current_node.label.successor != None:
         label1 = current_node.label
         label2 = current_node.label.successor.target
+        # only consider junctors between labels of the same type (Cause or effect)
         if label1.is_cause() == label2.is_cause():
-            # only determine junctors between labels of the same type
-            # TODO: currently, the junctor map uses the ids of the labels, not the events, as an identifier
-            #junctor_map[(current_node.id, current_node.label.successor.target.id)] = current_node.label.successor.junctor
-            junctor_map[(current_node.label.id, current_node.label.successor.target.id)] = current_node.label.successor.junctor
-            current_node = [event for event in events if event.label==current_node.label.successor.target][0]
+            # obtain the node with which the current node is joined and denote the junctor
+            next_node = [event for event in events if event.label==label2][0]
+            junctor_map[(current_node.id, next_node.id)] = label1.successor.junctor
+            # continue with that node
+            current_node = next_node
         else:
-            # if the the events do not contain the successor, then because the successor is outside ouf the events list
-            # for example: a cause label neighboring an effect label is not supposed to produce a junctor mapping
             break
 
-    # fill all implicit junctors
+    # fill all implicit junctors by traversing the junctor map in reverse order (as explicit junctors tend to appear towards the and, like in "If a [?], b [?], c [?], [AND] d, then e.")
     previous = 'AND'
     for nodepair in list(junctor_map.keys())[::-1]:
         if junctor_map[nodepair] == None:
@@ -63,7 +64,7 @@ def get_junctors(events: list[EventNode]) -> dict:
 
     return junctor_map
 
-def generate_initial_nodenet(events: list[Node], junctor_map: dict) -> list[IntermediateNode]:
+def generate_initial_nodenet(events: list[Node], junctor_map: dict) -> Tuple[list[IntermediateNode], list[Edge]]:
     """Generates the intermediate nodes that initially connect the list of events. The type of intermediate node (conjunction/disjunction) is derived from the junctor map.
     
     parameters: 
@@ -72,13 +73,15 @@ def generate_initial_nodenet(events: list[Node], junctor_map: dict) -> list[Inte
         
     returns: a list of intermediate nodes connecting the event nodes"""
     junctors: list[IntermediateNode] = []
+    edgelist: list[Edge] = []
 
     for index, junctor in enumerate(junctor_map):
         intermediate = IntermediateNode(id=f'I{index}', conjunction=(junctor_map[junctor]=='AND'))
-        joined_nodes: list[EventNode] = [event for event in events if (event.label.id in junctor)]
+        joined_nodes: list[EventNode] = [event for event in events if (event.id in junctor)]
         for node in joined_nodes:
             is_negated: bool = (bool) (node.is_negated())
-            intermediate.add_child(child=node, negated=is_negated)
+            edge = intermediate.add_incoming(child=node, negated=is_negated)
+            edgelist.append(edge)
         junctors.append(intermediate)
 
-    return junctors
+    return (junctors,edgelist)
