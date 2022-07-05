@@ -1,6 +1,7 @@
 import pytest
 import json
-import os
+import os, dotenv
+dotenv.load_dotenv()
 
 from src.converters.sentencetolabels.labeler import Labeler
 from src.converters.sentencetolabels.labelingconverter import TokenLabel
@@ -19,7 +20,7 @@ def sentence(id: str):
 
 @pytest.fixture(scope="module")
 def labeler():
-    return Labeler(model_path="C:/Users/juf/Workspace/BTH/NLP_RE/cira/services/bin/multilabel.ckpt", useGPU=True)
+    return Labeler(model_path=os.environ['MODEL_LABELING'], useGPU=True)
 
 
 # currently excluded: sentence 10 & 11 (the labeler does not create a negation for "unless"), sentence 13 (there is a tripple-labeling on "NO defect" with Cause3, Variable, and Negation)
