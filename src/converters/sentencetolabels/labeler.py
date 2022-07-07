@@ -4,12 +4,10 @@ from transformers import BatchEncoding
 import torch
 
 from src.data.labels import Label
+import src.util.constants as constants
 import src.converters.sentencetolabels.labelingconverter as lconv
 
-# Dataset configuration variables
-LABEL_IDS = ['NOT_RELEVANT', 'CAUSE_1', 'CAUSE_2', 'CAUSE_3', 'EFFECT_1', 'EFFECT_2', 'EFFECT_3', 'AND', 'OR', 'VARIABLE', 'CONDITION', 'NEGATION']
-LABEL_IDS_VERBOSE = ['notrelevant', 'Cause1', 'Cause2', 'Cause3', 'Effect1', 'Effect2', 'Effect3', 'Conjunction', 'Disjunction', 'Variable', 'Condition', 'Negation']
-
+MODEL_TO_USE = 'roberta-base'
 
 class Labeler:
 
@@ -19,14 +17,13 @@ class Labeler:
         self.max_len = max_len
 
         # setup model and tokenizer
-        MODEL_TO_USE = 'roberta-base'
         self.tokenizer = RobertaTokenizerFast.from_pretrained(MODEL_TO_USE)
         self.model = MultiLabelRoBERTaCustomModel.load_from_checkpoint(
             hyperparams={'dropout': dropout}, 
             training_dataset=None, 
             validation_dataset=None, 
             test_dataset=None,
-            labels=LABEL_IDS, 
+            labels=constants.LABEL_IDS, 
             model_to_use=MODEL_TO_USE, 
             checkpoint_path=model_path
         )
@@ -72,6 +69,5 @@ class Labeler:
         # return list of labels
         labels: list[Label] = lconv.convert(
             sentence_tokens=tokenized_batch[0].tokens, 
-            predictions=predictions, 
-            labels=LABEL_IDS_VERBOSE)
+            predictions=predictions)
         return labels

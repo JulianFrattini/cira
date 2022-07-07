@@ -3,6 +3,7 @@ from dataclasses import dataclass
 from torch import Tensor
 
 from src.data.labels import Label, EventLabel, SubLabel
+import src.util.constants as constants
 
 @dataclass
 class TokenLabel:
@@ -11,7 +12,7 @@ class TokenLabel:
     event: bool
     name: str
 
-def convert(sentence_tokens: list[str], predictions: Tensor, labels: list[str]) -> list[Label]: 
+def convert(sentence_tokens: list[str], predictions: Tensor) -> list[Label]: 
     """Convert the list of sentence tokens and the list of predictions into a list of label objects
     
     parameters: 
@@ -21,17 +22,17 @@ def convert(sentence_tokens: list[str], predictions: Tensor, labels: list[str]) 
         
     returns: list of actual labels on the sentence"""
     # convert the list of sentence tokens, predictions, and labels into a list of token labels, where each token is associated with up to two labels
-    token_labels = get_token_labeling(sentence_tokens=sentence_tokens, predictions=predictions, labels=labels)
+    token_labels = get_token_labeling(sentence_tokens=sentence_tokens, predictions=predictions)
     
     # merge all adjacent labels
-    labels: list[Label] = merge_labels(token_labels=token_labels, labels=labels)
+    labels: list[Label] = merge_labels(token_labels=token_labels)
 
     # connect first-level and second-level labels with each other
     connect_labels(labels)
 
     return labels
 
-def get_token_labeling(sentence_tokens: list[str], predictions: Tensor, labels: list[str]) -> list[TokenLabel]:
+def get_token_labeling(sentence_tokens: list[str], predictions: Tensor) -> list[TokenLabel]:
     """Convert the list of sentence tokens, predictions, and label ids into a list of tokens associated to all available labels
     
     parameters: 
@@ -60,7 +61,7 @@ def get_token_labeling(sentence_tokens: list[str], predictions: Tensor, labels: 
         for label_prediction_idx, label_prediction in enumerate(token_prediction):
             if label_prediction == 1:
                 #token_predicted_labels.append(label_ids_verbose[label_prediction_idx]) 
-                label = labels[label_prediction_idx]
+                label = constants.LABEL_IDS_VERBOSE[label_prediction_idx]
                 if label != 'notrelevant':
                     token_labels.append(TokenLabel(
                         begin=cursor, 
@@ -73,7 +74,7 @@ def get_token_labeling(sentence_tokens: list[str], predictions: Tensor, labels: 
         
     return token_labels
 
-def merge_labels(token_labels: list[TokenLabel], labels: list[str]) -> list[Label]:
+def merge_labels(token_labels: list[TokenLabel]) -> list[Label]:
     """Convert the list of token labels, where every single token is associated to up to two labels, to a list of merged labels, where each label spans all tokens that belong to the same label.
 
     parameters:
@@ -88,7 +89,7 @@ def merge_labels(token_labels: list[TokenLabel], labels: list[str]) -> list[Labe
     # keep track of event borders (begin and end of an event label)
     event_borders = []
 
-    for ltype in labels:
+    for ltype in constants.LABEL_IDS_VERBOSE:
         # get all labels of that type in the list of token labels
         all_of_type = [tl for tl in token_labels if tl.name==ltype]
         
