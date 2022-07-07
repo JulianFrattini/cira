@@ -3,7 +3,6 @@ from transformers import RobertaTokenizerFast
 from transformers import BatchEncoding
 import torch
 
-from typing import List
 from src.data.labels import Label
 import src.converters.sentencetolabels.labelingconverter as lconv
 
@@ -16,21 +15,20 @@ class Labeler:
 
     def __init__(self, model_path: str='bin/multilabel.ckpt', useGPU: bool=False, max_len: int=80, dropout: float=0.13780087432114646):
         # set variables
-        self.model_path = model_path
         self.useGPU = useGPU
         self.max_len = max_len
-        self.dropout = dropout
 
         # setup model and tokenizer
         MODEL_TO_USE = 'roberta-base'
         self.tokenizer = RobertaTokenizerFast.from_pretrained(MODEL_TO_USE)
-        self.model = MultiLabelRoBERTaCustomModel.load_from_checkpoint(hyperparams={'dropout': self.dropout}, 
+        self.model = MultiLabelRoBERTaCustomModel.load_from_checkpoint(
+            hyperparams={'dropout': dropout}, 
             training_dataset=None, 
             validation_dataset=None, 
             test_dataset=None,
             labels=LABEL_IDS, 
             model_to_use=MODEL_TO_USE, 
-            checkpoint_path=self.model_path
+            checkpoint_path=model_path
         )
 
         if self.useGPU:
@@ -38,15 +36,13 @@ class Labeler:
 
         self.model.eval()
 
-    def use_GPU(self, use: bool) -> None:
-        """Set the flag of whether the machine learning algorithm is supposed to use the GPU or not
-
+    def label(self, sentence: str) -> list[Label]:
+        """Label a given sentence with the available label list.
+        
         parameters:
-            use: bool -- true, if a CUDA-capable GPU is available and shall be used
-        """
-        self.useGPU = use
-
-    def label(self, sentence: str) -> List[Label]: 
+            sentence -- Natural language, english sentence that contains a causal relationship.
+            
+        returns: list of labels assigned to that sentence"""
         # tokenize the sentence
         tokenized_batch: BatchEncoding = self.tokenizer(
             text=[sentence], 
@@ -60,7 +56,7 @@ class Labeler:
         attention_mask = torch.tensor(tokenized_batch.attention_mask, dtype=torch.long)
 
         # utilize CUDA if possible
-        if self.use_GPU:
+        if self.useGPU:
             input_ids = input_ids.cuda()
             attention_mask = attention_mask.cuda()
 
@@ -74,9 +70,8 @@ class Labeler:
         predictions = predictions.cpu()
 
         # return list of labels
-        labels: List[Label] = lconv.convert(
-            sentence=sentence,
+        labels: list[Label] = lconv.convert(
             sentence_tokens=tokenized_batch[0].tokens, 
             predictions=predictions, 
-            label_ids_verbose=LABEL_IDS_VERBOSE)
+            labels=LABEL_IDS_VERBOSE)
         return labels
