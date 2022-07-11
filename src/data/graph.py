@@ -33,6 +33,10 @@ class Node:
         return self.outgoing[0].target.get_root()
 
     @abstractmethod
+    def get_testcase_configuration(self, expected_outcome: bool, negated: bool) -> list[dict]:
+        pass
+
+    @abstractmethod
     def is_equal(self, other, incoming: bool) -> bool:
         pass
 
@@ -75,6 +79,9 @@ class EventNode(Node):
     def flatten(self) -> list['Node']:
         return [self]
 
+    def get_testcase_configuration(self, expected_outcome: bool, negated: bool) -> list[dict]:
+        return {self.id : (expected_outcome != negated)}
+
     def is_equal(self, other, incoming: bool) -> bool:
         if type(other) != EventNode:
             return False
@@ -111,6 +118,33 @@ class IntermediateNode(Node):
         for child in self.incoming:
             result = result + child.origin.flatten()
         return result
+
+    def get_testcase_configuration(self, expected_outcome: bool, negated: bool) -> list[dict]:
+        # for a conjunction to be evaluated to true or a disjunction to be evaluated to false only one configuration is possible
+        inc_configs = []
+        if (expected_outcome and self.conjunction) or (not expected_outcome and not self.conjunction):
+            # for every incoming node, get the configurations for the expected outcome
+            inc_configs.append([inc.origin.get_testcase_configuration(expected_outcome, (negated and inc.negated)) for inc in self.incoming])
+        else:
+            for oddone in self.incoming:
+                inc_configs.append([inc.origin.get_testcase_configuration(expected_outcome, not (negated and inc.negated) if (inc != oddone) else (negated and inc.negated)) for inc in self.incoming])
+        
+        """configurations = []
+        for inc_config in inc_configs:
+            configuration = []
+            for inc in inc_config:
+                configs = inc_config[inc]
+                if len(configuration) == 0:
+                    configuration.append(configs)
+                else: 
+                    to_multiply = configuration.copy()
+                    configuration = []
+                    for config1 in to_multiply:
+                        for config2 in configs:
+                            configuration.append(config1 + configs[config2])
+            configurations = configurations + configuration"""
+
+        return inc_configs
 
     def is_equal(self, other, incoming: bool) -> bool:
         if type(other) != IntermediateNode or self.conjunction != other.conjunction:
