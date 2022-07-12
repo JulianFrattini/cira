@@ -1,5 +1,6 @@
 from abc import abstractmethod
 from dataclasses import dataclass, field
+import itertools
 
 from src.data.labels import EventLabel
 
@@ -33,7 +34,7 @@ class Node:
         return self.outgoing[0].target.get_root()
 
     @abstractmethod
-    def get_testcase_configuration(self, expected_outcome: bool, negated: bool) -> list[dict]:
+    def get_testcase_configuration(self, expected_outcome: bool) -> list[dict]:
         pass
 
     @abstractmethod
@@ -79,8 +80,8 @@ class EventNode(Node):
     def flatten(self) -> list['Node']:
         return [self]
 
-    def get_testcase_configuration(self, expected_outcome: bool, negated: bool) -> list[dict]:
-        return {self.id : (expected_outcome != negated)}
+    def get_testcase_configuration(self, expected_outcome: bool) -> list[dict]:
+        return [{self.id : expected_outcome}]
 
     def is_equal(self, other, incoming: bool) -> bool:
         if type(other) != EventNode:
@@ -119,32 +120,18 @@ class IntermediateNode(Node):
             result = result + child.origin.flatten()
         return result
 
-    def get_testcase_configuration(self, expected_outcome: bool, negated: bool) -> list[dict]:
-        # for a conjunction to be evaluated to true or a disjunction to be evaluated to false only one configuration is possible
-        inc_configs = []
-        if (expected_outcome and self.conjunction) or (not expected_outcome and not self.conjunction):
-            # for every incoming node, get the configurations for the expected outcome
-            inc_configs.append([inc.origin.get_testcase_configuration(expected_outcome, (negated and inc.negated)) for inc in self.incoming])
+    def get_testcase_configuration(self, expected_outcome: bool) -> list[dict]:
+        if (expected_outcome == self.conjunction):
+            # for a conjunction to be evaluated to true or a disjunction to false only one configuration is possible: every incoming node has to have the same expected outcome (negated if necessary)
+            inc_configs = [inc.origin.get_testcase_configuration(expected_outcome != inc.negated) for inc in self.incoming]
+            return permute_configurations(inc_configs=inc_configs)
         else:
+            # for a conjunction to be evaluated to false or disjunction to true, generate one configuration per incoming edge, where all other incoming nodes are evaluated to the opposite value (conjunction: true, disjunction: false) and only the respective incoming node is evaluated to the expected value (conjunction: false, disjunction: true) (adjust for negations)
+            configurations = []
             for oddone in self.incoming:
-                inc_configs.append([inc.origin.get_testcase_configuration(expected_outcome, not (negated and inc.negated) if (inc != oddone) else (negated and inc.negated)) for inc in self.incoming])
-        
-        """configurations = []
-        for inc_config in inc_configs:
-            configuration = []
-            for inc in inc_config:
-                configs = inc_config[inc]
-                if len(configuration) == 0:
-                    configuration.append(configs)
-                else: 
-                    to_multiply = configuration.copy()
-                    configuration = []
-                    for config1 in to_multiply:
-                        for config2 in configs:
-                            configuration.append(config1 + configs[config2])
-            configurations = configurations + configuration"""
-
-        return inc_configs
+                inc = [inc.origin.get_testcase_configuration((expected_outcome == inc.negated) if (inc == oddone) else (expected_outcome != inc.negated)) for inc in self.incoming]
+                configurations = configurations + permute_configurations(inc_configs=inc)
+            return configurations
 
     def is_equal(self, other, incoming: bool) -> bool:
         if type(other) != IntermediateNode or self.conjunction != other.conjunction:
@@ -168,6 +155,25 @@ class IntermediateNode(Node):
 
         result = f'({jstring.join(inp)})'
         return result
+
+def permute_configurations(inc_configs: list) -> list[dict]:
+    """Permute an automatically generated list of individual configurations for incoming nodes of an intermediate node. Every incoming node has 1..n individual configurations (at max 2^n, where n is the number of connected leaf nodes) which are permuted with all other individual configurations
+    
+    parameters: 
+        inc_configs -- individual configurations of the incoming nodes
+        
+    returns: harmonized, permuted set of configurations of all incoming nodes"""
+
+    configurations = []
+    for inc_config in inc_configs:
+        if len(configurations) == 0:
+            # if this is the first individual configuration to consider, simply add it to the list of configurations
+            configurations = inc_config
+        else:
+            # otherwise, generate the product between the existing configurations and the individual configurations of this node (inc_config)
+            configurations = [dict(r[0], **r[1]) for r in itertools.product(configurations, inc_config)]
+
+    return configurations
 
 @dataclass
 class Edge:

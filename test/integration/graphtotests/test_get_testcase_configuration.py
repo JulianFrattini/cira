@@ -54,11 +54,21 @@ def convert_graph(nodes: list[dict], edges: list[dict]) -> Graph:
     return Graph(nodes=nodelist, root=root, edges=edgelist)
 
 # test for sentences 6 and 6b
-@pytest.mark.parametrize('id', ['2'])
+@pytest.mark.parametrize('id', ['6'])
 def test_test(sentence):
     print(sentence)
 
     graph: Graph = sentence['graph']
-    print(graph.root.get_testcase_configuration(expected_outcome=True, negated=False))
+    configurations = []
+    for expected in [True, False]:
+        configurations = configurations + graph.root.get_testcase_configuration(expected_outcome=expected)
+    print(configurations)
 
     assert True
+
+"""def equals(manual_configurations: list, generated_configurations: list) -> bool:
+    if len(manual_configurations) != len(generated_configurations):
+        return False
+
+    for mconf in manual_configurations:
+        equivalent = [candidate for candidate in generated_configurations if ]"""
