@@ -129,7 +129,7 @@ class IntermediateNode(Node):
             # for a conjunction to be evaluated to false or disjunction to true, generate one configuration per incoming edge, where all other incoming nodes are evaluated to the opposite value (conjunction: true, disjunction: false) and only the respective incoming node is evaluated to the expected value (conjunction: false, disjunction: true) (adjust for negations)
             configurations = []
             for oddone in self.incoming:
-                inc = [inc.origin.get_testcase_configuration((expected_outcome == inc.negated) if (inc == oddone) else (expected_outcome != inc.negated)) for inc in self.incoming]
+                inc = [inc.origin.get_testcase_configuration((expected_outcome == inc.negated) if (inc != oddone) else (expected_outcome != inc.negated)) for inc in self.incoming]
                 configurations = configurations + permute_configurations(inc_configs=inc)
             return configurations
 
@@ -192,6 +192,13 @@ class Graph:
     nodes: list[Node] = field(default_factory=list)
     root: Node = None,
     edges: list[Edge] = field(default_factory=list)
+
+    def get_node(self, id: str):
+        candidates = [node for node in self.nodes if node.id == id]
+        if len(candidates) == 0:
+            print(f'No node with id {id} found in {self.nodes}')
+            return None
+        return candidates[0]
 
     def __repr__(self):
         effects = " && ".join([('NOT ' if out.negated else '') + str(out.target) for out in self.root.outgoing])

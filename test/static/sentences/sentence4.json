@@ -58,19 +58,19 @@
         "testcases": [
             {
                 "id": 1, 
-                "configurations": [{"inputid": 1, "text": "is over 18 years old"}, {"inputid": 2, "text": "is during working hours"}, {"inputid": 3, "text": "is a workday"}],
+                "configurations": [{"inputid": 1, "text": "is over 18 years old"}, {"inputid": 2, "text": "is during working hours"}, {"inputid": 3, "text": "is a work day"}],
                 "outcome": [{"outputid": 4, "text": "opens"}]
             }, {
                 "id": 2, 
-                "configurations": [{"inputid": 1, "text": "not is over 18 years old"}, {"inputid": 2, "text": "is during working hours"}, {"inputid": 3, "text": "is a workday"}],
+                "configurations": [{"inputid": 1, "text": "not is over 18 years old"}, {"inputid": 2, "text": "is during working hours"}, {"inputid": 3, "text": "is a work day"}],
                 "outcome": [{"outputid": 4, "text": "not opens"}]
             }, {
                 "id": 3, 
-                "configurations": [{"inputid": 1, "text": "is over 18 years old"}, {"inputid": 2, "text": "not is during working hours"}, {"inputid": 3, "text": "is a workday"}],
+                "configurations": [{"inputid": 1, "text": "is over 18 years old"}, {"inputid": 2, "text": "not is during working hours"}, {"inputid": 3, "text": "is a work day"}],
                 "outcome": [{"outputid": 4, "text": "not opens"}]
             }, {
                 "id": 4, 
-                "configurations": [{"inputid": 1, "text": "is over 18 years old"}, {"inputid": 2, "text": "is during working hours"}, {"inputid": 3, "text": "not is a workday"}],
+                "configurations": [{"inputid": 1, "text": "is over 18 years old"}, {"inputid": 2, "text": "is during working hours"}, {"inputid": 3, "text": "not is a work day"}],
                 "outcome": [{"outputid": 4, "text": "not opens"}]
             }
         ]

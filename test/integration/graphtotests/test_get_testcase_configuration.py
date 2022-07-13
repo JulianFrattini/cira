@@ -1,74 +1,68 @@
 import pytest, json
 
-from src.data.graph import Node, IntermediateNode, EventNode, Edge, Graph
+from src.util.loader import load_sentence
 
-SENTENCES_PATH = './test/static/sentences/'
-LABELS_EVENT = ['Cause1', 'Cause2', 'Cause3', 'Effect1', 'Effect2', 'Effect3']
-LABELS_SUB = ['Conjunction', 'Disjunction', 'Variable', 'Condition', 'Negation']
+from src.data.graph import Graph, Node
 
+SENTENCES_PATH = './test/static/sentences'
 
 @pytest.fixture
-def sentence(id: str):
-    with open(f'{SENTENCES_PATH}sentence{id}.json', 'r') as f:
-        file = json.load(f)
-        graph = convert_graph(nodes=file['graph']['nodes'], edges=file['graph']['edges'])
-
-        return {
-            'text': file['text'],
-            'graph': graph
-        }
-
-def convert_graph(nodes: list[dict], edges: list[dict]) -> Graph:
-    """Generate a graph in the internal representation from the given nodes and edges in the document.
+def sentence(id: str) -> dict:
+    """Load a static sentence from the repository of sentences.
     
     parameters:
-        nodes -- list of event and intermediate nodes
-        edges -- list of edges between the nodes
+        id -- unique id of a sentence file
         
-    returns: a graph representing the nodes and edges"""
+    returns: dictionary containing the verbatim sentence, the manually generated graph, and the manually generated input configurations"""
 
-    # generate the nodes
-    nodelist: list[Node] = []
-    for node in nodes:
-        if 'type' not in node:
-            event = EventNode(id=f'N{node["id"]}', label=None)
-            event.variable = node['variable']
-            event.condition = node['condition']
-            nodelist.append(event)
-        else:
-            nodelist.append(IntermediateNode(id=f'N{node["id"]}', conjunction=(node["type"]=='AND')))
-    
-    # generate the edges
-    edgelist: list[Edge] = []
-    for edge in edges:
-        source: Node = [node for node in nodelist if node.id == f'N{edge["source"]}'][0]
-        target: Node = [node for node in nodelist if node.id == f'N{edge["target"]}'][0]
+    # load a static sentence
+    file, sentence, _, graph = load_sentence(f'{SENTENCES_PATH}/sentence{id}.json')
 
-        edge = target.add_incoming(child=source, negated=edge["negate"])
-        edgelist.append(edge)
-        
-    # determine the root
-    effectnodes = [node for node in nodelist if len(node.outgoing) == 0]
-    root = effectnodes[0].incoming[0].origin
+    # generate the input configurations from the testsuite 
+    testsuite = file['testsuite']
+    input_params: list = {param['id']:param['text'] for param in testsuite['inputparams']}
+    configurations = []
+    for tc in testsuite['testcases']:
+        configuration = {f'[{input_params[config["inputid"]]}].({(config["text"] if not config["text"].startswith("not ") else config["text"][4:])})': not config['text'].startswith('not ') for config in tc['configurations']}
+        configurations.append(configuration)
 
-    return Graph(nodes=nodelist, root=root, edges=edgelist)
+    return {
+        'sentence': sentence,
+        'graph': graph,
+        'configurations': configurations
+    }
 
-# test for sentences 6 and 6b
-@pytest.mark.parametrize('id', ['6'])
-def test_test(sentence):
-    print(sentence)
+# exclude sentence 11 (exceptive clause not supported yet)
+@pytest.mark.parametrize('id', ['1', '1b', '1c', '2', '3', '4', '5', '6', '6b', '7', '8', '10', '12', '13', '14', '16', '17'])
+def test_input_config_generation(sentence):
+    """For the manually annotated, static sentences check that the get_testcase_configuration method generates the expected set of configurations of parameters to evaluate the root cause node of a graph to both True and False. The set is supposed to be minimal (as opposed to a brute force 2^len(events) test cases)."""
 
     graph: Graph = sentence['graph']
-    configurations = []
-    for expected in [True, False]:
-        configurations = configurations + graph.root.get_testcase_configuration(expected_outcome=expected)
-    print(configurations)
 
-    assert True
+    # determine the configurations of input parameters such that the root node is evaluated to both true and false
+    configurations = graph.root.get_testcase_configuration(expected_outcome=True) + \
+        graph.root.get_testcase_configuration(expected_outcome=False)
 
-"""def equals(manual_configurations: list, generated_configurations: list) -> bool:
+    # replace the ids of the nodes in the configuration with verbatim nodes [variable].(condition) to make them comparable
+    configs_verbatim = [{str(graph.get_node(id)): config[id] for id in config} for config in configurations]
+
+    assert equal_configurations(manual_configurations=sentence['configurations'], generated_configurations=configs_verbatim)
+
+def equal_configurations(manual_configurations: list[dict], generated_configurations: list[dict]) -> bool:
+    """Check that two lists of configurations for input parameters {parameter: True/False} are equal.
+
+    parameters:
+        manual_configurations: list of manually generated configurations
+        generated_configurations: list of automatically generated configurations
+
+    returns: True, if for every manual configuration there is exactly one equal counterpart in the list of manual configurations
+    """
     if len(manual_configurations) != len(generated_configurations):
         return False
 
     for mconf in manual_configurations:
-        equivalent = [candidate for candidate in generated_configurations if ]"""
+        equivalent = [gconf for gconf in generated_configurations if gconf == mconf]
+        if len(equivalent) != 1:
+            return False
+    
+    return True
