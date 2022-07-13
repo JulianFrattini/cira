@@ -15,7 +15,7 @@ class SubLabel(Label):
     parent: 'EventLabel' = field(default=None, init=False)
 
     def __repr__(self):
-        super().__str__()
+        return super().__str__()
 
 @dataclass
 class Neighbor:
@@ -57,7 +57,7 @@ class EventLabel(Label):
         return None
     
     def __str__(self):
-        super().__str__()
+        return super().__str__()
 
     def __repr__(self):
         children = " ".join([child.__repr__() for child in self.children])
