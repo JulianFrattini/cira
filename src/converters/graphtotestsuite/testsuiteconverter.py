@@ -5,14 +5,15 @@ def convert(graph: Graph) -> Testsuite:
 
     # obtain all event nodes from the graph and generate a mapping from those nodes to parameters
     events = [node for node in graph.nodes if type(node) == EventNode]
-    parameters = generate_parameters(nodes=events)
     causes = [event for event in events if len(event.incoming) == 0]
     effects = [event for event in events if len(event.outgoing) == 0]
+    input_parameters_map: dict = generate_parameters(nodes=causes)
+    output_parameters_map: dict = generate_parameters(nodes=effects)
 
-    for root_node_evaluation in [True, False]:
-        outcome: dict = get_expected_outcome(root_node_evaluation=root_node_evaluation, effects=effects)
+    expected_outcome: dict = get_expected_outcome(root_node_evaluation=True, effects=effects) + \
+        get_expected_outcome(root_node_evaluation=False, effects=effects)
 
-    return Testsuite(conditions=None, expected=None, cases=None)
+    return Testsuite(conditions=input_parameters_map.values(), expected=output_parameters_map.values(), cases=None)
 
 def generate_parameters(nodes: list[EventNode]) -> dict:
     """Convert every node in the list into a parameter for a test suite
@@ -22,7 +23,7 @@ def generate_parameters(nodes: list[EventNode]) -> dict:
         
     returns: a mapping between nodes and generated parameters"""
 
-    return {node: Parameter(id=f'P{index}', variable=node.variable, condition=node.condition) for index, node in enumerate(nodes)}
+    return {node.id: Parameter(id=f'P{index}', variable=node.variable, condition=node.condition) for index, node in enumerate(nodes)}
 
 def get_expected_outcome(root_node_evaluation: bool, effects: list[EventNode]) -> dict:
     """Generate a mapping of effect event nodes to an expected value.
@@ -33,4 +34,15 @@ def get_expected_outcome(root_node_evaluation: bool, effects: list[EventNode]) -
         
     returns: mapping from each effect to the expected value given the root node evaluation"""
 
-    return {effect: (effect.incoming[0].negated == root_node_evaluation) for effect in effects}
+    return {effect.id: (effect.incoming[0].negated != root_node_evaluation) for effect in effects}
+
+def map_node_to_parameter(configuration: dict, parameters_map: dict) -> dict:
+    """Convert a configuration, where a node is associated to a value, to a configuration, where a *parameter* is associated to a value.
+    
+    parameters:
+        configuration -- mapping from nodes to values
+        parameters_map -- mapping rom nodes to parameters
+        
+    returns: configuration which associates a parameter to a value"""
+    
+    return {parameters_map[config].id : configuration[config] for config in configuration}

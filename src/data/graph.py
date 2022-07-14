@@ -48,8 +48,8 @@ class Node:
 @dataclass
 class EventNode(Node):
     label: EventLabel = field(default=None)
-    variable: str = field(default="it", init=False)
-    condition: str = field(default="is present", init=False)
+    variable: str = field(default="it")
+    condition: str = field(default="is present")
 
     def is_cause(self):
         return self.label.is_cause()
