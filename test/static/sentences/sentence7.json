@@ -75,7 +75,7 @@
                 "outcome": [{"outputid": 4, "text": "not will be created"}]
             }, {
                 "id": 5, 
-                "configurations": [{"inputid": 1, "text": "not is present"}, {"inputid": 2, "text": "not is active"}, {"inputid": 3, "text": "is triggered"}],
+                "configurations": [{"inputid": 1, "text": "not is present"}, {"inputid": 2, "text": "is active"}, {"inputid": 3, "text": "not is triggered"}],
                 "outcome": [{"outputid": 4, "text": "not will be created"}]
             }
         ]

@@ -64,15 +64,15 @@
             }, {
                 "id": 3, 
                 "configurations": [{"inputid": 1, "text": "can present an identity card"}, {"inputid": 2, "text": "underage"}, {"inputid": 3, "text": "not can present a parent's permission"}],
-                "outcome": [{"outputid": 4, "text": "can be opened with the bank"}]
+                "outcome": [{"outputid": 4, "text": "not can be opened with the bank"}]
             }, {
                 "id": 4, 
                 "configurations": [{"inputid": 1, "text": "not can present an identity card"}, {"inputid": 2, "text": "not underage"}, {"inputid": 3, "text": "not can present a parent's permission"}],
-                "outcome": [{"outputid": 4, "text": "can be opened with the bank"}]
+                "outcome": [{"outputid": 4, "text": "not can be opened with the bank"}]
             }, {
                 "id": 5, 
                 "configurations": [{"inputid": 1, "text": "not can present an identity card"}, {"inputid": 2, "text": "underage"}, {"inputid": 3, "text": "can present a parent's permission"}],
-                "outcome": [{"outputid": 4, "text": "can be opened with the bank"}]
+                "outcome": [{"outputid": 4, "text": "not can be opened with the bank"}]
             }
         ]
     }
