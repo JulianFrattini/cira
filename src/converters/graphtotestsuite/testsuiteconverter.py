@@ -1,5 +1,5 @@
 from src.data.graph import Graph, EventNode
-from src.data.test import Suite, Parameter#, Configuration
+from src.data.test import Suite, Parameter
 
 def convert(graph: Graph) -> Suite:
     """Generate a test suite from a cause-effect graph. The test suite contains one parameter per event node (cause-nodes become input-/condition-parameters, effect-nodes become (expected) outcome parameters) and a minimal list of test cases necessary to evaluate the root cause node both to true and false, effectively covering all relevant, unique configurations of parameters which would assert that a system exhibits the behavior entailed by the cause-effect graph.
@@ -19,17 +19,18 @@ def convert(graph: Graph) -> Suite:
     input_parameters_map: dict = {node: parameters_map[node] for node in parameters_map if node in causeids}
     output_parameters_map: dict = {node: parameters_map[node] for node in parameters_map if node in effectids}
 
-    # generate the test cases
+    # generate test cases for the root node being evaluated both to True and False
     test_cases = []
     for root_node_outcome in [True, False]:
+        # determine the expected value of each effect node given the root node outcome
         outcome_configuration: dict = get_expected_outcome(root_node_evaluation=root_node_outcome, effects=effects)
         expected_outcome = map_node_to_parameter(configuration=outcome_configuration, parameters_map=parameters_map)
 
+        # determine all non-redundant configurations of cause node values able to produce the root node outcome
         node_configurations: list[dict] = graph.root.get_testcase_configuration(expected_outcome=root_node_outcome)
         for config in node_configurations:
+            # for each configuration: generate one test case
             test_case = map_node_to_parameter(configuration=config, parameters_map = parameters_map)
-            
-            #test_cases.append(Configuration(conditions=test_case, expected=expected_outcome))
             test_cases.append(test_case | expected_outcome)
 
     return Suite(conditions=list(input_parameters_map.values()), expected=list(output_parameters_map.values()), cases=test_cases)

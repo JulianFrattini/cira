@@ -54,7 +54,7 @@ def test_move1_variable():
     c2 = EventLabel(id='L4', name='Cause1', begin=28, end=36)
     c2.add_child(SubLabel(id='L5', name='Condition', begin=28, end=36))
 
-    c1.set_successor(c2)
+    c1.set_successor(c2, 'OR')
 
     event2 = EventNode(id='N1', label=c2)
     resolver.resolve_event(node=event2, sentence=sentence)
@@ -72,7 +72,7 @@ def test_move1_condition():
     c1.add_child(SubLabel(id='L2', name='Variable', begin=17, end=25))
     c2.add_child(SubLabel(id='L5', name='Condition', begin=26, end=36))
 
-    c1.set_successor(c2)
+    c1.set_successor(c2, 'OR')
 
     event1 = EventNode(id='N1', label=c1)
     resolver.resolve_event(node=event1, sentence=sentence)

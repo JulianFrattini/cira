@@ -46,7 +46,7 @@ def test_connection():
 
     events = [event1, event2, event3]
 
-    causes = connect_events(events)
+    causes, _ = connect_events(events)
 
     # there should be 5 cause nodes: 3 event nodes + 2 intermediate nodes
     assert len(causes) == 5

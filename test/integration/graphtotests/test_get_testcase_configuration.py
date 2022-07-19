@@ -16,7 +16,7 @@ def sentence(id: str) -> dict:
     returns: dictionary containing the verbatim sentence, the manually generated graph, and the manually generated input configurations"""
 
     # load a static sentence
-    file, sentence, _, graph = load_sentence(f'{SENTENCES_PATH}/sentence{id}.json')
+    file, sentence, _, graph, _ = load_sentence(f'{SENTENCES_PATH}/sentence{id}.json')
 
     # generate the input configurations from the testsuite 
     testsuite = file['testsuite']

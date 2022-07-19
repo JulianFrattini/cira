@@ -13,7 +13,7 @@ def test_two_conjunction(mock_isnegated):
     events = [EventNode(id='E1'), EventNode(id='E2')]
     jm = {('E1', 'E2'): 'AND'}
 
-    intermediates = gin(events=events, junctor_map=jm)
+    intermediates, _ = gin(events=events, junctor_map=jm)
 
     assert len(intermediates) == 1
     assert len(intermediates[0].incoming) == 2
@@ -28,7 +28,7 @@ def test_two_negation(mock_isnegated):
     events: list[EventNode] = [EventNode(id='E1'), EventNode(id='E2')]
     jm = {('E1', 'E2'): 'AND'}
 
-    intermediates = gin(events=events, junctor_map=jm)
+    intermediates, _ = gin(events=events, junctor_map=jm)
     print(intermediates[0].incoming)
 
     assert intermediates[0].incoming[0].negated == True
@@ -41,7 +41,7 @@ def test_three_conj_disj(mock_isnegated):
     events = [EventNode(id='E1'), EventNode(id='E2'), EventNode(id='E3')]
     jm = {('E1', 'E2'): 'AND', ('E2', 'E3'): 'OR'}
 
-    intermediates = gin(events=events, junctor_map=jm)
+    intermediates, _ = gin(events=events, junctor_map=jm)
     
     assert len(intermediates) == 2
     assert len(intermediates[0].incoming) == 2

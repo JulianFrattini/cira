@@ -20,7 +20,7 @@ def test_merge1():
     ]
     label_ids_verbose = ['notrelevant', 'Cause1', 'Cause2', 'Cause3', 'Effect1', 'Effect2', 'Effect3', 'Conjunction', 'Disjunction', 'Variable', 'Condition', 'Negation']
 
-    labels = lc.merge_labels(sentence=sentence, token_labels=token_labels, label_ids_verbose=label_ids_verbose)
+    labels = lc.merge_labels(token_labels=token_labels)
 
     cause1 = [label for label in labels if label.name=='Cause1']
     assert len(cause1) == 1

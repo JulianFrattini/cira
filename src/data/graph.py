@@ -52,9 +52,15 @@ class EventNode(Node):
     condition: str = field(default="is present")
 
     def is_cause(self):
+        """Determine whether this node represents a cause.
+        
+        returns: True, if the event label of this node is a cause label"""
         return self.label.is_cause()
 
     def is_negated(self):
+        """Determine whether this event node is negated.
+        
+        returns: True, if the event label of this node has a child label of type Negation"""
         return len([label for label in self.label.children if label.name == 'Negation']) > 0
 
     def condense(self) -> list['Edge']:
@@ -113,14 +119,23 @@ class IntermediateNode(Node):
                 removable_edges.append(potential_input)
         return removable_edges
 
-
     def flatten(self) -> list['Node']:
+        """Translate the tree structure implied by this intermediate node into a flat list.
+        
+        returns: list containing all (leaf and intermediate) nodes """
         result = [self]
         for child in self.incoming:
             result = result + child.origin.flatten()
         return result
 
     def get_testcase_configuration(self, expected_outcome: bool) -> list[dict]:
+        """Generate a map of configurations which determines the value that each leaf node connected to this intermediate node needs to have in order to produce the expected outcome.
+
+        parameters:
+            expected_outcome -- the boolean value this intermediate node is expected to have
+
+        returns: list of configurations mapping leaf (Event) node ids to boolean values
+        """
         if (expected_outcome == self.conjunction):
             # for a conjunction to be evaluated to true or a disjunction to false only one configuration is possible: every incoming node has to have the same expected outcome (negated if necessary)
             inc_configs = [inc.origin.get_testcase_configuration(expected_outcome != inc.negated) for inc in self.incoming]
@@ -134,16 +149,25 @@ class IntermediateNode(Node):
             return configurations
 
     def is_equal(self, other, incoming: bool) -> bool:
+        """Determine whether this node is equal to another node.
+        
+        parameters:
+            other -- the other object with which this one is compared
+            incoming -- True, if the direction of the recursive check is upstream
+            
+        returns: True, if this object is equal to the given other object"""
+        # assert that both the type and the conjunction of the other node is the same
         if type(other) != IntermediateNode or self.conjunction != other.conjunction:
             return False
 
+        # depending on the direction to check, select the list of edges to continue on
         to_check = "incoming" if incoming else "outgoing"
-
         if len(getattr(self, to_check)) != len(getattr(other, to_check)):
             return False
 
         for inc in getattr(self, to_check):
             equivalent = [eq for eq in getattr(other, to_check) if (inc.negated == eq.negated and inc.origin.is_equal(other=eq.origin, incoming=incoming))]
+            # if there is not exactly one equivalent for each edge in the the selected list of edges, the objects are inequal
             if len(equivalent) != 1:
                 return False
 
@@ -194,6 +218,12 @@ class Graph:
     edges: list[Edge] = field(default_factory=list)
 
     def get_node(self, id: str):
+        """Find and return the node of this graph with the given id.
+        
+        parameters: 
+            id -- identifier used by the node in question
+            
+        returns: the node within this graph with the given id, None if it does not exist"""
         candidates = [node for node in self.nodes if node.id == id]
         if len(candidates) == 0:
             print(f'No node with id {id} found in {self.nodes}')

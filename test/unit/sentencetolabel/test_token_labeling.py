@@ -89,7 +89,7 @@ labels = ['notrelevant', 'Cause1', 'Cause2', 'Cause3', 'Effect1', 'Effect2', 'Ef
 @pytest.mark.unit
 def test_token_labels():
     # test that every label produced is associated to a full word without whitespaces in the sentence
-    token_labels = lc.get_token_labeling(sentence_tokens=tokens, predictions=predictions, label_ids_verbose=labels)
+    token_labels = lc.get_token_labeling(sentence_tokens=tokens, predictions=predictions)
     
     for tl in token_labels:
         assert " " not in sentence[tl.begin:tl.end]
