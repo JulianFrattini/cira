@@ -2,7 +2,7 @@ import pytest
 
 from src.data.graph import IntermediateNode, EventNode
 
-@pytest.mark.unit
+@pytest.mark.integration
 def test_pure_conjunction():
     c1 = EventNode(id='E1')
     c1.variable = 'var1'
@@ -26,7 +26,7 @@ def test_pure_conjunction():
     assert root == i1
     assert root.conjunction == True
 
-@pytest.mark.unit
+@pytest.mark.integration
 def test_pure_disjunction():
     c1 = EventNode(id='E1')
     c1.variable = 'var1'
@@ -48,7 +48,7 @@ def test_pure_disjunction():
     assert root == i1
     assert root.conjunction == False
 
-@pytest.mark.unit
+@pytest.mark.integration
 def test_pure_mix():
     c1 = EventNode(id='E1')
     c1.variable = 'var1'
