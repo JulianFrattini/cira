@@ -5,6 +5,7 @@ from src.converters.labelstograph.eventconnector import get_junctors
 from src.data.graph import EventNode
 from src.data.labels import EventLabel
 
+@pytest.mark.unit
 def test_conjunction():
     c1 = EventLabel(id='L1', name='Cause1', begin=0, end=10)
     c2 = EventLabel(id='L2', name='Cause2', begin=15, end=20)
@@ -15,6 +16,7 @@ def test_conjunction():
     junctors = get_junctors(events=nodes)
     assert junctors[('E1', 'E2')] == 'AND'
 
+@pytest.mark.unit
 def test_disjunction():
     c1 = EventLabel(id='L1', name='Cause1', begin=0, end=10)
     c2 = EventLabel(id='L2', name='Cause2', begin=15, end=20)
@@ -25,6 +27,7 @@ def test_disjunction():
     junctors = get_junctors(events=nodes)
     assert junctors[('E1', 'E2')] == 'OR'
 
+@pytest.mark.unit
 def test_nojunction():
     c1 = EventLabel(id='L1', name='Cause1', begin=0, end=10)
     c2 = EventLabel(id='L2', name='Cause2', begin=15, end=20)
@@ -36,6 +39,7 @@ def test_nojunction():
     junctors = get_junctors(events=nodes)
     assert junctors[('E1', 'E2')] == 'AND'
 
+@pytest.mark.unit
 def test_implicit_conjunction():
     c1 = EventLabel(id='L1', name='Cause1', begin=0, end=10)
     c2 = EventLabel(id='L2', name='Cause2', begin=15, end=20)

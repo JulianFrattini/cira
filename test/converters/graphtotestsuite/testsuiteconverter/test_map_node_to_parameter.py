@@ -6,8 +6,6 @@ from src.converters.graphtotestsuite.testsuiteconverter import get_expected_outc
 
 from src.data.graph import EventNode
 
-
-
 @pytest.mark.integration
 @pytest.mark.parametrize('effect_edges_negated', [[False], [True], [False, False], [False, True], [True, False], [True, True]])
 def test_test(effect_edges_negated):

@@ -1,6 +1,5 @@
 import pytest
 
-from src.data.graph import EventNode
 from src.data.labels import EventLabel
 
 from src.converters.labelstograph.eventresolver import get_all_neighbors_of_type as neighbors

@@ -3,8 +3,7 @@ from unittest.mock import patch
 
 from src.converters.labelstograph.eventconnector import generate_initial_nodenet as gin
 
-from src.data.graph import EventNode, IntermediateNode
-from src.data.labels import SubLabel
+from src.data.graph import EventNode
 
 @pytest.mark.unit
 @patch('src.converters.labelstograph.eventconnector.EventNode.is_negated')
@@ -19,7 +18,6 @@ def test_two_conjunction(mock_isnegated):
     assert len(intermediates[0].incoming) == 2
     assert intermediates[0].incoming[0].origin == events[0]
     assert intermediates[0].incoming[1].origin == events[1]
-
 
 @pytest.mark.unit
 @patch('src.converters.labelstograph.eventconnector.EventNode.is_negated')

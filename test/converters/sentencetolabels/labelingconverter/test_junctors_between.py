@@ -4,6 +4,7 @@ from src.data.labels import Label, EventLabel, SubLabel
 
 from src.converters.sentencetolabels.labelingconverter import get_junctors_between
 
+@pytest.mark.unit
 def test_junctor_exist():
     labels: list[Label] = [
         EventLabel(id='L1', name='Cause1', begin=0, end=10),
@@ -14,6 +15,7 @@ def test_junctor_exist():
     junctors = get_junctors_between(labels=labels, first=labels[0], second=labels[2])
     assert junctors[0].name == 'Conjunction'
 
+@pytest.mark.unit
 def test_junctor_notexist():
     labels: list[Label] = [
         EventLabel(id='L1', name='Cause1', begin=0, end=10),
@@ -23,6 +25,7 @@ def test_junctor_notexist():
     junctors = get_junctors_between(labels=labels, first=labels[0], second=labels[1])
     assert len(junctors) == 0
 
+@pytest.mark.unit
 def test_junctor_outside():
     labels: list[Label] = [
         EventLabel(id='L1', name='Cause1', begin=0, end=10),
@@ -33,6 +36,7 @@ def test_junctor_outside():
     junctors = get_junctors_between(labels=labels, first=labels[0], second=labels[2])
     assert len(junctors) == 0
 
+@pytest.mark.unit
 def test_junctor_two():
     labels: list[Label] = [
         EventLabel(id='L1', name='Cause1', begin=0, end=10),

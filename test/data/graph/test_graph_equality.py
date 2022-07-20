@@ -1,7 +1,8 @@
 import pytest
 
-from src.data.graph import Graph, EventNode, IntermediateNode, Edge
+from src.data.graph import Graph, EventNode, IntermediateNode
 
+@pytest.mark.integration
 def test_simple():
     edgelist = []
     event1 = EventNode(id='E1')
@@ -24,7 +25,8 @@ def test_simple():
     graph1 = Graph(nodes=[event1, event2, junctor, event3], root=junctor, edges=edgelist)
     assert graph1 == graph1
 
-def test_2():
+@pytest.mark.integration
+def test_switched_node_order():
     edgelist1 = []
     event1 = EventNode(id='E1')
     event1.variable = 'the red button'

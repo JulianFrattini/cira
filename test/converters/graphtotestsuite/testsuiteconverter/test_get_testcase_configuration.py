@@ -1,10 +1,9 @@
 import pytest, json
 
 from src.util.loader import load_sentence
+from src.util import constants
 
-from src.data.graph import Graph, Node
-
-SENTENCES_PATH = './test/static/sentences'
+from src.data.graph import Graph
 
 @pytest.fixture
 def sentence(id: str) -> dict:
@@ -16,7 +15,7 @@ def sentence(id: str) -> dict:
     returns: dictionary containing the verbatim sentence, the manually generated graph, and the manually generated input configurations"""
 
     # load a static sentence
-    file, sentence, _, graph, _ = load_sentence(f'{SENTENCES_PATH}/sentence{id}.json')
+    file, sentence, _, graph, _ = load_sentence(f'{constants.SENTENCES_PATH}/sentence{id}.json')
 
     # generate the input configurations from the testsuite 
     testsuite = file['testsuite']
@@ -33,6 +32,7 @@ def sentence(id: str) -> dict:
     }
 
 # exclude sentence 11 (exceptive clause not supported yet)
+@pytest.mark.integration
 @pytest.mark.parametrize('id', ['1', '1b', '1c', '2', '3', '4', '5', '6', '6b', '7', '8', '10', '12', '13', '14', '16', '17'])
 def test_input_config_generation(sentence):
     """For the manually annotated, static sentences check that the get_testcase_configuration method generates the expected set of configurations of parameters to evaluate the root cause node of a graph to both True and False. The set is supposed to be minimal (as opposed to a brute force 2^len(events) test cases)."""

@@ -1,6 +1,6 @@
 import pytest
 
-from src.data.graph import Node, IntermediateNode, EventNode
+from src.data.graph import IntermediateNode, EventNode
 from src.data.labels import EventLabel, SubLabel
 
 @pytest.mark.unit
