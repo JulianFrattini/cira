@@ -195,7 +195,7 @@ def permute_configurations(inc_configs: list) -> list[dict]:
             configurations = inc_config
         else:
             # otherwise, generate the product between the existing configurations and the individual configurations of this node (inc_config)
-            configurations = [dict(r[0], **r[1]) for r in itertools.product(configurations, inc_config)]
+            configurations = [(r[0] | r[1]) for r in itertools.product(configurations, inc_config)]
 
     return configurations
 
