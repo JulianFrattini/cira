@@ -16,7 +16,7 @@ CLASS_NAMES = ['not causal', 'causal']
 PRE_TRAINED_MODEL_NAME = 'bert-base-cased'
 
 class CausalClassifier:
-    def __init__(self, path: str="bin/classifier.bin"):
+    def __init__(self, model_path: str):
         """Create a causal detector which wraps the pre-trained classification model.
         
         parameters:
@@ -27,9 +27,9 @@ class CausalClassifier:
 
         self.model = CausalClassificationModel(len(CLASS_NAMES))
         if torch.cuda.is_available():
-            self.model.load_state_dict(torch.load(path))
+            self.model.load_state_dict(torch.load(model_path))
         else:
-            self.model.load_state_dict(torch.load(path, map_location='cpu'))
+            self.model.load_state_dict(torch.load(model_path, map_location='cpu'))
 
         self.model = self.model.to(self.device)
 

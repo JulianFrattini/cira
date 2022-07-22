@@ -1,4 +1,5 @@
 from dataclasses import dataclass, field
+from tabulate import tabulate
 
 @dataclass
 class Parameter:
@@ -45,3 +46,18 @@ class Suite:
                 return False
 
         return True
+    
+    def __repr__(self):
+        headers = ['id'] + [param.variable for param in self.conditions] + [param.variable for param in self.expected]
+        index_expected = len(self.conditions)+1
+        headers[1] = '| '+headers[1]
+        headers[index_expected] = '| '+headers[index_expected]
+        data = [([index+1] + get_conditions(case, self.conditions+self.expected, index_expected-1)) for index, case in enumerate(self.cases)]
+        return tabulate(data, headers=headers)
+
+
+def get_conditions(configuration: dict, parameters: list[Parameter], expected_index: int) -> str:
+    row = [('' if configuration[param.id] else 'not ') + param.condition for param in parameters]
+    row[0] = '| '+row[0]
+    row[expected_index] = '| '+row[expected_index]
+    return row
