@@ -17,6 +17,13 @@ from src.data.test import Suite
 class CiRAConverter():
 
     def __init__(self, classifier_causal_model_path: str, converter_s2l_model_path: str, use_GPU: bool=False):
+        """Create a converter that exhibits the CiRA functionality (classification, labeling, CEG generation, test case generation).
+
+        parameters: 
+            classifier_causal_model_path -- path to the pre-trained classification model (https://zenodo.org/record/5159501#.Ytq28ITP3-g)
+            converter_s2l_model_path -- path to the pre-trained labeling model (https://zenodo.org/record/5550387#.Ytq3QYTP3-g) (use the model named roberta_dropout_linear_layer_multilabel.ckpt for optimal performance)
+            use_GPU -- True if the executing system can offer CUDA to accelerate the usage of the language models
+        """
         # initialize classifiers
         self.classifier_causal = CausalClassifier(model_path=classifier_causal_model_path)
 
@@ -25,10 +32,23 @@ class CiRAConverter():
         self.converter_labeltograph = GraphConverter(eventresolver=SimpleResolver())
 
     def classify(self, sentence: str) -> Tuple[bool, float]:
+        """Classify a natural language sentence regarding whether it is causal or not.
+        
+        parameters:
+            sentence -- natural language sentence in English
+            
+        returns: the classification whether the sentence is causal and the confidence of the classifier"""
         causal, confidence = self.classifier_causal.classify(sentence)
         return (causal, confidence)
 
     def process(self, sentence: str) -> Tuple[list[Label], Graph, Suite]:
+        """Process a causal, natural language sentence and generate (a) a list of labels, (b) a cause-effect graph, and (c) a minimal test suite from it.
+        
+        parameters:
+            sentence -- natural language sentence in English
+
+        returns: Tuple containing (a) a list of labels, (b) a cause-effect graph, and (c) a minimal test suite.
+        """
         labels: list[Label] = self.converter_sentencetolabel.label(sentence)
         graph: Graph = self.converter_labeltograph.generate_graph(sentence, labels)
         suite: Suite = convert_graph_to_testsuite(graph)
