@@ -16,7 +16,7 @@ This repostitory contains a Python implementation of the functions around the [c
 To use the CiRA pipeline, perform the following steps:
 
 1. Install all required dependencies via `pip3 install -r requirements.txt`.
-2. Download the pre-trained [classification](https://zenodo.org/record/5159501#.Ytq28ITP3-g) and [labeling](https://zenodo.org/record/5550387#.Ytq3QYTP3-g) models.
+2. Download the pre-trained [classification](https://zenodo.org/record/5159501#.Ytq28ITP3-g) and [labeling](https://zenodo.org/record/5550387#.Ytq3QYTP3-g) models or use the `download-models.sh` script.
     - Use the model named `roberta_dropout_linear_layer_multilabel.ckpt` for optimal performance.
     - The location, at which the models are stored locally, is irrelevant.
 3. Optionally, create a `.env` file and specify the variables `MODEL_CLASSIFICATION` and `MODEL_LABELING` with the location of the respective models.
