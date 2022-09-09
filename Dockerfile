@@ -1,6 +1,7 @@
-FROM python:3.9-buster
+FROM cira-base
 
-ADD requirements.txt .
-
-RUN python --version
-#RUN pip3 install -r requirements.txt
+COPY ./src/ ./src/
+COPY ./test/ ./test/
+COPY ./pytest.ini .
+COPY ./conftest.py .
+COPY ./demonstration.ipynb .
