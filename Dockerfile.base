@@ -4,6 +4,9 @@ FROM python:3.10-bullseye
 RUN curl https://sh.rustup.rs -sSf | sh -s -- -y
 ENV PATH="/root/.cargo/bin:${PATH}"
 
+# Required for Jupyter
+RUN pip3 install ipykernel
+
 # Install Python dependencies
 COPY requirements.txt .
 RUN pip3 install -r requirements.txt
