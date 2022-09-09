@@ -1,4 +1,4 @@
-FROM cira-base
+FROM cira-dev
 
 COPY ./src/ ./src/
 COPY ./test/ ./test/
