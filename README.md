@@ -32,11 +32,13 @@ For this setup, you need
 2. [Visual Studio Code](https://code.visualstudio.com)
 3. [Remote Development Extension Pack](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.vscode-remote-extensionpack)
 
-You can find detailed prerequisites for this development setup [here]( https://code.visualstudio.com/docs/remote/containers)
+Use then the `Remote-Containers: Open Workspace in Container...` command to open the project inside the container.
+
+You can find detailed information about the development container setup [here](https://code.visualstudio.com/docs/remote/containers).
 
 ## Tests
 
-Run all tests via`pytest`.
+Run all tests via `pytest`.
 
 ## Usage
 
