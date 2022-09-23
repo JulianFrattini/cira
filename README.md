@@ -22,9 +22,23 @@ This package is built and tested using [Python 3.10.0](https://www.python.org/do
     - The location, at which the models are stored locally, is irrelevant.
 4. Optionally, create a `.env` file and specify the variables `MODEL_CLASSIFICATION` and `MODEL_LABELING` with the location of the respective models.
 
+## Development inside a Docker Container
+
+You can develop inside a Docker container using a [pre-build image](https://hub.docker.com/r/andib/cira-dev) that contains all dependencies and the recommended classification and labeling models.
+
+For this setup, you need
+
+1. [Docker](https://www.docker.com)
+2. [Visual Studio Code](https://code.visualstudio.com)
+3. [Remote Development Extension Pack](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.vscode-remote-extensionpack)
+
+Use then the `Remote-Containers: Open Workspace in Container...` command to open the project inside the container.
+
+You can find detailed information about the development container setup [here](https://code.visualstudio.com/docs/remote/containers).
+
 ## Tests
 
-Run all tests via`pytest`.
+Run all tests via `pytest`.
 
 ## Usage
 
