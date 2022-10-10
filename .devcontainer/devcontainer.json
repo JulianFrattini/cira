@@ -8,5 +8,10 @@
 				"ms-python.python"
 			]
 		}
+	},
+	"containerEnv": {
+		"DEV_CONTAINER": "TRUE",
+		"MODEL_CLASSIFICATION_DEV": "/app/model/bertclassifier.bin",
+		"MODEL_LABELING_DEV": "/app/model/roberta_dropout_linear_layer_multilabel.ckpt"
 	}
 }

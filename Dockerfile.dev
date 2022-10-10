@@ -9,8 +9,8 @@ WORKDIR /app
 COPY ./model/bertclassifier.bin model/bertclassifier.bin
 COPY ./model/checkpoints/*/roberta_dropout_linear_layer_multilabel.ckpt model/roberta_dropout_linear_layer_multilabel.ckpt
 
-ENV MODEL_CLASSIFICATION=/app/model/bertclassifier.bin
-ENV MODEL_LABELING=/app/model/roberta_dropout_linear_layer_multilabel.ckpt
+ENV MODEL_CLASSIFICATION_DEV=/app/model/bertclassifier.bin
+ENV MODEL_LABELING_DEV=/app/model/roberta_dropout_linear_layer_multilabel.ckpt
 
 # Required for Jupyter
 RUN pip3 install ipykernel
