@@ -17,10 +17,8 @@ This package is built and tested using [Python 3.10.0](https://www.python.org/do
 
 1. Make sure the [Rust compiler](https://www.rust-lang.org/tools/install) is installed on your system, as the `tokenizer` package depends on it.
 2. Install all required dependencies via `pip3 install -r requirements.txt`.
-3. Download the pre-trained [classification](https://zenodo.org/record/5159501#.Ytq28ITP3-g) and [labeling](https://zenodo.org/record/5550387#.Ytq3QYTP3-g) models or use the `download-models.sh` script.
-    - Use the model named `roberta_dropout_linear_layer_multilabel.ckpt` for optimal performance.
-    - The location, at which the models are stored locally, is irrelevant.
-4. Optionally, create a `.env` file and specify the variables `MODEL_CLASSIFICATION` and `MODEL_LABELING` with the location of the respective models.
+3. Download and unzip the pre-trained [classification and labeling models](https://doi.org/10.5281/zenodo.7186287) or use the `download-models.sh` script.
+4. Create a `.env` file and specify the variables `MODEL_CLASSIFICATION` and `MODEL_LABELING` with the location of the respective models.
 
 ## Development inside a Docker Container
 
