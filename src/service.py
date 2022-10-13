@@ -26,25 +26,50 @@ class ClassificationResponse(BaseModel):
     confidence: float
 
 class LabelsResponse(BaseModel):
-    id: str
-    sentence: str
     labels: list[dict]
 
+class GraphResponse(BaseModel):
+    labels: list[dict]
+
+# heartbeat
 @cira_api.get('/api')
 def read_api_version():
     return {'version': 'v1'}
 
-# returns the number of existing labeled sentences from the cache
-@cira_api.get('/api/labels')
-def get_labels():
-    return {'number_of_labels': len(cira_api.cache)}
+# cache management
+@cira_api.get('/api/cache')
+def get_cache():
+    return cira_api.cache
 
-# delete the cache
 @cira_api.delete('/api/cache')
 def delete_classification():
     cira_api.cache = {}
 
-    
+
+def access_cache(sentence: str) -> dict:
+    req_id = sha3_256(sentence.encode('utf-8')).hexdigest()
+    if not req_id in cira_api.cache:
+        cira_api.cache[req_id] = {
+            "sentence": sentence
+        }
+    return cira_api.cache[req_id]
+
+@cira_api.post('/api/classify', response_model=ClassificationResponse)
+async def create_classification(req: SentenceRequest):
+    cache = access_cache(req.sentence)
+    if "classification" not in cache.keys():
+        causal, confidence = cira.classify(sentence=req.sentence)
+        cache['classification'] = ClassificationResponse(causal=causal, confidence=confidence)
+    return cache['classification']
+
+@cira_api.post('/api/label', response_model=LabelsResponse)
+async def create_labeling(req: SentenceRequest):
+    cache = access_cache(req.sentence)
+    if "labels" not in cache.keys():
+        labels = cira.label(sentence=req.sentence)
+        cache['labels'] = LabelsResponse(labels=[{"id": label.id, "begin": label.begin, "end": label.end, "name": label.name} for label in labels])
+    return cache['labels']
+
 if __name__ == '__main__':
     # parse arguments
     parser = argparse.ArgumentParser()
