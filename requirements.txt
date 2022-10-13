@@ -6,3 +6,7 @@ tabulate==0.8.10
 torch==1.12
 transformers==4.10
 pytest-cov==3.0
+
+uvicorn
+fastapi
+pydantic
