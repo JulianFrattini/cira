@@ -41,6 +41,40 @@ class CiRAConverter():
         causal, confidence = self.classifier_causal.classify(sentence)
         return (causal, confidence)
 
+    def label(self, sentence: str) -> list[Label]:
+        """Label each token contained in a causal, natural language sentence with its respective role in the causal relationship.
+        
+        parameters:
+            sentence -- natural language sentence in English
+
+        returns: A list of labels
+        """
+        labels: list[Label] = self.converter_sentencetolabel.label(sentence)
+        return labels
+
+    def graph(self, sentence: str, labels: list[Label]) -> Graph:
+        """Convert a sentence and a list of labels to a cause-effect graph
+        
+        parameters:
+            sentence -- natural language sentence in English
+            labels -- list of labels representing the role of each token in the sentence in respect to the causal relationship
+
+        returns: a cause-effect graph
+        """
+        graph: Graph = self.converter_labeltograph.generate_graph(sentence, labels)
+        return graph
+
+    def testsuite(self, ceg: Graph) -> Suite:
+        """Convert a cause-effect graph into a test suite containing the minimal set of test cases necessary to assert that the requirement is met.
+        
+        parameters:
+            ceg -- cause-effect graph
+
+        returns: a minimal test suite.
+        """
+        suite: Suite = convert_graph_to_testsuite(ceg)
+        return suite
+
     def process(self, sentence: str) -> Tuple[list[Label], Graph, Suite]:
         """Process a causal, natural language sentence and generate (a) a list of labels, (b) a cause-effect graph, and (c) a minimal test suite from it.
         
