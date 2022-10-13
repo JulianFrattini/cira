@@ -34,6 +34,16 @@ Use then the `Remote-Containers: Open Workspace in Container...` command to open
 
 You can find detailed information about the development container setup [here](https://code.visualstudio.com/docs/remote/containers).
 
+### Building the cira-dev base image
+
+To create and push a new multi-platform (Intel + ARM) base image based on `Dockerfile.dev` you have to run the following command:
+
+```sh
+docker buildx build --push --platform linux/arm64,linux/amd64 --tag andib/cira-dev:latest -f Dockerfile.dev .
+```
+
+Replace `andib/cira-dev:latest` with `YOUR_DOCKER_HUB_ACCOUNT/IMAGE_NAME:TAG` if you want to push the image to a different DockerHub account or change the image name.
+
 ## Tests
 
 Run all tests via `pytest`.
