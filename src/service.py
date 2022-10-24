@@ -6,7 +6,6 @@ from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
 
 cira_api = FastAPI()
-cira_api.cache = dict()
 
 import os, dotenv
 dotenv.load_dotenv()
@@ -20,6 +19,7 @@ cira = CiRAConverter(classifier_causal_model_path=model_classification, converte
 class SentenceRequest(BaseModel):
     sentence: str
     language: str = "en"
+    labels: list[dict] = None
 
 class ClassificationResponse(BaseModel):
     causal: bool
@@ -36,39 +36,25 @@ class GraphResponse(BaseModel):
 def read_api_version():
     return {'version': 'v1'}
 
-# cache management
-@cira_api.get('/api/cache')
-def get_cache():
-    return cira_api.cache
-
-@cira_api.delete('/api/cache')
-def delete_classification():
-    cira_api.cache = {}
-
-
-def access_cache(sentence: str) -> dict:
-    req_id = sha3_256(sentence.encode('utf-8')).hexdigest()
-    if not req_id in cira_api.cache:
-        cira_api.cache[req_id] = {
-            "sentence": sentence
-        }
-    return cira_api.cache[req_id]
-
 @cira_api.post('/api/classify', response_model=ClassificationResponse)
 async def create_classification(req: SentenceRequest):
-    cache = access_cache(req.sentence)
-    if "classification" not in cache.keys():
-        causal, confidence = cira.classify(sentence=req.sentence)
-        cache['classification'] = ClassificationResponse(causal=causal, confidence=confidence)
-    return cache['classification']
+    causal, confidence = cira.classify(sentence=req.sentence)
+    return ClassificationResponse(causal=causal, confidence=confidence)
 
 @cira_api.post('/api/label', response_model=LabelsResponse)
 async def create_labeling(req: SentenceRequest):
-    cache = access_cache(req.sentence)
-    if "labels" not in cache.keys():
-        labels = cira.label(sentence=req.sentence)
-        cache['labels'] = LabelsResponse(labels=[{"id": label.id, "begin": label.begin, "end": label.end, "name": label.name} for label in labels])
-    return cache['labels']
+    labels = cira.label(sentence=req.sentence)
+    return LabelsResponse(labels=[{"id": label.id, "begin": label.begin, "end": label.end, "name": label.name} for label in labels])
+
+@cira_api.post('/api/graph', response_model=LabelsResponse)
+async def create_graph(req: SentenceRequest):
+    labels = None
+    if req.labels != None:
+        labels = req.labels
+    else:
+        labels = create_labeling(req)
+    graph = cira.graph(sentence=req.sentence, labels=labels)
+    return None
 
 if __name__ == '__main__':
     # parse arguments
