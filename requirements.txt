@@ -10,6 +10,3 @@ pytest-cov==3.0
 uvicorn
 fastapi
 pydantic
-
-deepdiff
-dacite

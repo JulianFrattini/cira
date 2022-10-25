@@ -11,12 +11,26 @@ class Label:
     def __str__(self):
         return f'[{self.begin}> ({self.id}) {self.name} <{self.end}]'
 
+    @abstractmethod
+    def to_dict(self) -> dict:
+        pass
+
 @dataclass
 class SubLabel(Label):
     parent: 'EventLabel' = field(default=None, init=False)
 
     def __repr__(self):
         return super().__str__()
+
+    def to_dict(self) -> dict:
+        dictified: dict = {
+            'id': self.id,
+            'name': self.name,
+            'begin': self.begin,
+            'end': self.end,
+            'parent': None if self.parent==None else self.parent.id
+        }
+        return dictified
 
 @dataclass
 class Neighbor:
@@ -56,6 +70,22 @@ class EventLabel(Label):
         if len(eligible_sublabels) >= 1:
             return " ".join([sentence[l.begin:l.end] for l in eligible_sublabels])
         return None
+
+    def to_dict(self) -> dict:
+        dictified: dict = {
+            'id': self.id,
+            'name': self.name,
+            'begin': self.begin,
+            'end': self.end,
+            'predecessor': None if self.predecessor==None else {
+                'id': self.predecessor.origin.id,
+                'junctor': self.predecessor.junctor},
+            'successor': None if self.successor==None else {
+                'id': self.successor.target.id,
+                'junctor': self.successor.junctor},
+            'children': [child.id for child in self.children]
+        }
+        return dictified
     
     def __str__(self):
         return super().__str__()
