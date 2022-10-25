@@ -1,6 +1,7 @@
 # CiRA Pipeline
 
 [![GitHub](https://img.shields.io/github/license/JulianFrattini/cira)](./LICENSE)
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.7186287.svg)](https://doi.org/10.5281/zenodo.7186287)
 
 ## Summary of Artifact
 
