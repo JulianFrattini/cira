@@ -43,7 +43,6 @@ def test_evetlabel_serialization_child():
         'name': 'Cause1',
         'begin': 0,
         'end': 30,
-        'predecessor': None,
         'successor': None,
         'children': ['L2']
     }
@@ -63,7 +62,6 @@ def test_evetlabel_serialization_children():
         'name': 'Cause1',
         'begin': 0,
         'end': 30,
-        'predecessor': None,
         'successor': None,
         'children': ['L2', 'L3']
     }
@@ -81,7 +79,6 @@ def test_evetlabel_serialization_successor():
         'name': 'Cause1',
         'begin': 0,
         'end': 30,
-        'predecessor': None,
         'successor': {
             'id': 'L2',
             'junctor': 'AND'
@@ -102,10 +99,6 @@ def test_evetlabel_serialization_predecessor():
         'name': 'Cause2',
         'begin': 31,
         'end': 60,
-        'predecessor': {
-            'id': 'L1',
-            'junctor': 'OR'
-        },
         'successor': None,
         'children': []
     }
@@ -125,10 +118,6 @@ def test_evetlabel_serialization_successor_predecessor():
         'name': 'Cause2',
         'begin': 31,
         'end': 60,
-        'predecessor': {
-            'id': 'L1',
-            'junctor': 'AND'
-        },
         'successor': {
             'id': 'L3',
             'junctor': 'OR'
@@ -157,10 +146,6 @@ def test_evetlabel_serialization_successor_predecessor_children():
         'name': 'Cause2',
         'begin': 31,
         'end': 60,
-        'predecessor': {
-            'id': 'L1',
-            'junctor': 'AND'
-        },
         'successor': {
             'id': 'L3',
             'junctor': 'OR'
