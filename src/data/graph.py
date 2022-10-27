@@ -230,6 +230,30 @@ class Graph:
             return None
         return candidates[0]
 
+    def to_dict(self) -> dict:
+        edges = [{'origin': edge.origin.id, 'target': edge.target.id, 'negated': edge.negated} for edge in self.edges]
+
+        nodes = []
+        for node in self.nodes:
+            if type(node) == EventNode:
+                nodes.append({
+                    'id': node.id,
+                    'variable': node.variable,
+                    'condition': node.condition
+                })
+            else:
+                nodes.append({
+                    'id': node.id,
+                    'conjunction': node.conjunction
+                })
+
+        return {
+            'nodes': nodes,
+            'root': self.root.id,
+            'edges': edges
+        }
+
+
     def __repr__(self):
         effects = " && ".join([('NOT ' if out.negated else '') + str(out.target) for out in self.root.outgoing])
         return f'{str(self.root)} ===> {effects}'
