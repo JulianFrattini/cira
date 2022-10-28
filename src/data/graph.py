@@ -231,8 +231,14 @@ class Graph:
         return candidates[0]
 
     def to_dict(self) -> dict:
+        """Convert a graph into a dictionary object, effectively also replacing all cyclic dependencies (caused by edges) by references.
+        
+        returns: graph as a dictionary"""
+
+        # convert the edges into dictionaries containing only references to their nodes via the ids
         edges = [{'origin': edge.origin.id, 'target': edge.target.id, 'negated': edge.negated} for edge in self.edges]
 
+        # convert the nodes into dictionaries
         nodes = []
         for node in self.nodes:
             if type(node) == EventNode:
@@ -269,3 +275,48 @@ class Graph:
 
         # check that the causes are equal
         return self.root.is_equal(other=other.root, incoming=True)
+
+def from_dict(dict_graph: dict) -> Graph:
+    """Convert a graph represented by a dictionary into an actual graph object. This recovers references between edges and nodes from the ids.
+    
+    parameters:
+        dict_graph -- graph as a dictionary
+        
+    returns: actual graph representing the dict_graph"""
+
+    # recover the nodes
+    nodes: list[Node] = []
+    for node in dict_graph['nodes']:
+        if 'conjunction' in node.keys():
+            nodes.append(IntermediateNode(id=node['id'], conjunction=node['conjunction']))
+        else:
+            nodes.append(EventNode(id=node['id'], variable=node['variable'], condition=node['condition']))
+
+    # recover the edges
+    edges = []
+    for edge in dict_graph['edges']:
+        origin = get_node_from_list(nodes, edge['origin'])
+        target = get_node_from_list(nodes, edge['target'])
+        edges.append(target.add_incoming(origin, negated=edge['negated']))
+
+    # recover the root
+    root = get_node_from_list(nodes, dict_graph['root'])
+
+    return Graph(nodes=nodes, root=root, edges=edges)
+
+def get_node_from_list(nodelist: list[Node], id: str):
+    """Obtain a node from a list of nodes by its id
+    
+    parameters:
+        nodelist -- list of nodes
+        id -- identifier of the requested node
+        
+    returns:
+        node -- Node with the requested id if it exists,
+        None -- otherwise"""
+    candidates =  [node for node in nodelist if node.id==id]
+    if len(candidates) == 0:
+        return None
+    if len(candidates) > 1:
+        print(f'Warning: searching for node {id} in {nodelist} yielded mulitple results')
+    return candidates[0]
