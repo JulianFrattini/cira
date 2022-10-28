@@ -12,7 +12,46 @@ model_env_suffix = '_DEV' if ('DEV_CONTAINER' in os.environ) else ''
 model_classification = os.environ[f'MODEL_CLASSIFICATION{model_env_suffix}']
 model_labeling = os.environ[f'MODEL_LABELING{model_env_suffix}']
 
-app = FastAPI()
+
+description = """The CiRA API wraps the functionality of the Causality in Requirements Artifacts initiative and bundles it in one easy-to-use API.
+
+## Functionality
+
+At the time, the following features are supported:
+
+* **classify** a single, natural language sentence as either causal or non-causal
+* **label** each token in a sentence regarding its role within the causal relationship
+* generate a cause-effect **graph** from a labeled sentence
+* convert a cause-effect graph into a **test suite** containing the minimal number of test cases ensuring full requirements coverage
+"""
+
+tags_metadata = [
+    {
+        "name": "classify",
+        "description": "Classification of a single, natural language sentence as either causal or non-causal"
+    }, {
+        "name": "label",
+        "description": "Label each token in a sentence regarding its role within the causal relationship"
+    }, {
+        "name": "graph",
+        "description": "Generate a cause-effect graph from a labeled sentence"
+    }, {
+        "name": "testsuite",
+        "description": "Convert a cause-effect graph into a test suite"
+    }, 
+]
+
+app = FastAPI(
+    title="Causality in Requirements Artifacts - Pipeline",
+    version="1.0.0",
+    description=description,
+    contact={
+        "name": "Julian Frattini",
+        "url": "http://www.cira.bth.se/",
+        "email": "julian.frattini@bth.se"
+    },
+    openapi_tags=tags_metadata
+)
 PREFIX = "/api"
 
 service: CiRAService = CiRAServiceImpl(model_classification=model_classification, model_labeling=model_labeling)
@@ -52,25 +91,25 @@ def health():
     return {"status": "up"}
 
 
-@app.get(PREFIX + '/classify', response_model=ClassificationResponse)
+@app.get(PREFIX + '/classify', response_model=ClassificationResponse, tags=['classify'])
 async def create_classification(req: SentenceRequest):
     causal, confidence = service.classify(req.sentence)
     return ClassificationResponse(causal=causal, confidence=confidence)
 
 
-@app.get(PREFIX + '/label', response_model=LabelingResponse)
+@app.get(PREFIX + '/label', response_model=LabelingResponse, tags=['label'])
 async def create_labels(req: SentenceRequest):
     labels = service.sentence_to_labels(sentence=req.sentence)
     return LabelingResponse(labels=labels)
 
 
-@app.get(PREFIX + '/graph', response_model=GraphResponse)
+@app.get(PREFIX + '/graph', response_model=GraphResponse, tags=['graph'])
 async def create_graph(req: SentenceRequest):
     graph = service.sentence_to_graph(sentence=req.sentence, labels=req.labels)
     return GraphResponse(graph=graph)
 
 
-@app.get(PREFIX + '/testsuite', response_model=TestsuiteResponse)
+@app.get(PREFIX + '/testsuite', response_model=TestsuiteResponse, tags=['testsuite'])
 async def create_classification(req: SentenceRequest):
     testsuite = service.graph_to_test(graph=req.graph)
     return TestsuiteResponse(suite=testsuite)
