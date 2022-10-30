@@ -10,6 +10,7 @@ from src.data.graph import from_dict as graph_from_dict
 
 from src.data.test import Suite
 
+
 class CiRAService:
     @abstractmethod
     def classify(self, sentence: str) -> tuple[bool, float]:
@@ -27,6 +28,7 @@ class CiRAService:
     def graph_to_test(self, graph) -> dict:
         pass
 
+
 class CiraServiceMock(CiRAService):
     model_classification = None
     model_labeling = None
@@ -35,25 +37,24 @@ class CiraServiceMock(CiRAService):
         self.model_classification = model_classification
         self.model_labeling = model_labeling
 
-
     def classify(self, sentence) -> tuple[bool, float]:
         return True, 42.0
 
-class CiRAServiceImpl(CiRAService):
-    cira = None
 
-    def __init__(self, model_classification: str, model_labeling: str, use_GPU: bool=False):
+class CiRAServiceImpl(CiRAService):
+
+    def __init__(self, model_classification: str, model_labeling: str, use_GPU: bool = False):
         self.cira = CiRAConverter(
-            classifier_causal_model_path=model_classification, 
-            converter_s2l_model_path=model_labeling, 
+            classifier_causal_model_path=model_classification,
+            converter_s2l_model_path=model_labeling,
             use_GPU=use_GPU)
 
     def classify(self, sentence: str) -> tuple[bool, float]:
         """Classify a given sentence as either causal or non-causal.
-        
+
         parameters:
             sentence -- single natural language sentence
-            
+
         returns:
             causal -- True, if the sentence is considered to be causal
             confidence -- float value between 0 and 1 representing the confidence with which the classified chose either label"""
@@ -62,10 +63,10 @@ class CiRAServiceImpl(CiRAService):
 
     def sentence_to_labels(self, sentence: str) -> list[dict]:
         """Generate the causal labels for a sentence.
-        
+
         parameters:
             sentence -- single natural language sentence
-        
+
         returns: list of labels serialized to dictionaries
         """
         labels: list[Label] = self.cira.label(sentence)
@@ -81,7 +82,7 @@ class CiRAServiceImpl(CiRAService):
             sentence -- single natural language sentence
             labels -- list of labels (either as true labels or dictionaries)
 
-        returns: graph serialized to a dictionary       
+        returns: graph serialized to a dictionary
         """
         # if the labels are not provided, generate them
         if labels is None or len(labels) == 0:
@@ -99,10 +100,10 @@ class CiRAServiceImpl(CiRAService):
 
     def graph_to_test(self, graph) -> dict:
         """Generate a test suite from a cause-effect graph.
-        
+
         parameters:
             graph -- a cause effect graph (either as a true Graph or a dictionary)
-            
+
         returns: test suite serialized to a dictionary
         """
         # deserialize the graph in case it is not
@@ -114,3 +115,4 @@ class CiRAServiceImpl(CiRAService):
         # serialize the test suite and return it
         serialized = suite.to_dict()
         return serialized
+

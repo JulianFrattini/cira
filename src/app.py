@@ -1,14 +1,14 @@
+import os
+import dotenv
 import uvicorn
 from fastapi import FastAPI, Request
 from pydantic import BaseModel
 
 from src.api.service import CiRAService, CiRAServiceImpl
 
-import os, dotenv
+
 dotenv.load_dotenv()
-
 model_env_suffix = '_DEV' if ('DEV_CONTAINER' in os.environ) else ''
-
 model_classification = os.environ[f'MODEL_CLASSIFICATION{model_env_suffix}']
 model_labeling = os.environ[f'MODEL_LABELING{model_env_suffix}']
 
@@ -38,7 +38,7 @@ tags_metadata = [
     }, {
         "name": "testsuite",
         "description": "Convert a cause-effect graph into a test suite"
-    }, 
+    },
 ]
 
 app = FastAPI(
@@ -68,11 +68,14 @@ class ClassificationResponse(BaseModel):
     causal: bool
     confidence: float
 
+
 class LabelingResponse(BaseModel):
     labels: list[dict]
 
+
 class GraphResponse(BaseModel):
     graph: dict
+
 
 class TestsuiteResponse(BaseModel):
     suite: dict
@@ -110,7 +113,7 @@ async def create_graph(req: SentenceRequest):
 
 
 @app.get(PREFIX + '/testsuite', response_model=TestsuiteResponse, tags=['testsuite'])
-async def create_classification(req: SentenceRequest):
+async def create_testsuite(req: SentenceRequest):
     testsuite = service.graph_to_test(graph=req.graph)
     return TestsuiteResponse(suite=testsuite)
 
