@@ -29,18 +29,6 @@ class CiRAService:
         pass
 
 
-class CiraServiceMock(CiRAService):
-    model_classification = None
-    model_labeling = None
-
-    def __init__(self, model_classification, model_labeling):
-        self.model_classification = model_classification
-        self.model_labeling = model_labeling
-
-    def classify(self, sentence) -> tuple[bool, float]:
-        return True, 42.0
-
-
 class CiRAServiceImpl(CiRAService):
 
     def __init__(self, model_classification: str, model_labeling: str, use_GPU: bool = False):
@@ -116,3 +104,37 @@ class CiRAServiceImpl(CiRAService):
         serialized = suite.to_dict()
         return serialized
 
+
+class CiraServiceMock(CiRAService):
+    model_classification = None
+    model_labeling = None
+
+    def __init__(self, model_classification, model_labeling):
+        self.model_classification = model_classification
+        self.model_labeling = model_labeling
+
+    def classify(self, sentence) -> tuple[bool, float]:
+        return True, 42.0
+
+
+    def sentence_to_labels(self, sentence: str) -> list[dict]:
+        return [{'id': 'L1', 'name': 'Variable', 'begin': 10, 'end': 20, 'parent': None}]
+
+
+    def sentence_to_graph(self, sentence: str, labels: list) -> dict:
+        return {
+            'nodes': [
+                {'id': 'c', 'variable': 'the button', 'condition': 'is pressed'},
+                {'id': 'e', 'variable': 'the system', 'condition': 'shuts down'}
+                ],
+            'root': 'c',
+            'edges': [{'origin': 'c', 'target': 'e', 'negated': False}]
+        }
+
+
+    def graph_to_test(self, graph) -> dict:
+        return {
+            'conditions': [{'id': 'c', 'variable': 'the button', 'condition': 'is pressed'}],
+            'expected': [{'id': 'c', 'variable': 'the system', 'condition': 'shuts down'}],
+            'cases': [{'c': True, 'e': True}, {'c': False, 'e': False}]
+        }
