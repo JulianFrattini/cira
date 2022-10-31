@@ -11,12 +11,17 @@ class Label:
     def __str__(self):
         return f'[{self.begin}> ({self.id}) {self.name} <{self.end}]'
 
-    @abstractmethod
     def to_dict(self) -> dict:
         """Serialize a Label object to a standard dictionary, which gets rid of all cyclic dependencies and replaces them by references.
             
         returns: label serialized as a dictionary"""
-        pass
+        dictified: dict = {
+            'id': self.id,
+            'name': self.name,
+            'begin': int(self.begin),
+            'end': int(self.end)
+        }
+        return dictified
 
     def base_equals(self, other: 'Label') -> bool:
         """Basic equivalence method that checks that the name, begin, and end of another label equals this label's attributes. The id is purposefully ignored.
@@ -52,14 +57,11 @@ class SubLabel(Label):
         """Serialize a Label object to a standard dictionary, which gets rid of all cyclic dependencies and replaces them by references.
             
         returns: label serialized as a dictionary"""
+        parent_dict: dict = super().to_dict()
         dictified: dict = {
-            'id': self.id,
-            'name': self.name,
-            'begin': self.begin,
-            'end': self.end,
             'parent': None if self.parent==None else self.parent.id
         }
-        return dictified
+        return parent_dict | dictified
 
 @dataclass
 class Neighbor:
@@ -117,17 +119,14 @@ class EventLabel(Label):
         """Serialize a Label object to a standard dictionary, which gets rid of all cyclic dependencies and replaces them by references.
             
         returns: label serialized as a dictionary"""
+        parent_dict: dict = super().to_dict()
         dictified: dict = {
-            'id': self.id,
-            'name': self.name,
-            'begin': self.begin,
-            'end': self.end,
             'successor': None if self.successor==None else {
                 'id': self.successor.target.id,
                 'junctor': self.successor.junctor},
             'children': [child.id for child in self.children]
         }
-        return dictified
+        return parent_dict | dictified
 
     def __eq__(self, other) -> bool:
         """Deep equivalence method comparing this object with another object. An object that is to be identified as equivalent to this object has to (1) also be of type EventLabel, (2) have equal children, (3) have equal successors and predecessors, and (4) have equal base values. The equivalence check has a depth of 1, i.e., all connected objects are only checked for equivalent base values (e.g., successors are only compared via base_equals, not via __eq__, as this would cause a cycle).

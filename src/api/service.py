@@ -72,19 +72,35 @@ class CiRAServiceImpl(CiRAService):
 
         returns: graph serialized to a dictionary
         """
-        # if the labels are not provided, generate them
-        if labels is None or len(labels) == 0:
-            labels = self.cira.label(sentence)
+        # recover the list of labels if necessary
+        labels: list[Label] = self.recover_labels(sentence, labels)
 
-        # in case the labels are serialized, deserialize them
-        if type(labels[0]) == dict:
-            labels: list[Label] = labels_from_dict(labels)
-
+        # generate the graph
         graph = self.cira.graph(sentence, labels)
 
         # serialize the graph and return it
         serialized = graph.to_dict()
         return serialized
+
+    def recover_labels(self, sentence: str, labels: list) -> list[Label]:
+        """Recovers a list of labels and ensures that it is in the right format. This includes (1) generating new labels if the current list is None or empty and (2) casting labels serialized to dictionaries back to actual labels.
+        
+        parameters:
+            sentence -- single, causal, natural language sentence
+            labels -- list of labels
+            
+        returns: list of actual labels representing the causal relationship implied by the sentence"""
+        # if the labels are not provided, generate them
+        if labels is None or len(labels) == 0:
+            return self.cira.label(sentence)
+
+        # if the labels are serialized, deserialize them
+        if type(labels[0]) == dict:
+            return labels_from_dict(labels)
+
+        # otherwise, the labels are already recovered
+        return labels
+
 
     def graph_to_test(self, graph) -> dict:
         """Generate a test suite from a cause-effect graph.
@@ -114,7 +130,7 @@ class CiraServiceMock(CiRAService):
         self.model_labeling = model_labeling
 
     def classify(self, sentence) -> tuple[bool, float]:
-        return True, 42.0
+        return True, 0.99
 
 
     def sentence_to_labels(self, sentence: str) -> list[dict]:
