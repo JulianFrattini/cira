@@ -112,7 +112,7 @@ class CiRAServiceImpl(CiRAService):
         """
         # deserialize the graph in case it is not
         if type(graph) == dict:
-            graph = graph_from_dict(graph)
+            graph: Graph = graph_from_dict(graph)
 
         suite: Suite = self.cira.testsuite(ceg=graph)
 
