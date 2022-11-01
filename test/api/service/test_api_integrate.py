@@ -66,5 +66,5 @@ def test_graph(sut: CiRAServiceImpl):
 
 @pytest.mark.integration
 def test_testsuite(sut: CiRAServiceImpl):
-    generated_suite = sut.graph_to_test(graph)
+    generated_suite = sut.graph_to_test(graph, sentence)
     assert generated_suite == suite

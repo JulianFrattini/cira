@@ -25,7 +25,7 @@ class CiRAService:
         pass
 
     @abstractmethod
-    def graph_to_test(self, graph) -> dict:
+    def graph_to_test(self, graph, sentence: str) -> dict:
         pass
 
 
@@ -110,7 +110,7 @@ class CiRAServiceImpl(CiRAService):
 
         returns: test suite serialized to a dictionary
         """
-        if graph == None:
+        if not graph:
             graph = self.sentence_to_graph(sentence, labels=[])
 
         # deserialize the graph in case it is not
@@ -148,7 +148,7 @@ class CiraServiceMock(CiRAService):
         }
 
 
-    def graph_to_test(self, graph) -> dict:
+    def graph_to_test(self, graph, sentence: str) -> dict:
         return {
             'conditions': [{'id': 'c', 'variable': 'the button', 'condition': 'is pressed'}],
             'expected': [{'id': 'c', 'variable': 'the system', 'condition': 'shuts down'}],

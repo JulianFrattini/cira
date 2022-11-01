@@ -92,12 +92,12 @@ def test_sentence_to_graph_serialized_labels(isolatedService):
 
 
 @pytest.mark.unit
-def test_graph_to_test_Graph(isolatedService):
-    generated_suite = isolatedService.graph_to_test(graph=graph)
+def test_graph_to_test_from_graph(isolatedService):
+    generated_suite = isolatedService.graph_to_test(graph=graph, sentence=sentence)
     assert generated_suite == suite_serialized
 
 
 @pytest.mark.unit
-def test_graph_to_test_dictgraph(isolatedService):
-    generated_suite = isolatedService.graph_to_test(graph=graph_serialized)
+def test_graph_to_test_from_dictgraph(isolatedService):
+    generated_suite = isolatedService.graph_to_test(graph=graph_serialized, sentence=sentence)
     assert generated_suite == suite_serialized
