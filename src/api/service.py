@@ -122,15 +122,12 @@ class CiRAServiceImpl(CiRAService):
 
 
 class CiraServiceMock(CiRAService):
-    model_classification = None
-    model_labeling = None
 
-    def __init__(self, model_classification, model_labeling):
-        self.model_classification = model_classification
-        self.model_labeling = model_labeling
+    def __init__(self):
+        pass
 
     def classify(self, sentence) -> tuple[bool, float]:
-        return True, 0.99
+        return (True, 0.99)
 
 
     def sentence_to_labels(self, sentence: str) -> list[dict]:

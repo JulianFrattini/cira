@@ -7,12 +7,6 @@ from pydantic import BaseModel
 from src.api.service import CiRAService, CiRAServiceImpl
 
 
-dotenv.load_dotenv()
-model_env_suffix = '_DEV' if ('DEV_CONTAINER' in os.environ) else ''
-model_classification = os.environ[f'MODEL_CLASSIFICATION{model_env_suffix}']
-model_labeling = os.environ[f'MODEL_LABELING{model_env_suffix}']
-
-
 description = """The CiRA API wraps the functionality of the Causality in Requirements Artifacts initiative and bundles it in one easy-to-use API.
 
 ## Functionality
@@ -54,7 +48,18 @@ app = FastAPI(
 )
 PREFIX = "/api"
 
-service: CiRAService = CiRAServiceImpl(model_classification=model_classification, model_labeling=model_labeling)
+cira: CiRAService = None
+
+
+def set_cira():
+    # determine the location of the pre-trained models
+    dotenv.load_dotenv()
+    model_env_suffix = '_DEV' if ('DEV_CONTAINER' in os.environ) else ''
+    model_classification = os.environ[f'MODEL_CLASSIFICATION{model_env_suffix}']
+    model_labeling = os.environ[f'MODEL_LABELING{model_env_suffix}']
+
+    # generate a CiRA service implementation
+    cira = CiRAServiceImpl(model_classification, model_labeling)
 
 
 class SentenceRequest(BaseModel):
@@ -96,27 +101,29 @@ def health():
 
 @app.get(PREFIX + '/classify', response_model=ClassificationResponse, tags=['classify'])
 async def create_classification(req: SentenceRequest):
-    causal, confidence = service.classify(req.sentence)
+    print(cira)
+    causal, confidence = cira.classify(req.sentence)
     return ClassificationResponse(causal=causal, confidence=confidence)
 
 
 @app.get(PREFIX + '/label', response_model=LabelingResponse, tags=['label'])
 async def create_labels(req: SentenceRequest):
-    labels = service.sentence_to_labels(sentence=req.sentence)
+    labels = cira.sentence_to_labels(sentence=req.sentence)
     return LabelingResponse(labels=labels)
 
 
 @app.get(PREFIX + '/graph', response_model=GraphResponse, tags=['graph'])
 async def create_graph(req: SentenceRequest):
-    graph = service.sentence_to_graph(sentence=req.sentence, labels=req.labels)
+    graph = cira.sentence_to_graph(sentence=req.sentence, labels=req.labels)
     return GraphResponse(graph=graph)
 
 
 @app.get(PREFIX + '/testsuite', response_model=TestsuiteResponse, tags=['testsuite'])
 async def create_testsuite(req: SentenceRequest):
-    testsuite = service.graph_to_test(graph=req.graph)
+    testsuite = cira.graph_to_test(graph=req.graph)
     return TestsuiteResponse(suite=testsuite)
 
 
 if __name__ == '__main__':
+    set_cira()
     uvicorn.run(app)
