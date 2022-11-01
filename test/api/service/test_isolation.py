@@ -9,7 +9,7 @@ from src.data.graph import Graph, EventNode
 from src.data.test import Suite, Parameter
 
 # since the CiRAConverter is mocked in this test suite, define all objects (and their appropriate serialization) in advance
-sentence = "If the button is pressed than the system shuts down."
+sentence = "If the button is pressed then the system shuts down."
 
 classification = (True, 0.84)
 
