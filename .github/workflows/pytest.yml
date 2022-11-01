@@ -1,0 +1,23 @@
+name: Pytest
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+
+    runs-on: ubuntu-latest
+    container: andib/cira-dev:latest
+
+    steps:
+    - uses: actions/checkout@v3
+    - name: Test with pytest
+      run: |
+        pytest
