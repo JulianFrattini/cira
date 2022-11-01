@@ -120,7 +120,7 @@ async def create_graph(req: SentenceRequest):
 
 @app.get(PREFIX + '/testsuite', response_model=TestsuiteResponse, tags=['testsuite'])
 async def create_testsuite(req: SentenceRequest):
-    testsuite = cira.graph_to_test(graph=req.graph)
+    testsuite = cira.graph_to_test(graph=req.graph, sentence=req.sentence)
     return TestsuiteResponse(suite=testsuite)
 
 

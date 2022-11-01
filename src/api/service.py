@@ -102,7 +102,7 @@ class CiRAServiceImpl(CiRAService):
         return labels
 
 
-    def graph_to_test(self, graph) -> dict:
+    def graph_to_test(self, graph, sentence: str) -> dict:
         """Generate a test suite from a cause-effect graph.
 
         parameters:
@@ -110,6 +110,9 @@ class CiRAServiceImpl(CiRAService):
 
         returns: test suite serialized to a dictionary
         """
+        if graph == None:
+            graph = self.sentence_to_graph(sentence, labels=[])
+
         # deserialize the graph in case it is not
         if type(graph) == dict:
             graph: Graph = graph_from_dict(graph)
