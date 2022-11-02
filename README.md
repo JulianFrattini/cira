@@ -1,6 +1,7 @@
 # CiRA Pipeline
 
 [![GitHub](https://img.shields.io/github/license/JulianFrattini/cira)](./LICENSE)
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.7186287.svg)](https://doi.org/10.5281/zenodo.7186287)
 
 ## Summary of Artifact
 
@@ -33,6 +34,16 @@ For this setup, you need
 Use then the `Remote-Containers: Open Workspace in Container...` command to open the project inside the container.
 
 You can find detailed information about the development container setup [here](https://code.visualstudio.com/docs/remote/containers).
+
+### Building the cira-dev base image
+
+To create and push a new multi-platform (Intel + ARM) base image based on `Dockerfile.dev` you have to run the following command:
+
+```sh
+docker buildx build --push --platform linux/arm64,linux/amd64 --tag andib/cira-dev:latest -f Dockerfile.dev .
+```
+
+Replace `andib/cira-dev:latest` with `YOUR_DOCKER_HUB_ACCOUNT/IMAGE_NAME:TAG` if you want to push the image to a different DockerHub account or change the image name.
 
 ## Tests
 
