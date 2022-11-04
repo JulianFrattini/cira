@@ -10,14 +10,14 @@ class Node:
     outgoing: list['Edge'] = field(default_factory=list, init=False)
     incoming: list['Edge'] = field(default_factory=list, init=False)
 
-    def add_incoming(self, child: 'Node', negated: bool=False) -> 'Edge':
+    def add_incoming(self, child: 'Node', negated: bool = False) -> 'Edge':
         edge = Edge(origin=child, target=self, negated=negated)
         self.incoming.append(edge)
         child.outgoing.append(edge)
         return edge
 
     def remove_incoming(self, child: 'Node'):
-        for edge in [edge for edge in self.incoming if edge.origin==child]:
+        for edge in [edge for edge in self.incoming if edge.origin == child]:
             edge.origin.outgoing.remove(edge)
             self.incoming.remove(edge)
 
@@ -27,7 +27,7 @@ class Node:
 
     def get_root(self):
         """Assuming that the graph is currently structured like a tree (which the subgraph only containing causes is), return the root node.
-        
+
         returns: root node with no outgoing edges"""
         if len(self.outgoing) == 0:
             return self
@@ -53,19 +53,19 @@ class EventNode(Node):
 
     def is_cause(self):
         """Determine whether this node represents a cause.
-        
+
         returns: True, if the event label of this node is a cause label"""
         return self.label.is_cause()
 
     def is_negated(self):
         """Determine whether this event node is negated.
-        
+
         returns: True, if the event label of this node has a child label of type Negation"""
         return len([label for label in self.label.children if label.name == 'Negation']) > 0
 
     def condense(self) -> list['Edge']:
         """In case the event node has more than one outgoing relationship, try to condense these relationships. If they have the same junctor type, merge them. If not, rearrange them according to precedence rules (AND binds stronger than OR)
-        
+
         returns: list of edges that are now removable"""
         removable_edges: list[Edge] = []
         if len(self.outgoing) > 0:
@@ -76,7 +76,7 @@ class EventNode(Node):
                 for parent in self.outgoing[1:]:
                     removable = surviving_parent.merge(parent.target)
                     removable_edges = removable_edges + removable
-            else: 
+            else:
                 # complex case: apply precedence rules
                 disjunction_edge = [parent for parent in self.outgoing if not parent.target.conjunction][0]
                 disjunction_parent: IntermediateNode = disjunction_edge.target
@@ -103,10 +103,10 @@ class IntermediateNode(Node):
 
     def merge(self, other: 'IntermediateNode') -> list['Edge']:
         """Merge this intermediate node with another intermediate node. In the end, all nodes with an incoming connection to the other node, which are not yet connected to this node, will be connected to this node.
-        
+
         parameters:
             other -- the other node to merge with
-            
+
         returns: list of unused egdes which now can be removed"""
         current_inputs = [inc.origin for inc in self.incoming]
         removable_edges: list[Edge] = []
@@ -121,7 +121,7 @@ class IntermediateNode(Node):
 
     def flatten(self) -> list['Node']:
         """Translate the tree structure implied by this intermediate node into a flat list.
-        
+
         returns: list containing all (leaf and intermediate) nodes """
         result = [self]
         for child in self.incoming:
@@ -150,11 +150,11 @@ class IntermediateNode(Node):
 
     def is_equal(self, other, incoming: bool) -> bool:
         """Determine whether this node is equal to another node.
-        
+
         parameters:
             other -- the other object with which this one is compared
             incoming -- True, if the direction of the recursive check is upstream
-            
+
         returns: True, if this object is equal to the given other object"""
         # assert that both the type and the conjunction of the other node is the same
         if type(other) != IntermediateNode or self.conjunction != other.conjunction:
@@ -182,10 +182,10 @@ class IntermediateNode(Node):
 
 def permute_configurations(inc_configs: list) -> list[dict]:
     """Permute an automatically generated list of individual configurations for incoming nodes of an intermediate node. Every incoming node has 1..n individual configurations (at max 2^n, where n is the number of connected leaf nodes) which are permuted with all other individual configurations
-    
-    parameters: 
+
+    parameters:
         inc_configs -- individual configurations of the incoming nodes
-        
+
     returns: harmonized, permuted set of configurations of all incoming nodes"""
 
     configurations = []
@@ -219,10 +219,10 @@ class Graph:
 
     def get_node(self, id: str):
         """Find and return the node of this graph with the given id.
-        
-        parameters: 
+
+        parameters:
             id -- identifier used by the node in question
-            
+
         returns: the node within this graph with the given id, None if it does not exist"""
         candidates = [node for node in self.nodes if node.id == id]
         if len(candidates) == 0:
@@ -232,7 +232,7 @@ class Graph:
 
     def to_dict(self) -> dict:
         """Convert a graph into a dictionary object, effectively also replacing all cyclic dependencies (caused by edges) by references.
-        
+
         returns: graph as a dictionary"""
 
         # convert the edges into dictionaries containing only references to their nodes via the ids
@@ -259,7 +259,6 @@ class Graph:
             'edges': edges
         }
 
-
     def __repr__(self):
         effects = " && ".join([('NOT ' if out.negated else '') + str(out.target) for out in self.root.outgoing])
         return f'{str(self.root)} ===> {effects}'
@@ -276,12 +275,13 @@ class Graph:
         # check that the causes are equal
         return self.root.is_equal(other=other.root, incoming=True)
 
+
 def from_dict(dict_graph: dict) -> Graph:
     """Convert a graph represented by a dictionary into an actual graph object. This recovers references between edges and nodes from the ids.
-    
+
     parameters:
         dict_graph -- graph as a dictionary
-        
+
     returns: actual graph representing the dict_graph"""
 
     # recover the nodes
@@ -304,17 +304,18 @@ def from_dict(dict_graph: dict) -> Graph:
 
     return Graph(nodes=nodes, root=root, edges=edges)
 
+
 def get_node_from_list(nodelist: list[Node], id: str):
     """Obtain a node from a list of nodes by its id
-    
+
     parameters:
         nodelist -- list of nodes
         id -- identifier of the requested node
-        
+
     returns:
         node -- Node with the requested id if it exists,
         None -- otherwise"""
-    candidates =  [node for node in nodelist if node.id==id]
+    candidates = [node for node in nodelist if node.id == id]
     if len(candidates) == 0:
         return None
     if len(candidates) > 1:

@@ -1,6 +1,7 @@
 from dataclasses import dataclass, field, asdict
 from tabulate import tabulate
 
+
 @dataclass
 class Parameter:
     id: str
@@ -9,6 +10,7 @@ class Parameter:
 
     def __eq__(self, other: 'Parameter') -> bool:
         return self.variable == other.variable and self.condition == other.condition
+
 
 @dataclass
 class Suite:
@@ -19,7 +21,7 @@ class Suite:
 
     def to_dict(self) -> dict:
         """Convert a dataclass object into a simple dictionary
-        
+
         returns: test suite as a dictionary"""
         return asdict(self)
 
@@ -52,10 +54,10 @@ class Suite:
                 return False
 
         return True
-    
+
     def __repr__(self):
         """Represent the test suite as a string table.
-        
+
         returns: test suite as a string table that is printed via tabulated"""
         # arrange the header of the table containing the 'id' column, the variables of the conditions, and the variables of the expected outcomes
         headers = ['id'] + [param.variable for param in self.conditions] + [param.variable for param in self.expected]
@@ -72,12 +74,12 @@ class Suite:
 
 def get_conditions(configuration: dict, parameters: list[Parameter], expected_index: int) -> list[str]:
     """Converts a test case into a list of strings containing the condition of each parameter with the respective boolean prefix (i.e., 'not <condition>' if that parameter is False in the given configuration.
-    
+
     parameters:
         configuration -- dictionary mapping each parameter id to a boolean value
         parameters -- list of both input and output parameters
         expected_index -- number of condition parameters +1
-        
+
     returns: list of parameter conditions in the configuration"""
     # concatenate the conditions of the condition parameters and the outcome parameters
     row = [('' if configuration[param.id] else 'not ') + param.condition for param in parameters]
@@ -86,12 +88,13 @@ def get_conditions(configuration: dict, parameters: list[Parameter], expected_in
     row[expected_index] = '| '+row[expected_index]
     return row
 
+
 def from_dict(dict_suite: dict) -> Suite:
     """Convert a test suite into an actual Suite object. This will mainly parse the conditions and expected parameters into actual Parameter objects.
-    
+
     parameters:
         dict_suite -- test suite as a dictionary
-        
+
     returnst test suite as a Suite"""
     conditions = [Parameter(id=c['id'], variable=c['variable'], condition=c['condition']) for c in dict_suite['conditions']]
     expected = [Parameter(id=c['id'], variable=c['variable'], condition=c['condition']) for c in dict_suite['expected']]

@@ -31,6 +31,7 @@ suite = {
     'cases': [{'P0': True, 'P1': True}, {'P0': False, 'P1': False}]
 }
 
+
 @pytest.fixture(scope="module")
 def sut() -> CiRAServiceImpl:
     # determine the location of the classification and labeling model
@@ -62,9 +63,10 @@ def test_labeling(sut: CiRAServiceImpl):
 def test_graph(sut: CiRAServiceImpl):
     generated_graph = sut.sentence_to_graph(sentence, labels)
     assert generated_graph == graph
-    
+
 
 @pytest.mark.integration
 def test_testsuite(sut: CiRAServiceImpl):
     generated_suite = sut.graph_to_test(graph, sentence)
     assert generated_suite == suite
+
