@@ -84,11 +84,11 @@ class CiRAServiceImpl(CiRAService):
 
     def recover_labels(self, sentence: str, labels: list) -> list[Label]:
         """Recovers a list of labels and ensures that it is in the right format. This includes (1) generating new labels if the current list is None or empty and (2) casting labels serialized to dictionaries back to actual labels.
-        
+
         parameters:
             sentence -- single, causal, natural language sentence
             labels -- list of labels
-            
+
         returns: list of actual labels representing the causal relationship implied by the sentence"""
         # if the labels are not provided, generate them
         if labels is None or len(labels) == 0:
@@ -100,7 +100,6 @@ class CiRAServiceImpl(CiRAService):
 
         # otherwise, the labels are already recovered
         return labels
-
 
     def graph_to_test(self, graph, sentence: str) -> dict:
         """Generate a test suite from a cause-effect graph.
@@ -132,10 +131,8 @@ class CiraServiceMock(CiRAService):
     def classify(self, sentence) -> tuple[bool, float]:
         return (True, 0.99)
 
-
     def sentence_to_labels(self, sentence: str) -> list[dict]:
         return [{'id': 'L1', 'name': 'Variable', 'begin': 10, 'end': 20, 'parent': None}]
-
 
     def sentence_to_graph(self, sentence: str, labels: list) -> dict:
         return {
@@ -146,7 +143,6 @@ class CiraServiceMock(CiRAService):
             'root': 'c',
             'edges': [{'origin': 'c', 'target': 'e', 'negated': False}]
         }
-
 
     def graph_to_test(self, graph, sentence: str) -> dict:
         return {
