@@ -51,7 +51,7 @@ PREFIX = "/api"
 cira: CiRAService = None
 
 
-def set_cira():
+def setup_cira():
     # determine the location of the pre-trained models
     dotenv.load_dotenv()
     model_env_suffix = '_DEV' if ('DEV_CONTAINER' in os.environ) else ''
@@ -125,5 +125,5 @@ async def create_testsuite(req: SentenceRequest):
 
 
 if __name__ == '__main__':
-    set_cira()
+    setup_cira()
     uvicorn.run(app)

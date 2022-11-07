@@ -6,7 +6,7 @@ from src import app
 from src.api.service import CiraServiceMock
 
 sentence = "If the button is pressed then the system shuts down."
-
+API_URL = 'http://localhost:8000/api/'
 
 @pytest.fixture(scope="module")
 def client() -> TestClient:
@@ -17,7 +17,7 @@ def client() -> TestClient:
 
 @pytest.mark.unit
 def test_routes(client):
-    response = client.get('http://localhost:8000/api/')
+    response = client.get(f'{API_URL}')
     assert response.status_code == 200
 
     routes = response.json()
@@ -26,7 +26,7 @@ def test_routes(client):
 
 @pytest.mark.unit
 def test_health(client):
-    response = client.get('http://localhost:8000/api/health')
+    response = client.get(f'{API_URL}health')
 
     assert response.status_code == 200
     assert response.json() == {'status': 'up'}
@@ -35,7 +35,7 @@ def test_health(client):
 @pytest.mark.unit
 def test_classification(client):
     response = client.get(
-        'http://localhost:8000/api/classify', json={"sentence": sentence})
+        f'{API_URL}classify', json={"sentence": sentence})
 
     assert response.status_code == 200
     assert response.json() == {'causal': True, 'confidence': 0.99}
@@ -44,7 +44,7 @@ def test_classification(client):
 @pytest.mark.unit
 def test_labels(client):
     response = client.get(
-        'http://localhost:8000/api/label', json={"sentence": sentence})
+        f'{API_URL}label', json={"sentence": sentence})
 
     assert response.status_code == 200
     assert response.json() == {'labels': [
@@ -54,7 +54,7 @@ def test_labels(client):
 @pytest.mark.unit
 def test_graph(client):
     response = client.get(
-        'http://localhost:8000/api/graph', json={"sentence": sentence})
+        f'{API_URL}graph', json={"sentence": sentence})
 
     assert response.status_code == 200
     assert response.json() == {'graph': {
@@ -70,7 +70,7 @@ def test_graph(client):
 @pytest.mark.unit
 def test_suite(client):
     response = client.get(
-        'http://localhost:8000/api/testsuite', json={"sentence": sentence, "graph": None})
+        f'{API_URL}testsuite', json={"sentence": sentence, "graph": None})
 
     assert response.status_code == 200
     assert response.json() == {'suite': {

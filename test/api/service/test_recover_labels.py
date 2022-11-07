@@ -21,28 +21,28 @@ def isolatedService(converter) -> CiRAServiceImpl:
 
 @pytest.mark.unit
 def test_recover_none(isolatedService):
-    labels = isolatedService.recover_labels(sentence, labels=None)
+    labels = isolatedService.get_deserialized_labels(sentence, labels=None)
     expected = [SubLabel(id='L1', name='Variable', begin=3, end=14)]
     assert labels == expected
 
 
 @pytest.mark.unit
 def test_recover_empty(isolatedService):
-    labels = isolatedService.recover_labels(sentence, labels=[])
+    labels = isolatedService.get_deserialized_labels(sentence, labels=[])
     expected = [SubLabel(id='L1', name='Variable', begin=3, end=14)]
     assert labels == expected
 
 
 @pytest.mark.unit
 def test_recover_serialized(isolatedService):
-    labels = isolatedService.recover_labels(sentence, labels=[{'id': 'L1', 'name': 'Variable', 'begin': 3, 'end': 14, 'parent': None}])
+    labels = isolatedService.get_deserialized_labels(sentence, labels=[{'id': 'L1', 'name': 'Variable', 'begin': 3, 'end': 14, 'parent': None}])
     expected = [SubLabel(id='L1', name='Variable', begin=3, end=14)]
     assert labels == expected
 
 
 @pytest.mark.unit
 def test_recover_existing(isolatedService):
-    labels = isolatedService.recover_labels(sentence, labels=[SubLabel(id='L1', name='Variable', begin=3, end=14)])
+    labels = isolatedService.get_deserialized_labels(sentence, labels=[SubLabel(id='L1', name='Variable', begin=3, end=14)])
     expected = [SubLabel(id='L1', name='Variable', begin=3, end=14)]
     assert labels == expected
 

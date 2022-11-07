@@ -4,6 +4,7 @@ import itertools
 
 from src.data.labels import EventLabel
 
+
 @dataclass
 class Node:
     id: str
@@ -45,6 +46,11 @@ class Node:
     def flatten(self) -> list['Node']:
         pass
 
+    @abstractmethod
+    def to_dict(self) -> dict:
+        pass
+
+
 @dataclass
 class EventNode(Node):
     label: EventLabel = field(default=None)
@@ -69,7 +75,8 @@ class EventNode(Node):
         returns: list of edges that are now removable"""
         removable_edges: list[Edge] = []
         if len(self.outgoing) > 0:
-            conjunction_parents = [out for out in self.outgoing if out.target.conjunction]
+            conjunction_parents = [
+                out for out in self.outgoing if out.target.conjunction]
             if len(conjunction_parents) == len(self.outgoing) or len(conjunction_parents) == 0:
                 # simple case: all parents have the same junctor type
                 surviving_parent: IntermediateNode = self.outgoing[0].target
@@ -78,24 +85,34 @@ class EventNode(Node):
                     removable_edges = removable_edges + removable
             else:
                 # complex case: apply precedence rules
-                disjunction_edge = [parent for parent in self.outgoing if not parent.target.conjunction][0]
+                disjunction_edge = [
+                    parent for parent in self.outgoing if not parent.target.conjunction][0]
                 disjunction_parent: IntermediateNode = disjunction_edge.target
-                disjunction_parent.rewire(old_child=self, new_child=conjunction_parents[0].target)
+                disjunction_parent.rewire(
+                    old_child=self, new_child=conjunction_parents[0].target)
         return removable_edges
 
     def flatten(self) -> list['Node']:
         return [self]
 
     def get_testcase_configuration(self, expected_outcome: bool) -> list[dict]:
-        return [{self.id : expected_outcome}]
+        return [{self.id: expected_outcome}]
 
     def is_equal(self, other, incoming: bool) -> bool:
         if type(other) != EventNode:
             return False
         return self.variable == other.variable and self.condition == other.condition
 
+    def to_dict(self) -> dict:
+        return {
+            'id': self.id,
+            'variable': self.variable,
+            'condition': self.condition
+        }
+
     def __repr__(self):
         return f'[{self.variable}].({self.condition})'
+
 
 @dataclass
 class IntermediateNode(Node):
@@ -138,14 +155,17 @@ class IntermediateNode(Node):
         """
         if (expected_outcome == self.conjunction):
             # for a conjunction to be evaluated to true or a disjunction to false only one configuration is possible: every incoming node has to have the same expected outcome (negated if necessary)
-            inc_configs = [inc.origin.get_testcase_configuration(expected_outcome != inc.negated) for inc in self.incoming]
+            inc_configs = [inc.origin.get_testcase_configuration(
+                expected_outcome != inc.negated) for inc in self.incoming]
             return permute_configurations(inc_configs=inc_configs)
         else:
             # for a conjunction to be evaluated to false or disjunction to true, generate one configuration per incoming edge, where all other incoming nodes are evaluated to the opposite value (conjunction: true, disjunction: false) and only the respective incoming node is evaluated to the expected value (conjunction: false, disjunction: true) (adjust for negations)
             configurations = []
             for oddone in self.incoming:
-                inc = [inc.origin.get_testcase_configuration((expected_outcome == inc.negated) if (inc != oddone) else (expected_outcome != inc.negated)) for inc in self.incoming]
-                configurations = configurations + permute_configurations(inc_configs=inc)
+                inc = [inc.origin.get_testcase_configuration((expected_outcome == inc.negated) if (
+                    inc != oddone) else (expected_outcome != inc.negated)) for inc in self.incoming]
+                configurations = configurations + \
+                    permute_configurations(inc_configs=inc)
             return configurations
 
     def is_equal(self, other, incoming: bool) -> bool:
@@ -166,19 +186,28 @@ class IntermediateNode(Node):
             return False
 
         for inc in getattr(self, to_check):
-            equivalent = [eq for eq in getattr(other, to_check) if (inc.negated == eq.negated and inc.origin.is_equal(other=eq.origin, incoming=incoming))]
+            equivalent = [eq for eq in getattr(other, to_check) if (
+                inc.negated == eq.negated and inc.origin.is_equal(other=eq.origin, incoming=incoming))]
             # if there is not exactly one equivalent for each edge in the the selected list of edges, the objects are inequal
             if len(equivalent) != 1:
                 return False
 
         return True
 
+    def to_dict(self) -> dict:
+        return {
+            'id': self.id,
+            'conjunction': self.conjunction
+        }
+
     def __repr__(self):
-        inp = [('NOT ' if input.negated else '') + str(input.origin) for input in self.incoming]
+        inp = [('NOT ' if input.negated else '') + str(input.origin)
+               for input in self.incoming]
         jstring = ' && ' if self.conjunction else ' || '
 
         result = f'({jstring.join(inp)})'
         return result
+
 
 def permute_configurations(inc_configs: list) -> list[dict]:
     """Permute an automatically generated list of individual configurations for incoming nodes of an intermediate node. Every incoming node has 1..n individual configurations (at max 2^n, where n is the number of connected leaf nodes) which are permuted with all other individual configurations
@@ -195,9 +224,11 @@ def permute_configurations(inc_configs: list) -> list[dict]:
             configurations = inc_config
         else:
             # otherwise, generate the product between the existing configurations and the individual configurations of this node (inc_config)
-            configurations = [(r[0] | r[1]) for r in itertools.product(configurations, inc_config)]
+            configurations = [(r[0] | r[1])
+                              for r in itertools.product(configurations, inc_config)]
 
     return configurations
+
 
 @dataclass
 class Edge:
@@ -205,11 +236,15 @@ class Edge:
     target: Node = field(default=None)
     negated: bool = False
 
+    def to_dict(self) -> dict:
+        return {'origin': self.origin.id, 'target': self.target.id, 'negated': self.negated}
+
     def __repr__(self):
         return f'{str(self.origin.id)} -{"~" if self.negated else "-"}-> {str(self.target.id)}'
 
     def __eq__(self, other: 'Edge') -> bool:
         return self.negated == other.negated and self.origin == other.origin and self.target == other.target
+
 
 @dataclass
 class Graph:
@@ -235,32 +270,18 @@ class Graph:
 
         returns: graph as a dictionary"""
 
-        # convert the edges into dictionaries containing only references to their nodes via the ids
-        edges = [{'origin': edge.origin.id, 'target': edge.target.id, 'negated': edge.negated} for edge in self.edges]
-
-        # convert the nodes into dictionaries
-        nodes = []
-        for node in self.nodes:
-            if type(node) == EventNode:
-                nodes.append({
-                    'id': node.id,
-                    'variable': node.variable,
-                    'condition': node.condition
-                })
-            else:
-                nodes.append({
-                    'id': node.id,
-                    'conjunction': node.conjunction
-                })
+        edges_serialized: list[dict] = [edge.to_dict() for edge in self.edges]
+        nodes_serialized: list[dict] = [node.to_dict() for node in self.nodes]
 
         return {
-            'nodes': nodes,
+            'nodes': nodes_serialized,
             'root': self.root.id,
-            'edges': edges
+            'edges': edges_serialized
         }
 
     def __repr__(self):
-        effects = " && ".join([('NOT ' if out.negated else '') + str(out.target) for out in self.root.outgoing])
+        effects = " && ".join(
+            [('NOT ' if out.negated else '') + str(out.target) for out in self.root.outgoing])
         return f'{str(self.root)} ===> {effects}'
 
     def __eq__(self, other: 'Graph') -> bool:
@@ -268,7 +289,8 @@ class Graph:
         if len(self.root.outgoing) != len(other.root.outgoing):
             return False
         for effect_edge in self.root.outgoing:
-            equivalent = [eq_edge for eq_edge in other.root.outgoing if (eq_edge.negated == effect_edge.negated and effect_edge.target.is_equal(other=eq_edge.target, incoming=False))]
+            equivalent = [eq_edge for eq_edge in other.root.outgoing if (
+                eq_edge.negated == effect_edge.negated and effect_edge.target.is_equal(other=eq_edge.target, incoming=False))]
             if len(equivalent) != 1:
                 return False
 
@@ -288,9 +310,11 @@ def from_dict(dict_graph: dict) -> Graph:
     nodes: list[Node] = []
     for node in dict_graph['nodes']:
         if 'conjunction' in node.keys():
-            nodes.append(IntermediateNode(id=node['id'], conjunction=node['conjunction']))
+            nodes.append(IntermediateNode(
+                id=node['id'], conjunction=node['conjunction']))
         else:
-            nodes.append(EventNode(id=node['id'], variable=node['variable'], condition=node['condition']))
+            nodes.append(EventNode(
+                id=node['id'], variable=node['variable'], condition=node['condition']))
 
     # recover the edges
     edges = []
@@ -319,5 +343,6 @@ def get_node_from_list(nodelist: list[Node], id: str):
     if len(candidates) == 0:
         return None
     if len(candidates) > 1:
-        print(f'Warning: searching for node {id} in {nodelist} yielded mulitple results')
+        print(
+            f'Warning: searching for node {id} in {nodelist} yielded mulitple results')
     return candidates[0]

@@ -59,9 +59,8 @@ class CiRAServiceImpl(CiRAService):
         """
         labels: list[Label] = self.cira.label(sentence)
 
-        # serialize all labels and return them
-        serialized = [label.to_dict() for label in labels]
-        return serialized
+        labels_serialized: list[dict] = [label.to_dict() for label in labels]
+        return labels_serialized
 
     def sentence_to_graph(self, sentence: str, labels: list) -> dict:
         """Generate a cause-effect-graph from a sentence and a list of labels. If the labels are not given, they will be generated.
@@ -72,17 +71,14 @@ class CiRAServiceImpl(CiRAService):
 
         returns: graph serialized to a dictionary
         """
-        # recover the list of labels if necessary
-        labels: list[Label] = self.recover_labels(sentence, labels)
+        labels_deserialized: list[Label] = self.get_deserialized_labels(sentence, labels)
 
-        # generate the graph
-        graph = self.cira.graph(sentence, labels)
+        graph: Graph = self.cira.graph(sentence, labels_deserialized)
 
-        # serialize the graph and return it
-        serialized = graph.to_dict()
-        return serialized
+        graph_serialized: dict = graph.to_dict()
+        return graph_serialized
 
-    def recover_labels(self, sentence: str, labels: list) -> list[Label]:
+    def get_deserialized_labels(self, sentence: str, labels: list) -> list[Label]:
         """Recovers a list of labels and ensures that it is in the right format. This includes (1) generating new labels if the current list is None or empty and (2) casting labels serialized to dictionaries back to actual labels.
 
         parameters:
@@ -90,15 +86,14 @@ class CiRAServiceImpl(CiRAService):
             labels -- list of labels
 
         returns: list of actual labels representing the causal relationship implied by the sentence"""
-        # if the labels are not provided, generate them
-        if labels is None or len(labels) == 0:
+        labels_missing = (labels is None) or (len(labels) == 0)
+        if labels_missing:
             return self.cira.label(sentence)
 
-        # if the labels are serialized, deserialize them
-        if type(labels[0]) == dict:
+        labels_serialized = (type(labels[0]) == dict)
+        if labels_serialized:
             return labels_from_dict(labels)
 
-        # otherwise, the labels are already recovered
         return labels
 
     def graph_to_test(self, graph, sentence: str) -> dict:
@@ -112,15 +107,14 @@ class CiRAServiceImpl(CiRAService):
         if not graph:
             graph = self.sentence_to_graph(sentence, labels=[])
 
-        # deserialize the graph in case it is not
-        if type(graph) == dict:
+        graph_serialized = (type(graph) == dict)
+        if graph_serialized:
             graph: Graph = graph_from_dict(graph)
 
         suite: Suite = self.cira.testsuite(ceg=graph)
 
-        # serialize the test suite and return it
-        serialized = suite.to_dict()
-        return serialized
+        suite_serialized: dict = suite.to_dict()
+        return suite_serialized
 
 
 class CiraServiceMock(CiRAService):
