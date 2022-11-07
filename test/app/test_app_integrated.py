@@ -37,6 +37,7 @@ suite = {
     'cases': [{'P0': True, 'P1': True}, {'P0': False, 'P1': False}]
 }
 
+
 @pytest.fixture(scope="module")
 def client() -> TestClient:
     # determine the location of the classification and labeling model
@@ -64,6 +65,7 @@ def test_classification(client):
     assert body['causal'] == True
     assert body['confidence'] > 0.9
 
+
 @pytest.mark.system
 def test_classification_empty_sentence(client):
     response = client.get(
@@ -75,12 +77,14 @@ def test_classification_empty_sentence(client):
     assert body['causal'] == False
     assert body['confidence'] > 0.9
 
+
 @pytest.mark.system
 def test_classification_missing_sentence(client):
     response = client.get(
         f'{API_URL}classify', json={})
 
     assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
+
 
 @pytest.mark.system
 def test_classification_missing_sentence_recovery(client):
@@ -93,6 +97,7 @@ def test_classification_missing_sentence_recovery(client):
         f'{API_URL}classify', json={"sentence": sentence})
     assert response.status_code == status.HTTP_200_OK
 
+
 @pytest.mark.system
 def test_labeling(client):
     response = client.get(
@@ -103,6 +108,7 @@ def test_labeling(client):
     body = response.json()
     assert body['labels'] == labels
 
+
 @pytest.mark.system
 def test_labeling_emtpy_sentence(client):
     response = client.get(
@@ -112,6 +118,7 @@ def test_labeling_emtpy_sentence(client):
 
     body = response.json()
     assert body['labels'] == []
+
 
 @pytest.mark.system
 def test_graph(client):
@@ -133,6 +140,7 @@ def test_suite(client):
 
     body = response.json()
     assert body['suite'] == suite
+
 
 @pytest.mark.system
 def test_suite_missing_graph(client):
