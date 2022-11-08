@@ -9,7 +9,7 @@ from src.data.test import Suite
 
 @pytest.fixture
 def sentence(id: str):
-    _, _, _, graph, testsuite = load_sentence(filename=f'{constants.SENTENCES_PATH}/sentence{id}.json')
+    _, _, _, graph, testsuite = load_sentence(filename=f'{constants.SENTENCES_PATH}/sentence-{id}.json')
     return {
         'graph': graph,
         'testsuite': testsuite

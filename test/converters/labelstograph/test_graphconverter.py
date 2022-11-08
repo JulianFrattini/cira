@@ -12,7 +12,7 @@ def sut() -> GraphConverter:
 
 @pytest.fixture
 def sentence(id: str):
-    _, sentence, labels, graph, _ = load_sentence(filename=f'{constants.SENTENCES_PATH}/sentence{id}.json')
+    _, sentence, labels, graph, _ = load_sentence(filename=f'{constants.SENTENCES_PATH}/sentence-{id}.json')
     return {
         'text': sentence,
         'labels': labels,

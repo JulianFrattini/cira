@@ -3,6 +3,10 @@ from typing import Tuple
 
 from src.converters.sentencetolabels.labelingconverter import connect_labels
 
+from src.data.labels import from_dict as labels_from_dict
+from src.data.graph import from_dict as graph_from_dict
+from src.data.test import from_dict as testsuite_from_dict
+
 from src.data.labels import Label, EventLabel, SubLabel
 from src.data.graph import Node, IntermediateNode, EventNode, Edge, Graph
 from src.data.test import Suite, Parameter
@@ -25,12 +29,13 @@ def load_sentence(filename: str) -> Tuple[object, str, list[Label], Graph, Suite
     with open(filename, 'r') as f:
         file = json.load(f)
 
-        sentence: str = file['text']
-        labels: list[Label] = convert_labels(labels=file['labels'])
-        graph: Graph = convert_graph(nodes=file['graph']['nodes'], edges=file['graph']['edges'])
-        testsuite: Suite = convert_testsuite(inputparams=file['testsuite']['inputparams'], 
+        sentence: str = file['sentence']
+        labels: list[Label] = labels_from_dict(serialized=file['labels'])#convert_labels(labels=file['labels'])
+        graph: Graph = graph_from_dict(dict_graph=file['graph'])#convert_graph(nodes=file['graph']['nodes'], edges=file['graph']['edges'])
+        testsuite: Suite = testsuite_from_dict(dict_suite=file['testsuite']) 
+        """convert_testsuite(inputparams=file['testsuite']['inputparams'], 
             outputparams=file['testsuite']['outputparams'],
-            cases=file['testsuite']['testcases'])
+            cases=file['testsuite']['testcases'])"""
 
         return (file, sentence, labels, graph, testsuite)
 

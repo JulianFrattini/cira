@@ -12,7 +12,7 @@ from src.util import constants
 
 @pytest.fixture
 def sentence(id: str):
-    _, sentence, labels, _, _ = load_sentence(filename=f'{constants.SENTENCES_PATH}/sentence{id}.json')
+    _, sentence, labels, _, _ = load_sentence(filename=f'{constants.SENTENCES_PATH}/sentence-{id}.json')
     return {'text': sentence, 'labels': labels}
 
 @pytest.fixture(scope="module")
