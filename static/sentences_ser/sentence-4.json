@@ -1,0 +1,231 @@
+{
+    "sentence": "If the user is over 18 years old and the current time is during working hours and the current day is a work day then the door opens.",
+    "labels": [
+        {
+            "id": "T2",
+            "name": "Cause1",
+            "begin": 3,
+            "end": 32,
+            "successor": {
+                "id": "T6",
+                "junctor": "AND"
+            },
+            "children": [
+                "T3",
+                "T4"
+            ]
+        },
+        {
+            "id": "T3",
+            "name": "Variable",
+            "begin": 3,
+            "end": 11,
+            "parent": "T2"
+        },
+        {
+            "id": "T4",
+            "name": "Condition",
+            "begin": 12,
+            "end": 32,
+            "parent": "T2"
+        },
+        {
+            "id": "T5",
+            "name": "Conjunction",
+            "begin": 33,
+            "end": 36,
+            "parent": null
+        },
+        {
+            "id": "T6",
+            "name": "Cause2",
+            "begin": 37,
+            "end": 77,
+            "successor": {
+                "id": "T11",
+                "junctor": "AND"
+            },
+            "children": [
+                "T7",
+                "T9"
+            ]
+        },
+        {
+            "id": "T7",
+            "name": "Variable",
+            "begin": 37,
+            "end": 53,
+            "parent": "T6"
+        },
+        {
+            "id": "T9",
+            "name": "Condition",
+            "begin": 54,
+            "end": 77,
+            "parent": "T6"
+        },
+        {
+            "id": "T10",
+            "name": "Conjunction",
+            "begin": 78,
+            "end": 81,
+            "parent": null
+        },
+        {
+            "id": "T11",
+            "name": "Cause3",
+            "begin": 82,
+            "end": 111,
+            "successor": {
+                "id": "T16",
+                "junctor": null
+            },
+            "children": [
+                "T13",
+                "T14"
+            ]
+        },
+        {
+            "id": "T13",
+            "name": "Variable",
+            "begin": 82,
+            "end": 97,
+            "parent": "T11"
+        },
+        {
+            "id": "T14",
+            "name": "Condition",
+            "begin": 98,
+            "end": 111,
+            "parent": "T11"
+        },
+        {
+            "id": "T16",
+            "name": "Effect1",
+            "begin": 117,
+            "end": 131,
+            "successor": null,
+            "children": [
+                "T17",
+                "T18"
+            ]
+        },
+        {
+            "id": "T17",
+            "name": "Variable",
+            "begin": 117,
+            "end": 125,
+            "parent": "T16"
+        },
+        {
+            "id": "T18",
+            "name": "Condition",
+            "begin": 126,
+            "end": 131,
+            "parent": "T16"
+        }
+    ],
+    "graph": {
+        "nodes": [
+            {
+                "id": "N1",
+                "variable": "the user",
+                "condition": "is over 18 years old"
+            },
+            {
+                "id": "N2",
+                "variable": "the current time",
+                "condition": "is during working hours"
+            },
+            {
+                "id": "N3",
+                "variable": "the current day",
+                "condition": "is a work day"
+            },
+            {
+                "id": "N4",
+                "conjunction": true
+            },
+            {
+                "id": "N5",
+                "variable": "the door",
+                "condition": "opens"
+            }
+        ],
+        "root": "N4",
+        "edges": [
+            {
+                "origin": "N1",
+                "target": "N4",
+                "negated": false
+            },
+            {
+                "origin": "N2",
+                "target": "N4",
+                "negated": false
+            },
+            {
+                "origin": "N3",
+                "target": "N4",
+                "negated": false
+            },
+            {
+                "origin": "N4",
+                "target": "N5",
+                "negated": false
+            }
+        ]
+    },
+    "testsuite": {
+        "conditions": [
+            {
+                "id": "P1",
+                "variable": "the user",
+                "condition": "is over 18 years old"
+            },
+            {
+                "id": "P2",
+                "variable": "the current time",
+                "condition": "is during working hours"
+            },
+            {
+                "id": "P3",
+                "variable": "the current day",
+                "condition": "is a work day"
+            }
+        ],
+        "expected": [
+            {
+                "id": "P4",
+                "variable": "the door",
+                "condition": "opens"
+            }
+        ],
+        "cases": [
+            {
+                "P1": true,
+                "P2": true,
+                "P3": true,
+                "P4": true
+            },
+            {
+                "P1": false,
+                "P2": true,
+                "P3": true,
+                "P4": false
+            },
+            {
+                "P1": true,
+                "P2": false,
+                "P3": true,
+                "P4": false
+            },
+            {
+                "P1": true,
+                "P2": true,
+                "P3": false,
+                "P4": false
+            }
+        ]
+    }
+}

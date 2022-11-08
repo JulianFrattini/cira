@@ -15,5 +15,33 @@
         {"id": "T5", "label": "Effect1", "begin": 22, "end": 44},
         {"id": "T6", "label": "Variable", "begin": 22, "end": 29},
         {"id": "T7", "label": "Condition", "begin": 30, "end": 44}
-    ]
+    ],
+    "graph": {
+        "nodes": [
+            {"id": 1, "variable": "a window", "condition": "opening"},
+            {"id": 2, "variable": "a sound", "condition": "will be played"}
+        ],
+        "edges": [
+            {"source": 1, "target": 2, "negate": false}
+        ]
+    },
+    "testsuite": {
+        "inputparams": [
+            {"id": 1, "text": "a window"}
+        ],
+        "outputparams": [
+            {"id": 2, "text": "a sound"}
+        ],
+        "testcases": [
+            {
+                "id": 1, 
+                "configurations": [{"inputid": 1, "text": "opening"}],
+                "outcome": [{"outputid": 2, "text": "will be played"}]
+            }, {
+                "id": 2, 
+                "configurations": [{"inputid": 1, "text": "not opening"}],
+                "outcome": [{"outputid": 2, "text": "not will be played"}]
+            }
+        ]
+    }
 }

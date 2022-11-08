@@ -1,0 +1,110 @@
+{
+    "sentence": "Users which are older than 18 years, are allowed to drive.",
+    "labels": [
+        {
+            "id": "T1",
+            "name": "Cause1",
+            "begin": 0,
+            "end": 5,
+            "successor": {
+                "id": "T3",
+                "junctor": null
+            },
+            "children": [
+                "T2"
+            ]
+        },
+        {
+            "id": "T2",
+            "name": "Variable",
+            "begin": 0,
+            "end": 5,
+            "parent": "T1"
+        },
+        {
+            "id": "T3",
+            "name": "Cause1",
+            "begin": 12,
+            "end": 35,
+            "successor": {
+                "id": "T5",
+                "junctor": null
+            },
+            "children": [
+                "T4"
+            ]
+        },
+        {
+            "id": "T4",
+            "name": "Condition",
+            "begin": 12,
+            "end": 35,
+            "parent": "T3"
+        },
+        {
+            "id": "T5",
+            "name": "Effect1",
+            "begin": 37,
+            "end": 57,
+            "successor": null,
+            "children": [
+                "T6"
+            ]
+        },
+        {
+            "id": "T6",
+            "name": "Condition",
+            "begin": 37,
+            "end": 57,
+            "parent": "T5"
+        }
+    ],
+    "graph": {
+        "nodes": [
+            {
+                "id": "N1",
+                "variable": "Users",
+                "condition": "are older than 18 years"
+            },
+            {
+                "id": "N2",
+                "variable": "Users",
+                "condition": "are allowed to drive"
+            }
+        ],
+        "root": "N1",
+        "edges": [
+            {
+                "origin": "N1",
+                "target": "N2",
+                "negated": false
+            }
+        ]
+    },
+    "testsuite": {
+        "conditions": [
+            {
+                "id": "P1",
+                "variable": "Users",
+                "condition": "are older than 18 years"
+            }
+        ],
+        "expected": [
+            {
+                "id": "P2",
+                "variable": "Users",
+                "condition": "are allowed to drive"
+            }
+        ],
+        "cases": [
+            {
+                "P1": true,
+                "P2": true
+            },
+            {
+                "P1": false,
+                "P2": false
+            }
+        ]
+    }
+}

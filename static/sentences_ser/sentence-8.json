@@ -1,0 +1,158 @@
+{
+    "sentence": "When the red button is pushed the system shuts down and energy is saved.",
+    "labels": [
+        {
+            "id": "T2",
+            "name": "Cause1",
+            "begin": 5,
+            "end": 29,
+            "successor": {
+                "id": "T5",
+                "junctor": null
+            },
+            "children": [
+                "T3",
+                "T4"
+            ]
+        },
+        {
+            "id": "T3",
+            "name": "Variable",
+            "begin": 5,
+            "end": 19,
+            "parent": "T2"
+        },
+        {
+            "id": "T4",
+            "name": "Condition",
+            "begin": 20,
+            "end": 29,
+            "parent": "T2"
+        },
+        {
+            "id": "T5",
+            "name": "Effect1",
+            "begin": 30,
+            "end": 51,
+            "successor": {
+                "id": "T9",
+                "junctor": "AND"
+            },
+            "children": [
+                "T6",
+                "T7"
+            ]
+        },
+        {
+            "id": "T6",
+            "name": "Variable",
+            "begin": 30,
+            "end": 40,
+            "parent": "T5"
+        },
+        {
+            "id": "T7",
+            "name": "Condition",
+            "begin": 41,
+            "end": 51,
+            "parent": "T5"
+        },
+        {
+            "id": "T8",
+            "name": "Conjunction",
+            "begin": 52,
+            "end": 55,
+            "parent": null
+        },
+        {
+            "id": "T9",
+            "name": "Effect2",
+            "begin": 56,
+            "end": 71,
+            "successor": null,
+            "children": [
+                "T10",
+                "T11"
+            ]
+        },
+        {
+            "id": "T10",
+            "name": "Variable",
+            "begin": 56,
+            "end": 62,
+            "parent": "T9"
+        },
+        {
+            "id": "T11",
+            "name": "Condition",
+            "begin": 63,
+            "end": 71,
+            "parent": "T9"
+        }
+    ],
+    "graph": {
+        "nodes": [
+            {
+                "id": "N1",
+                "variable": "the red button",
+                "condition": "is pushed"
+            },
+            {
+                "id": "N2",
+                "variable": "the system",
+                "condition": "shuts down"
+            },
+            {
+                "id": "N3",
+                "variable": "energy",
+                "condition": "is saved"
+            }
+        ],
+        "root": "N1",
+        "edges": [
+            {
+                "origin": "N1",
+                "target": "N2",
+                "negated": false
+            },
+            {
+                "origin": "N1",
+                "target": "N3",
+                "negated": false
+            }
+        ]
+    },
+    "testsuite": {
+        "conditions": [
+            {
+                "id": "P1",
+                "variable": "the red button",
+                "condition": "is pushed"
+            }
+        ],
+        "expected": [
+            {
+                "id": "P2",
+                "variable": "the system",
+                "condition": "shuts down"
+            },
+            {
+                "id": "P3",
+                "variable": "energy",
+                "condition": "is saved"
+            }
+        ],
+        "cases": [
+            {
+                "P1": true,
+                "P2": true,
+                "P3": true
+            },
+            {
+                "P1": false,
+                "P2": false,
+                "P3": false
+            }
+        ]
+    }
+}

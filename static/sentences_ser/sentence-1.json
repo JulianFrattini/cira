@@ -1,0 +1,106 @@
+{
+    "sentence": "When the red button is pushed the system shuts down.",
+    "labels": [
+        {
+            "id": "T2",
+            "name": "Cause1",
+            "begin": 5,
+            "end": 29,
+            "successor": {
+                "id": "T5",
+                "junctor": null
+            },
+            "children": [
+                "T3",
+                "T4"
+            ]
+        },
+        {
+            "id": "T3",
+            "name": "Variable",
+            "begin": 5,
+            "end": 19,
+            "parent": "T2"
+        },
+        {
+            "id": "T4",
+            "name": "Condition",
+            "begin": 20,
+            "end": 29,
+            "parent": "T2"
+        },
+        {
+            "id": "T5",
+            "name": "Effect1",
+            "begin": 30,
+            "end": 51,
+            "successor": null,
+            "children": [
+                "T6",
+                "T7"
+            ]
+        },
+        {
+            "id": "T6",
+            "name": "Variable",
+            "begin": 30,
+            "end": 40,
+            "parent": "T5"
+        },
+        {
+            "id": "T7",
+            "name": "Condition",
+            "begin": 41,
+            "end": 51,
+            "parent": "T5"
+        }
+    ],
+    "graph": {
+        "nodes": [
+            {
+                "id": "N1",
+                "variable": "the red button",
+                "condition": "is pushed"
+            },
+            {
+                "id": "N2",
+                "variable": "the system",
+                "condition": "shuts down"
+            }
+        ],
+        "root": "N1",
+        "edges": [
+            {
+                "origin": "N1",
+                "target": "N2",
+                "negated": false
+            }
+        ]
+    },
+    "testsuite": {
+        "conditions": [
+            {
+                "id": "P1",
+                "variable": "the red button",
+                "condition": "is pushed"
+            }
+        ],
+        "expected": [
+            {
+                "id": "P2",
+                "variable": "the system",
+                "condition": "shuts down"
+            }
+        ],
+        "cases": [
+            {
+                "P1": true,
+                "P2": true
+            },
+            {
+                "P1": false,
+                "P2": false
+            }
+        ]
+    }
+}

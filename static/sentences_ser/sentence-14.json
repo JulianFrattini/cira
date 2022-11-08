@@ -1,0 +1,269 @@
+{
+    "sentence": "Where it is impractical to substantially eliminate or reduce the hazard or where the condition of the hazard indicates additional emphasis, special operating procedures and training will be used.",
+    "labels": [
+        {
+            "id": "T2",
+            "name": "Cause1",
+            "begin": 6,
+            "end": 50,
+            "successor": {
+                "id": "T6",
+                "junctor": "OR"
+            },
+            "children": [
+                "T3",
+                "T4"
+            ]
+        },
+        {
+            "id": "T3",
+            "name": "Variable",
+            "begin": 6,
+            "end": 8,
+            "parent": "T2"
+        },
+        {
+            "id": "T4",
+            "name": "Condition",
+            "begin": 9,
+            "end": 50,
+            "parent": "T2"
+        },
+        {
+            "id": "T5",
+            "name": "Disjunction",
+            "begin": 51,
+            "end": 53,
+            "parent": null
+        },
+        {
+            "id": "T6",
+            "name": "Cause2",
+            "begin": 54,
+            "end": 71,
+            "successor": {
+                "id": "T10",
+                "junctor": "OR"
+            },
+            "children": [
+                "T7"
+            ]
+        },
+        {
+            "id": "T7",
+            "name": "Condition",
+            "begin": 54,
+            "end": 71,
+            "parent": "T6"
+        },
+        {
+            "id": "T8",
+            "name": "Disjunction",
+            "begin": 72,
+            "end": 74,
+            "parent": null
+        },
+        {
+            "id": "T10",
+            "name": "Cause3",
+            "begin": 81,
+            "end": 138,
+            "successor": {
+                "id": "T13",
+                "junctor": null
+            },
+            "children": [
+                "T11",
+                "T12"
+            ]
+        },
+        {
+            "id": "T11",
+            "name": "Variable",
+            "begin": 81,
+            "end": 108,
+            "parent": "T10"
+        },
+        {
+            "id": "T12",
+            "name": "Condition",
+            "begin": 109,
+            "end": 138,
+            "parent": "T10"
+        },
+        {
+            "id": "T13",
+            "name": "Effect1",
+            "begin": 140,
+            "end": 168,
+            "successor": {
+                "id": "T16",
+                "junctor": "AND"
+            },
+            "children": [
+                "T14"
+            ]
+        },
+        {
+            "id": "T14",
+            "name": "Variable",
+            "begin": 140,
+            "end": 168,
+            "parent": "T13"
+        },
+        {
+            "id": "T15",
+            "name": "Conjunction",
+            "begin": 169,
+            "end": 172,
+            "parent": null
+        },
+        {
+            "id": "T16",
+            "name": "Effect2",
+            "begin": 173,
+            "end": 194,
+            "successor": null,
+            "children": [
+                "T17",
+                "T18"
+            ]
+        },
+        {
+            "id": "T17",
+            "name": "Variable",
+            "begin": 173,
+            "end": 181,
+            "parent": "T16"
+        },
+        {
+            "id": "T18",
+            "name": "Condition",
+            "begin": 182,
+            "end": 194,
+            "parent": "T16"
+        }
+    ],
+    "graph": {
+        "nodes": [
+            {
+                "id": "N1",
+                "variable": "it",
+                "condition": "is impractical to substantially eliminate"
+            },
+            {
+                "id": "N2",
+                "variable": "it",
+                "condition": "reduce the hazard"
+            },
+            {
+                "id": "N3",
+                "variable": "the condition of the hazard",
+                "condition": "indicates additional emphasis"
+            },
+            {
+                "id": "N4",
+                "conjunction": false
+            },
+            {
+                "id": "N5",
+                "variable": "special operating procedures",
+                "condition": "will be used"
+            },
+            {
+                "id": "N6",
+                "variable": "training",
+                "condition": "will be used"
+            }
+        ],
+        "root": "N4",
+        "edges": [
+            {
+                "origin": "N1",
+                "target": "N4",
+                "negated": false
+            },
+            {
+                "origin": "N2",
+                "target": "N4",
+                "negated": false
+            },
+            {
+                "origin": "N3",
+                "target": "N4",
+                "negated": false
+            },
+            {
+                "origin": "N4",
+                "target": "N5",
+                "negated": false
+            },
+            {
+                "origin": "N4",
+                "target": "N6",
+                "negated": false
+            }
+        ]
+    },
+    "testsuite": {
+        "conditions": [
+            {
+                "id": "P1",
+                "variable": "it",
+                "condition": "is impractical to substantially eliminate"
+            },
+            {
+                "id": "P2",
+                "variable": "it",
+                "condition": "reduce the hazard"
+            },
+            {
+                "id": "P3",
+                "variable": "the condition of the hazard",
+                "condition": "indicates additional emphasis"
+            }
+        ],
+        "expected": [
+            {
+                "id": "P4",
+                "variable": "special operating procedures",
+                "condition": "will be used"
+            },
+            {
+                "id": "P5",
+                "variable": "training",
+                "condition": "will be used"
+            }
+        ],
+        "cases": [
+            {
+                "P1": false,
+                "P2": false,
+                "P3": false,
+                "P4": false,
+                "P5": false
+            },
+            {
+                "P1": true,
+                "P2": false,
+                "P3": false,
+                "P4": true,
+                "P5": true
+            },
+            {
+                "P1": false,
+                "P2": true,
+                "P3": false,
+                "P4": true,
+                "P5": true
+            },
+            {
+                "P1": false,
+                "P2": false,
+                "P3": true,
+                "P4": true,
+                "P5": true
+            }
+        ]
+    }
+}
