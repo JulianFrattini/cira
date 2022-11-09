@@ -1,0 +1,172 @@
+{
+    "sentence": "When the red button is pushed or the power fails the system shuts down.",
+    "labels": [
+        {
+            "id": "T2",
+            "name": "Cause1",
+            "begin": 5,
+            "end": 29,
+            "successor": {
+                "id": "T6",
+                "junctor": "OR"
+            },
+            "children": [
+                "T3",
+                "T4"
+            ]
+        },
+        {
+            "id": "T3",
+            "name": "Variable",
+            "begin": 5,
+            "end": 19,
+            "parent": "T2"
+        },
+        {
+            "id": "T4",
+            "name": "Condition",
+            "begin": 20,
+            "end": 29,
+            "parent": "T2"
+        },
+        {
+            "id": "T5",
+            "name": "Disjunction",
+            "begin": 30,
+            "end": 32,
+            "parent": null
+        },
+        {
+            "id": "T6",
+            "name": "Cause2",
+            "begin": 33,
+            "end": 48,
+            "successor": {
+                "id": "T9",
+                "junctor": null
+            },
+            "children": [
+                "T7",
+                "T8"
+            ]
+        },
+        {
+            "id": "T7",
+            "name": "Variable",
+            "begin": 33,
+            "end": 42,
+            "parent": "T6"
+        },
+        {
+            "id": "T8",
+            "name": "Condition",
+            "begin": 43,
+            "end": 48,
+            "parent": "T6"
+        },
+        {
+            "id": "T9",
+            "name": "Effect1",
+            "begin": 49,
+            "end": 70,
+            "successor": null,
+            "children": [
+                "T10",
+                "T12"
+            ]
+        },
+        {
+            "id": "T10",
+            "name": "Variable",
+            "begin": 49,
+            "end": 59,
+            "parent": "T9"
+        },
+        {
+            "id": "T12",
+            "name": "Condition",
+            "begin": 60,
+            "end": 70,
+            "parent": "T9"
+        }
+    ],
+    "graph": {
+        "nodes": [
+            {
+                "id": "N1",
+                "variable": "the red button",
+                "condition": "is pushed"
+            },
+            {
+                "id": "N2",
+                "variable": "the power",
+                "condition": "fails"
+            },
+            {
+                "id": "N3",
+                "conjunction": false
+            },
+            {
+                "id": "N4",
+                "variable": "the system",
+                "condition": "shuts down"
+            }
+        ],
+        "root": "N3",
+        "edges": [
+            {
+                "origin": "N1",
+                "target": "N3",
+                "negated": false
+            },
+            {
+                "origin": "N2",
+                "target": "N3",
+                "negated": false
+            },
+            {
+                "origin": "N3",
+                "target": "N4",
+                "negated": false
+            }
+        ]
+    },
+    "testsuite": {
+        "conditions": [
+            {
+                "id": "P1",
+                "variable": "the red button",
+                "condition": "is pushed"
+            },
+            {
+                "id": "P2",
+                "variable": "the power",
+                "condition": "fails"
+            }
+        ],
+        "expected": [
+            {
+                "id": "P3",
+                "variable": "the system",
+                "condition": "shuts down"
+            }
+        ],
+        "cases": [
+            {
+                "P1": false,
+                "P2": false,
+                "P3": false
+            },
+            {
+                "P1": true,
+                "P2": false,
+                "P3": true
+            },
+            {
+                "P1": false,
+                "P2": true,
+                "P3": true
+            }
+        ]
+    }
+}

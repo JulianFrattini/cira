@@ -1,0 +1,309 @@
+{
+    "sentence": "If an error is present and the debugger is active or an exception is triggered then a log entry will be created and the system will not accept further inputs.",
+    "labels": [
+        {
+            "id": "T2",
+            "name": "Cause1",
+            "begin": 3,
+            "end": 22,
+            "successor": {
+                "id": "T6",
+                "junctor": "AND"
+            },
+            "children": [
+                "T3",
+                "T4"
+            ]
+        },
+        {
+            "id": "T3",
+            "name": "Variable",
+            "begin": 3,
+            "end": 11,
+            "parent": "T2"
+        },
+        {
+            "id": "T4",
+            "name": "Condition",
+            "begin": 12,
+            "end": 22,
+            "parent": "T2"
+        },
+        {
+            "id": "T5",
+            "name": "Conjunction",
+            "begin": 23,
+            "end": 26,
+            "parent": null
+        },
+        {
+            "id": "T6",
+            "name": "Cause2",
+            "begin": 27,
+            "end": 49,
+            "successor": {
+                "id": "T10",
+                "junctor": "OR"
+            },
+            "children": [
+                "T7",
+                "T8"
+            ]
+        },
+        {
+            "id": "T7",
+            "name": "Variable",
+            "begin": 27,
+            "end": 39,
+            "parent": "T6"
+        },
+        {
+            "id": "T8",
+            "name": "Condition",
+            "begin": 40,
+            "end": 49,
+            "parent": "T6"
+        },
+        {
+            "id": "T9",
+            "name": "Disjunction",
+            "begin": 50,
+            "end": 52,
+            "parent": null
+        },
+        {
+            "id": "T10",
+            "name": "Cause3",
+            "begin": 53,
+            "end": 78,
+            "successor": {
+                "id": "T14",
+                "junctor": null
+            },
+            "children": [
+                "T11",
+                "T12"
+            ]
+        },
+        {
+            "id": "T11",
+            "name": "Variable",
+            "begin": 53,
+            "end": 65,
+            "parent": "T10"
+        },
+        {
+            "id": "T12",
+            "name": "Condition",
+            "begin": 66,
+            "end": 78,
+            "parent": "T10"
+        },
+        {
+            "id": "T14",
+            "name": "Effect1",
+            "begin": 84,
+            "end": 111,
+            "successor": {
+                "id": "T18",
+                "junctor": "AND"
+            },
+            "children": [
+                "T15",
+                "T16"
+            ]
+        },
+        {
+            "id": "T15",
+            "name": "Variable",
+            "begin": 84,
+            "end": 95,
+            "parent": "T14"
+        },
+        {
+            "id": "T16",
+            "name": "Condition",
+            "begin": 96,
+            "end": 111,
+            "parent": "T14"
+        },
+        {
+            "id": "T17",
+            "name": "Conjunction",
+            "begin": 112,
+            "end": 115,
+            "parent": null
+        },
+        {
+            "id": "T18",
+            "name": "Effect2",
+            "begin": 116,
+            "end": 157,
+            "successor": null,
+            "children": [
+                "T19",
+                "T20",
+                "T21"
+            ]
+        },
+        {
+            "id": "T19",
+            "name": "Variable",
+            "begin": 116,
+            "end": 126,
+            "parent": "T18"
+        },
+        {
+            "id": "T20",
+            "name": "Negation",
+            "begin": 127,
+            "end": 135,
+            "parent": "T18"
+        },
+        {
+            "id": "T21",
+            "name": "Condition",
+            "begin": 136,
+            "end": 157,
+            "parent": "T18"
+        }
+    ],
+    "graph": {
+        "nodes": [
+            {
+                "id": "N1",
+                "variable": "an error",
+                "condition": "is present"
+            },
+            {
+                "id": "N2",
+                "variable": "the debugger",
+                "condition": "is active"
+            },
+            {
+                "id": "N3",
+                "conjunction": true
+            },
+            {
+                "id": "N4",
+                "variable": "an exception",
+                "condition": "is triggered"
+            },
+            {
+                "id": "N5",
+                "conjunction": false
+            },
+            {
+                "id": "N6",
+                "variable": "a log entry",
+                "condition": "will be created"
+            },
+            {
+                "id": "N7",
+                "variable": "the system",
+                "condition": "accept further inputs"
+            }
+        ],
+        "root": "N5",
+        "edges": [
+            {
+                "origin": "N1",
+                "target": "N3",
+                "negated": false
+            },
+            {
+                "origin": "N2",
+                "target": "N3",
+                "negated": false
+            },
+            {
+                "origin": "N3",
+                "target": "N5",
+                "negated": false
+            },
+            {
+                "origin": "N4",
+                "target": "N5",
+                "negated": false
+            },
+            {
+                "origin": "N5",
+                "target": "N6",
+                "negated": false
+            },
+            {
+                "origin": "N5",
+                "target": "N7",
+                "negated": true
+            }
+        ]
+    },
+    "testsuite": {
+        "conditions": [
+            {
+                "id": "P1",
+                "variable": "an error",
+                "condition": "is present"
+            },
+            {
+                "id": "P2",
+                "variable": "the debugger",
+                "condition": "is active"
+            },
+            {
+                "id": "P3",
+                "variable": "an exception",
+                "condition": "is triggered"
+            }
+        ],
+        "expected": [
+            {
+                "id": "P4",
+                "variable": "a log entry",
+                "condition": "will be created"
+            },
+            {
+                "id": "P5",
+                "variable": "the system",
+                "condition": "accept further inputs"
+            }
+        ],
+        "cases": [
+            {
+                "P1": true,
+                "P2": true,
+                "P3": false,
+                "P4": true,
+                "P5": false
+            },
+            {
+                "P1": false,
+                "P2": true,
+                "P3": true,
+                "P4": true,
+                "P5": false
+            },
+            {
+                "P1": true,
+                "P2": false,
+                "P3": true,
+                "P4": true,
+                "P5": false
+            },
+            {
+                "P1": false,
+                "P2": true,
+                "P3": false,
+                "P4": false,
+                "P5": true
+            },
+            {
+                "P1": true,
+                "P2": false,
+                "P3": false,
+                "P4": false,
+                "P5": true
+            }
+        ]
+    }
+}

@@ -1,0 +1,253 @@
+{
+    "sentence": "Unless the director gives the orders and the red button is pressed or the power fails then the system remains active.",
+    "labels": [
+        {
+            "id": "T2",
+            "name": "Negation",
+            "begin": 0,
+            "end": 6,
+            "parent": null
+        },
+        {
+            "id": "T3",
+            "name": "Cause1",
+            "begin": 7,
+            "end": 36,
+            "successor": {
+                "id": "T7",
+                "junctor": "AND"
+            },
+            "children": [
+                "T4",
+                "T5"
+            ]
+        },
+        {
+            "id": "T4",
+            "name": "Variable",
+            "begin": 7,
+            "end": 19,
+            "parent": "T3"
+        },
+        {
+            "id": "T5",
+            "name": "Condition",
+            "begin": 20,
+            "end": 36,
+            "parent": "T3"
+        },
+        {
+            "id": "T6",
+            "name": "Conjunction",
+            "begin": 37,
+            "end": 40,
+            "parent": null
+        },
+        {
+            "id": "T7",
+            "name": "Cause2",
+            "begin": 41,
+            "end": 66,
+            "successor": {
+                "id": "T11",
+                "junctor": "OR"
+            },
+            "children": [
+                "T8",
+                "T9"
+            ]
+        },
+        {
+            "id": "T8",
+            "name": "Variable",
+            "begin": 41,
+            "end": 55,
+            "parent": "T7"
+        },
+        {
+            "id": "T9",
+            "name": "Condition",
+            "begin": 56,
+            "end": 66,
+            "parent": "T7"
+        },
+        {
+            "id": "T10",
+            "name": "Disjunction",
+            "begin": 67,
+            "end": 69,
+            "parent": null
+        },
+        {
+            "id": "T11",
+            "name": "Cause3",
+            "begin": 70,
+            "end": 85,
+            "successor": {
+                "id": "T15",
+                "junctor": null
+            },
+            "children": [
+                "T12",
+                "T13"
+            ]
+        },
+        {
+            "id": "T12",
+            "name": "Variable",
+            "begin": 70,
+            "end": 79,
+            "parent": "T11"
+        },
+        {
+            "id": "T13",
+            "name": "Condition",
+            "begin": 80,
+            "end": 85,
+            "parent": "T11"
+        },
+        {
+            "id": "T15",
+            "name": "Effect1",
+            "begin": 91,
+            "end": 116,
+            "successor": null,
+            "children": [
+                "T16",
+                "T17"
+            ]
+        },
+        {
+            "id": "T16",
+            "name": "Variable",
+            "begin": 91,
+            "end": 101,
+            "parent": "T15"
+        },
+        {
+            "id": "T17",
+            "name": "Condition",
+            "begin": 102,
+            "end": 116,
+            "parent": "T15"
+        }
+    ],
+    "graph": {
+        "nodes": [
+            {
+                "id": "N1",
+                "variable": "the director",
+                "condition": "gives the orders"
+            },
+            {
+                "id": "N2",
+                "variable": "the red button",
+                "condition": "is pressed"
+            },
+            {
+                "id": "N3",
+                "conjunction": true
+            },
+            {
+                "id": "N4",
+                "variable": "the power",
+                "condition": "fails"
+            },
+            {
+                "id": "N5",
+                "conjunction": false
+            },
+            {
+                "id": "N6",
+                "variable": "the system",
+                "condition": "remains active"
+            }
+        ],
+        "root": "N5",
+        "edges": [
+            {
+                "origin": "N1",
+                "target": "N3",
+                "negated": true
+            },
+            {
+                "origin": "N2",
+                "target": "N3",
+                "negated": true
+            },
+            {
+                "origin": "N3",
+                "target": "N5",
+                "negated": false
+            },
+            {
+                "origin": "N4",
+                "target": "N5",
+                "negated": false
+            },
+            {
+                "origin": "N5",
+                "target": "N6",
+                "negated": false
+            }
+        ]
+    },
+    "testsuite": {
+        "conditions": [
+            {
+                "id": "P1",
+                "variable": "the director",
+                "condition": "gives the orders"
+            },
+            {
+                "id": "P2",
+                "variable": "the red button",
+                "condition": "is pressed"
+            },
+            {
+                "id": "P3",
+                "variable": "the power",
+                "condition": "fails"
+            }
+        ],
+        "expected": [
+            {
+                "id": "P4",
+                "variable": "the system",
+                "condition": "remains active"
+            }
+        ],
+        "cases": [
+            {
+                "P1": false,
+                "P2": true,
+                "P3": false,
+                "P4": true
+            },
+            {
+                "P1": true,
+                "P2": false,
+                "P3": false,
+                "P4": true
+            },
+            {
+                "P1": true,
+                "P2": true,
+                "P3": false,
+                "P4": false
+            },
+            {
+                "P1": false,
+                "P2": true,
+                "P3": true,
+                "P4": false
+            },
+            {
+                "P1": true,
+                "P2": false,
+                "P3": true,
+                "P4": false
+            }
+        ]
+    }
+}

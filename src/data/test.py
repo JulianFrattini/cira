@@ -25,6 +25,12 @@ class Suite:
         returns: test suite as a dictionary"""
         return asdict(self)
 
+    def get_parameter(self, id: str) -> Parameter:
+        candidates = [parameter for parameter in (self.conditions+self.expected) if parameter.id==id]
+        if len(candidates) > 0:
+            return candidates[0]
+        return None
+
     def __eq__(self, other: 'Suite') -> bool:
         # maintain a map which associates the parameters of one test suite to another
         eq_map = {}

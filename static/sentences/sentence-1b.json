@@ -1,0 +1,114 @@
+{
+    "sentence": "When the green button is pushed the system does not shut down.",
+    "labels": [
+        {
+            "id": "T2",
+            "name": "Cause1",
+            "begin": 5,
+            "end": 31,
+            "successor": {
+                "id": "T5",
+                "junctor": null
+            },
+            "children": [
+                "T3",
+                "T4"
+            ]
+        },
+        {
+            "id": "T3",
+            "name": "Variable",
+            "begin": 5,
+            "end": 21,
+            "parent": "T2"
+        },
+        {
+            "id": "T4",
+            "name": "Condition",
+            "begin": 22,
+            "end": 31,
+            "parent": "T2"
+        },
+        {
+            "id": "T5",
+            "name": "Effect1",
+            "begin": 32,
+            "end": 61,
+            "successor": null,
+            "children": [
+                "T6",
+                "T7",
+                "T8"
+            ]
+        },
+        {
+            "id": "T6",
+            "name": "Variable",
+            "begin": 32,
+            "end": 42,
+            "parent": "T5"
+        },
+        {
+            "id": "T7",
+            "name": "Negation",
+            "begin": 43,
+            "end": 51,
+            "parent": "T5"
+        },
+        {
+            "id": "T8",
+            "name": "Condition",
+            "begin": 52,
+            "end": 61,
+            "parent": "T5"
+        }
+    ],
+    "graph": {
+        "nodes": [
+            {
+                "id": "N1",
+                "variable": "the green button",
+                "condition": "is pushed"
+            },
+            {
+                "id": "N2",
+                "variable": "the system",
+                "condition": "shut down"
+            }
+        ],
+        "root": "N1",
+        "edges": [
+            {
+                "origin": "N1",
+                "target": "N2",
+                "negated": true
+            }
+        ]
+    },
+    "testsuite": {
+        "conditions": [
+            {
+                "id": "P1",
+                "variable": "the green button",
+                "condition": "is pushed"
+            }
+        ],
+        "expected": [
+            {
+                "id": "P2",
+                "variable": "the system",
+                "condition": "shut down"
+            }
+        ],
+        "cases": [
+            {
+                "P1": true,
+                "P2": false
+            },
+            {
+                "P1": false,
+                "P2": true
+            }
+        ]
+    }
+}

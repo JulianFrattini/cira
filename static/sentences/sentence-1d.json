@@ -1,0 +1,106 @@
+{
+    "sentence": "When opening a window a sound will be played.",
+    "labels": [
+        {
+            "id": "T2",
+            "name": "Cause1",
+            "begin": 5,
+            "end": 21,
+            "successor": {
+                "id": "T5",
+                "junctor": null
+            },
+            "children": [
+                "T3",
+                "T4"
+            ]
+        },
+        {
+            "id": "T3",
+            "name": "Condition",
+            "begin": 5,
+            "end": 12,
+            "parent": "T2"
+        },
+        {
+            "id": "T4",
+            "name": "Variable",
+            "begin": 13,
+            "end": 21,
+            "parent": "T2"
+        },
+        {
+            "id": "T5",
+            "name": "Effect1",
+            "begin": 22,
+            "end": 44,
+            "successor": null,
+            "children": [
+                "T6",
+                "T7"
+            ]
+        },
+        {
+            "id": "T6",
+            "name": "Variable",
+            "begin": 22,
+            "end": 29,
+            "parent": "T5"
+        },
+        {
+            "id": "T7",
+            "name": "Condition",
+            "begin": 30,
+            "end": 44,
+            "parent": "T5"
+        }
+    ],
+    "graph": {
+        "nodes": [
+            {
+                "id": "N1",
+                "variable": "a window",
+                "condition": "opening"
+            },
+            {
+                "id": "N2",
+                "variable": "a sound",
+                "condition": "will be played"
+            }
+        ],
+        "root": "N1",
+        "edges": [
+            {
+                "origin": "N1",
+                "target": "N2",
+                "negated": false
+            }
+        ]
+    },
+    "testsuite": {
+        "conditions": [
+            {
+                "id": "P1",
+                "variable": "a window",
+                "condition": "opening"
+            }
+        ],
+        "expected": [
+            {
+                "id": "P2",
+                "variable": "a sound",
+                "condition": "will be played"
+            }
+        ],
+        "cases": [
+            {
+                "P1": true,
+                "P2": true
+            },
+            {
+                "P1": false,
+                "P2": false
+            }
+        ]
+    }
+}

@@ -1,0 +1,246 @@
+{
+    "sentence": "If an error is present or the debugger is active and an exception is triggered then a log entry will be created.",
+    "labels": [
+        {
+            "id": "T2",
+            "name": "Cause1",
+            "begin": 3,
+            "end": 22,
+            "successor": {
+                "id": "T6",
+                "junctor": "OR"
+            },
+            "children": [
+                "T3",
+                "T4"
+            ]
+        },
+        {
+            "id": "T3",
+            "name": "Variable",
+            "begin": 3,
+            "end": 11,
+            "parent": "T2"
+        },
+        {
+            "id": "T4",
+            "name": "Condition",
+            "begin": 12,
+            "end": 22,
+            "parent": "T2"
+        },
+        {
+            "id": "T5",
+            "name": "Disjunction",
+            "begin": 23,
+            "end": 25,
+            "parent": null
+        },
+        {
+            "id": "T6",
+            "name": "Cause2",
+            "begin": 26,
+            "end": 48,
+            "successor": {
+                "id": "T10",
+                "junctor": "AND"
+            },
+            "children": [
+                "T7",
+                "T8"
+            ]
+        },
+        {
+            "id": "T7",
+            "name": "Variable",
+            "begin": 26,
+            "end": 38,
+            "parent": "T6"
+        },
+        {
+            "id": "T8",
+            "name": "Condition",
+            "begin": 39,
+            "end": 48,
+            "parent": "T6"
+        },
+        {
+            "id": "T9",
+            "name": "Conjunction",
+            "begin": 49,
+            "end": 52,
+            "parent": null
+        },
+        {
+            "id": "T10",
+            "name": "Cause3",
+            "begin": 53,
+            "end": 78,
+            "successor": {
+                "id": "T14",
+                "junctor": null
+            },
+            "children": [
+                "T11",
+                "T12"
+            ]
+        },
+        {
+            "id": "T11",
+            "name": "Variable",
+            "begin": 53,
+            "end": 65,
+            "parent": "T10"
+        },
+        {
+            "id": "T12",
+            "name": "Condition",
+            "begin": 66,
+            "end": 78,
+            "parent": "T10"
+        },
+        {
+            "id": "T14",
+            "name": "Effect1",
+            "begin": 84,
+            "end": 111,
+            "successor": null,
+            "children": [
+                "T15",
+                "T16"
+            ]
+        },
+        {
+            "id": "T15",
+            "name": "Variable",
+            "begin": 84,
+            "end": 95,
+            "parent": "T14"
+        },
+        {
+            "id": "T16",
+            "name": "Condition",
+            "begin": 96,
+            "end": 111,
+            "parent": "T14"
+        }
+    ],
+    "graph": {
+        "nodes": [
+            {
+                "id": "N1",
+                "variable": "the debugger",
+                "condition": "is active"
+            },
+            {
+                "id": "N2",
+                "variable": "an exception",
+                "condition": "is triggered"
+            },
+            {
+                "id": "N3",
+                "conjunction": true
+            },
+            {
+                "id": "N4",
+                "variable": "an error",
+                "condition": "is present"
+            },
+            {
+                "id": "N5",
+                "conjunction": false
+            },
+            {
+                "id": "N6",
+                "variable": "a log entry",
+                "condition": "will be created"
+            }
+        ],
+        "root": "N5",
+        "edges": [
+            {
+                "origin": "N1",
+                "target": "N3",
+                "negated": false
+            },
+            {
+                "origin": "N2",
+                "target": "N3",
+                "negated": false
+            },
+            {
+                "origin": "N3",
+                "target": "N5",
+                "negated": false
+            },
+            {
+                "origin": "N4",
+                "target": "N5",
+                "negated": false
+            },
+            {
+                "origin": "N5",
+                "target": "N6",
+                "negated": false
+            }
+        ]
+    },
+    "testsuite": {
+        "conditions": [
+            {
+                "id": "P1",
+                "variable": "an error",
+                "condition": "is present"
+            },
+            {
+                "id": "P2",
+                "variable": "the debugger",
+                "condition": "is active"
+            },
+            {
+                "id": "P3",
+                "variable": "an exception",
+                "condition": "is triggered"
+            }
+        ],
+        "expected": [
+            {
+                "id": "P4",
+                "variable": "a log entry",
+                "condition": "will be created"
+            }
+        ],
+        "cases": [
+            {
+                "P1": true,
+                "P2": false,
+                "P3": true,
+                "P4": true
+            },
+            {
+                "P1": true,
+                "P2": true,
+                "P3": false,
+                "P4": true
+            },
+            {
+                "P1": false,
+                "P2": true,
+                "P3": true,
+                "P4": true
+            },
+            {
+                "P1": false,
+                "P2": false,
+                "P3": true,
+                "P4": false
+            },
+            {
+                "P1": false,
+                "P2": true,
+                "P3": false,
+                "P4": false
+            }
+        ]
+    }
+}

@@ -1,0 +1,179 @@
+{
+    "sentence": "Unless the red button is pushed and the power fails the system continues to operate.",
+    "labels": [
+        {
+            "id": "T2",
+            "name": "Negation",
+            "begin": 0,
+            "end": 6,
+            "parent": null
+        },
+        {
+            "id": "T3",
+            "name": "Cause1",
+            "begin": 7,
+            "end": 31,
+            "successor": {
+                "id": "T7",
+                "junctor": "AND"
+            },
+            "children": [
+                "T4",
+                "T5"
+            ]
+        },
+        {
+            "id": "T4",
+            "name": "Variable",
+            "begin": 7,
+            "end": 21,
+            "parent": "T3"
+        },
+        {
+            "id": "T5",
+            "name": "Condition",
+            "begin": 22,
+            "end": 31,
+            "parent": "T3"
+        },
+        {
+            "id": "T6",
+            "name": "Conjunction",
+            "begin": 32,
+            "end": 35,
+            "parent": null
+        },
+        {
+            "id": "T7",
+            "name": "Cause2",
+            "begin": 36,
+            "end": 51,
+            "successor": {
+                "id": "T10",
+                "junctor": null
+            },
+            "children": [
+                "T8",
+                "T9"
+            ]
+        },
+        {
+            "id": "T8",
+            "name": "Variable",
+            "begin": 36,
+            "end": 45,
+            "parent": "T7"
+        },
+        {
+            "id": "T9",
+            "name": "Condition",
+            "begin": 46,
+            "end": 51,
+            "parent": "T7"
+        },
+        {
+            "id": "T10",
+            "name": "Effect1",
+            "begin": 52,
+            "end": 83,
+            "successor": null,
+            "children": [
+                "T11",
+                "T12"
+            ]
+        },
+        {
+            "id": "T11",
+            "name": "Variable",
+            "begin": 52,
+            "end": 62,
+            "parent": "T10"
+        },
+        {
+            "id": "T12",
+            "name": "Condition",
+            "begin": 63,
+            "end": 83,
+            "parent": "T10"
+        }
+    ],
+    "graph": {
+        "nodes": [
+            {
+                "id": "N1",
+                "variable": "the red button",
+                "condition": "is pushed"
+            },
+            {
+                "id": "N2",
+                "variable": "the power",
+                "condition": "fails"
+            },
+            {
+                "id": "N3",
+                "conjunction": true
+            },
+            {
+                "id": "N4",
+                "variable": "the system",
+                "condition": "continues to operate"
+            }
+        ],
+        "root": "N3",
+        "edges": [
+            {
+                "origin": "N1",
+                "target": "N3",
+                "negated": true
+            },
+            {
+                "origin": "N2",
+                "target": "N3",
+                "negated": true
+            },
+            {
+                "origin": "N3",
+                "target": "N4",
+                "negated": false
+            }
+        ]
+    },
+    "testsuite": {
+        "conditions": [
+            {
+                "id": "P1",
+                "variable": "the red button",
+                "condition": "is pushed"
+            },
+            {
+                "id": "P2",
+                "variable": "the power",
+                "condition": "fails"
+            }
+        ],
+        "expected": [
+            {
+                "id": "P3",
+                "variable": "the system",
+                "condition": "continues to operate"
+            }
+        ],
+        "cases": [
+            {
+                "P1": false,
+                "P2": false,
+                "P3": true
+            },
+            {
+                "P1": true,
+                "P2": false,
+                "P3": false
+            },
+            {
+                "P1": false,
+                "P2": true,
+                "P3": false
+            }
+        ]
+    }
+}
