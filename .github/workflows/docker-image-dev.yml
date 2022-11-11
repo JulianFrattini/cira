@@ -7,7 +7,7 @@
 # To get a newer version, you will need to update the SHA.
 # You can also reference a tag or branch, but the action may change without warning.
 
-name: Create and publish a Docker image
+name: Build and push Docker dev image
 
 on:
   workflow_dispatch:
@@ -26,6 +26,15 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
+
+      - name: Cache model files
+        id: cache-models
+        uses: actions/cache@v3
+        with:
+          path: model/
+          key: zenodo-record-7186287
+          restore-keys: |
+            zenodo-record-7186287
 
       - name: Download model files
         run: |
