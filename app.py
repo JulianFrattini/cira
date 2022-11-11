@@ -52,6 +52,8 @@ cira: CiRAService = None
 
 
 def setup_cira():
+    global cira
+
     # determine the location of the pre-trained models
     dotenv.load_dotenv()
     model_env_suffix = '_DEV' if ('DEV_CONTAINER' in os.environ) else ''
@@ -59,10 +61,7 @@ def setup_cira():
     model_labeling = os.environ[f'MODEL_LABELING{model_env_suffix}']
 
     # generate a CiRA service implementation
-    print(model_env_suffix)
-    print(model_classification)
     cira = CiRAServiceImpl(model_classification, model_labeling)
-    print(cira)
 
 
 class SentenceRequest(BaseModel):
