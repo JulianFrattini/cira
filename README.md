@@ -48,7 +48,10 @@ To use the CiRA pipeline, instantiate a `src.cira.CiRAConverter` object and spec
 
 ### REST API
 
-The CiRA functionality can also be provided by a single Docker container based on `Dockerfile`. Create the image and run the container via `docker-compose up --build`. The functionality can then be accessed at `localhost:8080`. Check `localhost:8080\docs` while the container is running to access the specification of the API.
+The CiRA functionality can also be provided by a single Docker container based on `Dockerfile`.
+Build and run the Docker container via `docker compose up`.
+CiRA's functionality can then be accessed at `localhost:8080`.
+Check `localhost:8080\docs` while the container is running to access the specification of the API.
 
 ### Building the cira-dev base image
 
