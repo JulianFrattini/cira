@@ -59,7 +59,10 @@ def setup_cira():
     model_labeling = os.environ[f'MODEL_LABELING{model_env_suffix}']
 
     # generate a CiRA service implementation
+    print(model_env_suffix)
+    print(model_classification)
     cira = CiRAServiceImpl(model_classification, model_labeling)
+    print(cira)
 
 
 class SentenceRequest(BaseModel):
@@ -101,7 +104,6 @@ def health():
 
 @app.get(PREFIX + '/classify', response_model=ClassificationResponse, tags=['classify'])
 async def create_classification(req: SentenceRequest):
-    print(cira)
     causal, confidence = cira.classify(req.sentence)
     return ClassificationResponse(causal=causal, confidence=confidence)
 
@@ -126,4 +128,4 @@ async def create_testsuite(req: SentenceRequest):
 
 if __name__ == '__main__':
     setup_cira()
-    uvicorn.run(app)
+    uvicorn.run(app, host='0.0.0.0')

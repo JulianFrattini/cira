@@ -1,0 +1,8 @@
+version: "3.7"
+
+services:
+  cira:
+    container_name: cira
+    build: .
+    ports:
+      - "8080:8000"
