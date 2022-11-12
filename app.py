@@ -52,6 +52,8 @@ cira: CiRAService = None
 
 
 def setup_cira():
+    global cira
+
     # determine the location of the pre-trained models
     dotenv.load_dotenv()
     model_env_suffix = '_DEV' if ('DEV_CONTAINER' in os.environ) else ''
@@ -101,7 +103,6 @@ def health():
 
 @app.get(PREFIX + '/classify', response_model=ClassificationResponse, tags=['classify'])
 async def create_classification(req: SentenceRequest):
-    print(cira)
     causal, confidence = cira.classify(req.sentence)
     return ClassificationResponse(causal=causal, confidence=confidence)
 
@@ -126,4 +127,4 @@ async def create_testsuite(req: SentenceRequest):
 
 if __name__ == '__main__':
     setup_cira()
-    uvicorn.run(app)
+    uvicorn.run(app, host='0.0.0.0')

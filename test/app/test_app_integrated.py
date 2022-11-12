@@ -6,7 +6,7 @@ import pytest
 from fastapi.testclient import TestClient
 from fastapi import status
 
-from src import app
+import app
 from src.api.service import CiRAServiceImpl
 
 sentence = "If the button is pressed then the system shuts down."

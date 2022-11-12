@@ -13,16 +13,20 @@ This repostitory contains a Python implementation of the functions around the [c
 3. Transforming a labeled sentence into a cause-effect graph representing the causal relationship.
 4. Transforming a cause-effect graph into a minimal set of test cases (test suite) asserting the behavior implied by the sentence.
 
-## Prerequisites
+## Development
 
-This package is built and tested using [Python 3.10.0](https://www.python.org/downloads/release/python-3100/). To use the CiRA pipeline, perform the following steps:
+### Setup
+
+#### Local Development
+
+This package is built and tested using [Python 3.10.0](https://www.python.org/downloads/release/python-3100/). To use the CiRA pipeline locally, perform the following steps:
 
 1. Make sure the [Rust compiler](https://www.rust-lang.org/tools/install) is installed on your system, as the `tokenizer` package depends on it.
 2. Install all required dependencies via `pip3 install -r requirements.txt`.
 3. Download and unzip the pre-trained [classification and labeling models](https://doi.org/10.5281/zenodo.7186287) or use the `download-models.sh` script.
 4. Create a `.env` file and specify the variables `MODEL_CLASSIFICATION` and `MODEL_LABELING` with the location of the respective models.
 
-## Development inside a Docker Container
+#### Development inside a Docker Container
 
 You can develop inside a Docker container using a [pre-build image](https://hub.docker.com/r/andib/cira-dev) that contains all dependencies and the recommended classification and labeling models.
 
@@ -35,6 +39,19 @@ For this setup, you need
 Use then the `Remote-Containers: Open Workspace in Container...` command to open the project inside the container.
 
 You can find detailed information about the development container setup [here](https://code.visualstudio.com/docs/remote/containers).
+
+### Usage
+
+To use the CiRA pipeline, instantiate a `src.cira.CiRAConverter` object and specify the location of the pre-trained models. Then, use the high-level functionality as shown in the [demonstration.ipynb](./demonstration.ipynb) file.
+
+## Dockerization
+
+### REST API
+
+The CiRA functionality can also be provided by a single Docker container based on `Dockerfile`.
+Build and run the Docker container via `docker compose up`.
+CiRA's functionality can then be accessed at `localhost:8080`.
+Check `localhost:8080\docs` while the container is running to access the specification of the API.
 
 ### Building the cira-dev base image
 
@@ -49,8 +66,3 @@ Replace `andib/cira-dev:latest` with `YOUR_DOCKER_HUB_ACCOUNT/IMAGE_NAME:TAG` if
 ## Tests
 
 Run all tests via `pytest`.
-
-## Usage
-
-To use the CiRA pipeline, instantiate a `src.cira.CiRAConverter` object and specify the location of the pre-trained models.
-Then, use the high-level functionality as shown in the [demonstration.ipynb](./demonstration.ipynb) file.
