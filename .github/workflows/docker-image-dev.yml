@@ -45,6 +45,7 @@ jobs:
         uses: docker/metadata-action@v4
         with:
           images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+          tags: latest
 
       - name: Build and push Docker image
         uses: docker/build-push-action@v3
@@ -52,5 +53,5 @@ jobs:
           context: .
           file: Dockerfile.dev
           push: true
-          tags: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
+          tags: ${{ steps.meta.outputs.tags}}
           labels: ${{ steps.meta.outputs.labels }}
