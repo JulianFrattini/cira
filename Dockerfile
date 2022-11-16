@@ -1,4 +1,4 @@
-FROM andib/cira-dev
+FROM ghcr.io/julianfrattini/cira-dev:latest
 
 WORKDIR /cira
 
