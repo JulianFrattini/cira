@@ -1,5 +1,7 @@
 import pytest
 
+import pkg_resources
+
 from fastapi.testclient import TestClient
 from fastapi import status
 
@@ -9,6 +11,7 @@ from src.api.service import CiraServiceMock
 sentence = "If the button is pressed then the system shuts down."
 API_URL = 'http://localhost:8000/api/'
 
+cira_version = pkg_resources.require("cira")[0].version
 
 @pytest.fixture(scope="module")
 def client() -> TestClient:
@@ -31,7 +34,10 @@ def test_health(client):
     response = client.get(f'{API_URL}health')
 
     assert response.status_code == status.HTTP_200_OK
-    assert response.json() == {'status': 'up'}
+    assert response.json() == {
+        'status': 'up',
+        'cira-version': cira_version
+        }
 
 
 @pytest.mark.unit

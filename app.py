@@ -1,5 +1,7 @@
 import os
 import dotenv
+import pkg_resources
+
 import uvicorn
 from fastapi import FastAPI, Request
 from pydantic import BaseModel
@@ -98,7 +100,11 @@ def root(req: Request):
 
 @app.get(PREFIX + "/health")
 def health():
-    return {"status": "up"}
+    cira_version = pkg_resources.require("cira")[0].version
+    return {
+        "status": "up",
+        "cira-version": cira_version
+    }
 
 
 @app.get(PREFIX + '/classify', response_model=ClassificationResponse, tags=['classify'])
