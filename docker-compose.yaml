@@ -2,7 +2,7 @@ version: "3.7"
 
 services:
   cira:
-    container_name: cira
+    container_name: ghcr.io/julianfrattini/cira
     build: .
     ports:
       - "8080:8000"
