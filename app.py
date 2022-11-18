@@ -8,6 +8,7 @@ from pydantic import BaseModel
 
 from src.api.service import CiRAService, CiRAServiceImpl
 
+cira_version = pkg_resources.require("cira")[0].version
 
 description = """The CiRA API wraps the functionality of the Causality in Requirements Artifacts initiative and bundles it in one easy-to-use API.
 
@@ -39,7 +40,7 @@ tags_metadata = [
 
 app = FastAPI(
     title="Causality in Requirements Artifacts - Pipeline",
-    version="1.0.0",
+    version=cira_version,
     description=description,
     contact={
         "name": "Julian Frattini",
@@ -100,7 +101,7 @@ def root(req: Request):
 
 @app.get(PREFIX + "/health")
 def health():
-    cira_version = pkg_resources.require("cira")[0].version
+    global cira_version
     return {
         "status": "up",
         "cira-version": cira_version
