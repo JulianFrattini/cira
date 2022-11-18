@@ -69,5 +69,6 @@ class Labeler:
         # return list of labels
         labels: list[Label] = lconv.convert(
             sentence_tokens=tokenized_batch[0].tokens, 
+            sentence=sentence,
             predictions=predictions)
         return labels

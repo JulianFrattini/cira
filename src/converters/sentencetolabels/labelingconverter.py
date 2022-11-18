@@ -1,6 +1,7 @@
 from dataclasses import dataclass
 
 from torch import Tensor
+import re
 
 from src.data.labels import Label, EventLabel, SubLabel
 import src.util.constants as constants
@@ -12,17 +13,17 @@ class TokenLabel:
     event: bool
     name: str
 
-def convert(sentence_tokens: list[str], predictions: Tensor) -> list[Label]: 
+def convert(sentence_tokens: list[str], sentence: str, predictions: Tensor) -> list[Label]: 
     """Convert the list of sentence tokens and the list of predictions into a list of label objects
     
     parameters: 
         sentence_tokens -- list of tokens of the labeled sentence (words) as produced by the labeler
+        sentence -- actual sentence
         predictions -- matrix of predictions (valid labels for each token)
-        labels -- list of labels in the same order as in the predictions tensor
         
     returns: list of actual labels on the sentence"""
     # convert the list of sentence tokens, predictions, and labels into a list of token labels, where each token is associated with up to two labels
-    token_labels = get_token_labeling(sentence_tokens=sentence_tokens, predictions=predictions)
+    token_labels = get_token_labeling(sentence_tokens=sentence_tokens, sentence=sentence, predictions=predictions)
     
     # merge all adjacent labels
     labels: list[Label] = merge_labels(token_labels=token_labels)
@@ -32,13 +33,13 @@ def convert(sentence_tokens: list[str], predictions: Tensor) -> list[Label]:
 
     return labels
 
-def get_token_labeling(sentence_tokens: list[str], predictions: Tensor) -> list[TokenLabel]:
+def get_token_labeling(sentence_tokens: list[str], sentence: str, predictions: Tensor) -> list[TokenLabel]:
     """Convert the list of sentence tokens, predictions, and label ids into a list of tokens associated to all available labels
     
     parameters: 
         sentence_tokens -- list of sentence tokens (usually one token per word or special character)
+        sentence -- full sentence which comprises of the sentence_tokens
         predictions -- list of predictions for each token, associating each available label with a weight within [0;1]
-        labels -- ordered list of labels corresponding to the predictions
     
     returns: list of token labels, containing one object for each token label (max 2 per token)
     """
@@ -46,7 +47,7 @@ def get_token_labeling(sentence_tokens: list[str], predictions: Tensor) -> list[
     cursor = 0
 
     for token_prediction_idx, token_prediction in enumerate(predictions[0]):
-        # get the current token
+        # get the current token and clean it of the RoBERTa-specific prefix
         token: str = sentence_tokens[token_prediction_idx]
         token = token.replace("Ġ", "")
 
@@ -56,6 +57,10 @@ def get_token_labeling(sentence_tokens: list[str], predictions: Tensor) -> list[
         # stop once a finalizing token is reached
         if token in ['</s>', '<pad>', '<sep>']:
             break
+
+        # advance the cursor to the position of this token in the sentence
+        advance = position_of_next_token(sentence, cursor, token)
+        cursor += advance
 
         # get all labels associated to a token
         for label_prediction_idx, label_prediction in enumerate(token_prediction):
@@ -69,8 +74,9 @@ def get_token_labeling(sentence_tokens: list[str], predictions: Tensor) -> list[
                         event = 'Cause' in label or 'Effect' in label, 
                         name=label))
 
-        # advance the cursor to the position of the next token in the sentence
-        cursor += advance_cursor(token)
+        # move the cursor to the end of the current token              
+        cursor += len(token)
+
         
     return token_labels
 
@@ -154,19 +160,18 @@ def get_junctors_between(labels: list[Label], first: EventLabel, second: EventLa
 
     return junctors
 
-def advance_cursor(token: str) -> int:
+def position_of_next_token(sentence: str, cursor_pos: int, token: str) -> int:
     """Calculate the amount of characters the cursor needs to jump to the next token. The calculation takes into account that certain characters cause the token splitter to introduce more whitespaces than others.
 
     parameters:
+        sentence -- the full sentence
+        cursor_pos -- the current position of the cursor
         token -- current token
 
-    returns: number of characters until the next token
+    returns: delta between the current position of the cursor and the next occurrence of the given token in that respective sentence
     """
     if token.startswith('##'):
         return 1
-    elif token == ',':
-        return len(token)
-    elif token.startswith("'"):
-        return len(token)
-    else:
-        return len(token) + 1
+
+    position_of_token = re.search(token, sentence[cursor_pos:]).start()
+    return position_of_token
