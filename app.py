@@ -101,7 +101,6 @@ def root(req: Request):
 
 @app.get(PREFIX + "/health")
 def health():
-    global cira_version
     return {
         "status": "up",
         "cira-version": cira_version
