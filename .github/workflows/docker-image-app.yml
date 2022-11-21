@@ -27,12 +27,21 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: Get CiRA version
+        run: |
+          CIRA_VERSION=$(python setup.py --version)
+          echo "CIRA_VERSION=$CIRA_VERSION" >> $GITHUB_ENV
+
       - name: Extract metadata (tags, labels) for Docker
         id: meta
         uses: docker/metadata-action@v4
         with:
           images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
-          tags: latest
+          labels: |
+            org.opencontainers.image.version=${{ env.CIRA_VERSION }}
+          tags: |
+            latest
+            ${{ env.CIRA_VERSION }}
 
       - name: Build and push Docker image
         uses: docker/build-push-action@v3
