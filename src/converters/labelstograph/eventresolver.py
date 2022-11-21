@@ -10,10 +10,14 @@ class EventResolver(ABC):
 
 class SimpleResolver(EventResolver):
     def resolve_event(self, node: EventNode, sentence: str):
-        """Determine the variable and the condition of a node dependent on the following conditions: (1) if the EventLabel associated to the EventNode has at least one SubLabel child that is a variable/condition, use the text covered by those labels as variable/condition."""
+        """Determine the variable and the condition of a node dependent on the following conditions: (1) if the EventLabel associated to the EventNode has at least one SubLabel child that is a variable/condition, use the text covered by those labels as variable/condition.
+        
+        parameters:
+            node -- the node where the variable and condition shall be set
+            sentence -- the verbatim sentence from which the variable and condition will be taken"""
 
         for attribute in ['Variable', 'Condition']:
-            candidates = [node.label] + get_events_in_order(label=node.label, attribute=attribute)
+            candidates = node.labels + get_events_in_order(starting_node=node, attribute=attribute)
 
             for candidate in candidates:
                 value = candidate.get_attribute(attribute=attribute, sentence=sentence)
@@ -21,7 +25,7 @@ class SimpleResolver(EventResolver):
                     setattr(node, attribute.lower(), value)
                     break
 
-def get_events_in_order(label: EventLabel, attribute: str) -> list[EventLabel]:
+def get_events_in_order(starting_node: EventNode, attribute: str) -> list[EventLabel]:
     """Obtain a list of EventLabel's in the order of relevance (dominant order for variables is preceeding, because in case of a missing variable (e.g., "the red button is pressed or released") the variable is more likely to be located in the preceeding event, and for conditions is succeeding), preferring events of the same type (cause/effect).
 
     parameters:
@@ -32,9 +36,14 @@ def get_events_in_order(label: EventLabel, attribute: str) -> list[EventLabel]:
     """
     candidates: list[EventLabel] = []
 
-    for etype in (['Cause', 'Effect'] if label.name[:-1]=='Cause' else ['Effect', 'Cause']):
+    # determine the event type of a node (either "Cause" or "Effect")
+    event_type_of_node = starting_node.labels[0].name[:-1]
+
+    for event_type in (['Cause', 'Effect'] if event_type_of_node=='Cause' else ['Effect', 'Cause']):
         for direction in (['predecessor', 'successor'] if attribute=='Variable' else ['successor', 'predecessor']):
-            candidates = candidates + get_all_neighbors_of_type(startlabel=label, direction=direction, type=etype)
+            # determine the label to start with
+            starting_label = starting_node.labels[0 if direction=='predecessor' else -1]
+            candidates = candidates + get_all_neighbors_of_type(startlabel=starting_label, direction=direction, type=event_type)
 
     return candidates
 

@@ -16,7 +16,7 @@ def test_simple():
     c1.add_child(c1_c)
     c1.add_child(c1_v)
 
-    event1 = EventNode(id='N1', label=c1)
+    event1 = EventNode(id='N1', labels=[c1])
     resolver.resolve_event(node=event1, sentence=sentence)
 
     assert event1.variable == "the red button"
@@ -37,7 +37,7 @@ def test_split():
     c1.add_child(c1_c2)
     c1.add_child(c1_v2)
 
-    event1 = EventNode(id='N1', label=c1)
+    event1 = EventNode(id='N1', labels=[c1])
     resolver.resolve_event(node=event1, sentence=sentence)
 
     assert event1.variable == "the red button"
@@ -56,7 +56,7 @@ def test_move1_variable():
 
     c1.set_successor(c2, 'OR')
 
-    event2 = EventNode(id='N1', label=c2)
+    event2 = EventNode(id='N1', labels=[c2])
     resolver.resolve_event(node=event2, sentence=sentence)
 
     assert event2.variable == "the button"
@@ -74,7 +74,26 @@ def test_move1_condition():
 
     c1.set_successor(c2, 'OR')
 
-    event1 = EventNode(id='N1', label=c1)
+    event1 = EventNode(id='N1', labels=[c1])
     resolver.resolve_event(node=event1, sentence=sentence)
 
     assert event1.condition == "is pressed"
+
+@pytest.mark.integration
+def test_join_two_labels():
+    # this test asserts that an event node with two distinct event labels still resolves the event correctly
+    resolver = SimpleResolver()
+    sentence = "The button that is pressed"
+
+    c1_1 = EventLabel(id='L1', name='Cause1', begin=0, end=10)
+    c1_1.add_child(SubLabel(id='L2', name='Variable', begin=0, end=10))
+    c1_2 = EventLabel(id='L3', name='Cause1', begin=16, end=26)
+    c1_2.add_child(SubLabel(id='L4', name='Condition', begin=16, end=26))
+
+    c1_1.set_successor(c1_2, junctor='MERGE')
+
+    event = EventNode(id='N1', labels=[c1_1, c1_2])
+    resolver.resolve_event(node=event, sentence=sentence)
+
+    assert event.variable == 'The button'
+    assert event.condition == 'is pressed'

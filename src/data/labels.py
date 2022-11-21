@@ -69,7 +69,7 @@ class SubLabel(Label):
 class Neighbor:
     origin: 'EventLabel' = field(default=None)
     target: 'EventLabel' = field(default=None)
-    junctor: str = None
+    junctor: str = None # AND, OR, MERGE
 
 @dataclass
 class EventLabel(Label):
