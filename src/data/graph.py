@@ -67,7 +67,10 @@ class EventNode(Node):
         """Determine whether this event node is negated.
 
         returns: True, if the event label of this node has a child label of type Negation"""
-        all_sublabels: list[SubLabel] = [label.children for label in self.labels]
+        all_sublabels: list[SubLabel] = []
+        for label in self.labels:
+            all_sublabels = all_sublabels + label.children
+
         return len([label for label in all_sublabels if label.name == 'Negation']) > 0
 
     def condense(self) -> list['Edge']:

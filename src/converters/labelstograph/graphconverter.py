@@ -47,8 +47,9 @@ def generate_events(labels: list[Label]) -> list[EventNode]:
     """
     events: list[EventNode] = []
 
-    event_labels = [label for label in labels if label.name[:-1] in ['Cause', 'Effect']]
-    for event_counter, event_label in enumerate(event_labels):
-        events.append(EventNode(id=f'E{event_counter}', label=event_label))
+    event_labels_names = [label.name for label in labels if label.name[:-1] in ['Cause', 'Effect']]
+    for event_counter, event_label_name in enumerate(event_labels_names):
+        event_labels = [label for label in labels if label.name==event_label_name]
+        events.append(EventNode(id=f'E{event_counter}', labels=event_labels))
     
     return events
