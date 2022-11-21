@@ -50,13 +50,13 @@ def test_switched_node_order():
 @pytest.mark.integration
 def test_inequal_number_of_effects():
     # graph 1
-    root = EventNode(id='c1', label=None, variable='an error', condition='occurs')
+    root = EventNode(id='c1', labels=None, variable='an error', condition='occurs')
     effect1 = EventNode(id='e1', variable='a message', condition='is shown')
     effect1.add_incoming(child=root, negated=False)
     graph1 = Graph(nodes=[root, effect1], root=root, edges=None)
 
     # graph 2
-    root = EventNode(id='c1', label=None, variable='an error', condition='occurs')
+    root = EventNode(id='c1', labels=None, variable='an error', condition='occurs')
     effect1 = EventNode(id='e1', variable='a message', condition='is shown')
     effect2 = EventNode(id='e2', variable='a sound', condition='is played')
     effect1.add_incoming(child=root)
@@ -68,13 +68,13 @@ def test_inequal_number_of_effects():
 @pytest.mark.integration
 def test_inequal_effects_variable():
     # graph 1
-    root1 = EventNode(id='c1', label=None, variable='an error', condition='occurs')
+    root1 = EventNode(id='c1', labels=None, variable='an error', condition='occurs')
     effect1 = EventNode(id='e1', variable='a message', condition='is shown')
     effect1.add_incoming(child=root1, negated=False)
     graph1 = Graph(nodes=[root1, effect1], root=root1, edges=None)
 
     # graph 2: the variable of the effect node is different
-    root2 = EventNode(id='c1', label=None, variable='an error', condition='occurs')
+    root2 = EventNode(id='c1', labels=None, variable='an error', condition='occurs')
     effect2 = EventNode(id='e1', variable='the message', condition='is shown')
     effect2.add_incoming(child=root2)
     graph2 = Graph(nodes=[root2, effect1], root=root2, edges=None)
@@ -84,13 +84,13 @@ def test_inequal_effects_variable():
 @pytest.mark.integration
 def test_inequal_effects_condition():
     # graph 1
-    root1 = EventNode(id='c1', label=None, variable='an error', condition='occurs')
+    root1 = EventNode(id='c1', labels=None, variable='an error', condition='occurs')
     effect1 = EventNode(id='e1', variable='a message', condition='is shown')
     effect1.add_incoming(child=root1, negated=False)
     graph1 = Graph(nodes=[root1, effect1], root=root1, edges=None)
 
     # graph 2: the variable of the effect node is different
-    root2 = EventNode(id='c1', label=None, variable='an error', condition='occurs')
+    root2 = EventNode(id='c1', labels=None, variable='an error', condition='occurs')
     effect2 = EventNode(id='e1', variable='a message', condition='is opened')
     effect2.add_incoming(child=root2)
     graph2 = Graph(nodes=[root2, effect1], root=root2, edges=None)
@@ -100,13 +100,13 @@ def test_inequal_effects_condition():
 @pytest.mark.integration
 def test_inequal_effects_negation():
     # graph 1
-    root1 = EventNode(id='c1', label=None, variable='an error', condition='occurs')
+    root1 = EventNode(id='c1', labels=None, variable='an error', condition='occurs')
     effect1 = EventNode(id='e1', variable='a message', condition='is shown')
     effect1.add_incoming(child=root1, negated=False)
     graph1 = Graph(nodes=[root1, effect1], root=root1, edges=None)
 
     # graph 2: the variable of the effect node is different
-    root2 = EventNode(id='c1', label=None, variable='an error', condition='occurs')
+    root2 = EventNode(id='c1', labels=None, variable='an error', condition='occurs')
     effect2 = EventNode(id='e1', variable='a message', condition='is shown')
     effect2.add_incoming(child=root2, negated=True)
     graph2 = Graph(nodes=[root2, effect1], root=root2, edges=None)

@@ -48,6 +48,6 @@ def test_removeonechild():
 def test_negatednode():
     l1 = EventLabel(id='L1', name='Cause1', begin=0, end=10)
     l1.add_child(SubLabel(id='L2', name='Negation', begin=0, end=2))
-    e1 = EventNode(id='E1', label=l1)
+    e1 = EventNode(id='E1', labels=[l1])
 
     assert e1.is_negated() == True
