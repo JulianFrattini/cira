@@ -17,14 +17,18 @@ class Node:
         child.outgoing.append(edge)
         return edge
 
-    def remove_incoming(self, child: 'Node'):
+    def remove_incoming(self, child: 'Node') -> list['Edge']:
+        removed = []
         for edge in [edge for edge in self.incoming if edge.origin == child]:
             edge.origin.outgoing.remove(edge)
             self.incoming.remove(edge)
+            removed.append(edge)
+        return removed
 
-    def rewire(self, old_child: 'Node', new_child: 'Node'):
-        self.remove_incoming(old_child)
-        self.add_incoming(new_child)
+    def rewire(self, old_child: 'Node', new_child: 'Node') -> tuple[list['Edge'], 'Edge']:
+        old_edges = self.remove_incoming(old_child)
+        new_edge = self.add_incoming(new_child)
+        return (old_edges, new_edge)
 
     def get_root(self):
         """Assuming that the graph is currently structured like a tree (which the subgraph only containing causes is), return the root node.
@@ -73,11 +77,14 @@ class EventNode(Node):
 
         return len([label for label in all_sublabels if label.name == 'Negation']) > 0
 
-    def condense(self) -> list['Edge']:
+    def condense(self) -> tuple[list['Edge'], list['Edge']]:
         """In case the event node has more than one outgoing relationship, try to condense these relationships. If they have the same junctor type, merge them. If not, rearrange them according to precedence rules (AND binds stronger than OR)
 
-        returns: list of edges that are now removable"""
+        returns: a tuple containing 
+          a list of edges that are now removable,
+          a list of edges that are now new"""
         removable_edges: list[Edge] = []
+        new_edges: list[Edge] = []
         if len(self.outgoing) > 0:
             conjunction_parents = [
                 out for out in self.outgoing if out.target.conjunction]
@@ -92,9 +99,11 @@ class EventNode(Node):
                 disjunction_edge = [
                     parent for parent in self.outgoing if not parent.target.conjunction][0]
                 disjunction_parent: IntermediateNode = disjunction_edge.target
-                disjunction_parent.rewire(
+                edges_to_remove, edge_to_add = disjunction_parent.rewire(
                     old_child=self, new_child=conjunction_parents[0].target)
-        return removable_edges
+                removable_edges = removable_edges + edges_to_remove
+                new_edges.append(edge_to_add)
+        return (removable_edges, new_edges)
 
     def flatten(self) -> list['Node']:
         return [self]
@@ -121,6 +130,7 @@ class EventNode(Node):
 @dataclass
 class IntermediateNode(Node):
     conjunction: bool = True
+    precedence: bool = False # if conjunction is false but precedence true then this intermediate node has to be resolved before the others
 
     def merge(self, other: 'IntermediateNode') -> list['Edge']:
         """Merge this intermediate node with another intermediate node. In the end, all nodes with an incoming connection to the other node, which are not yet connected to this node, will be connected to this node.
