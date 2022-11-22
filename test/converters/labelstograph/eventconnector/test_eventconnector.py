@@ -1,4 +1,5 @@
 import pytest
+from unittest.mock import patch
 
 from src.converters.labelstograph.eventconnector import connect_events
 
@@ -53,3 +54,34 @@ def test_connection():
 
     root: IntermediateNode = causes[0]
     assert root.conjunction == False
+
+@pytest.mark.integration
+@patch('src.converters.labelstograph.eventconnector.generate_initial_nodenet')
+@patch('src.converters.labelstograph.eventconnector.get_junctors')
+def test_connection_overruled_precedence(mock_gj, mock_gin):
+    """Test the event connection in a scenario with overruled precedence (e.g., "If A and either B or C" which should resolve to (A && (B || C)). The root node should be the conjunction, because the precedence of the disjunction overrules the conjunction in this case."""
+
+    cause1 = EventNode(id='c1', labels=None, variable="v1")
+    cause2 = EventNode(id='c2', labels=None, variable="v2")
+    cause3 = EventNode(id='c3', labels=None, variable="v3")
+
+    edgelist = []
+    i1 = IntermediateNode(id='i1', conjunction=True)
+    edgelist.append(i1.add_incoming(cause1))
+    edgelist.append(i1.add_incoming(cause2))
+    i2 = IntermediateNode(id='i2', conjunction=False, precedence=True)
+    edgelist.append(i2.add_incoming(cause2))
+    edgelist.append(i2.add_incoming(cause3))
+    
+    mock_gj.return_value = None
+    mock_gin.return_value = ([i1, i2], edgelist)
+
+    nodes, edges = connect_events([cause1, cause2, cause3])
+    root = nodes[0]
+
+    # make sure the root node is an intermediate node
+    assert type(root) == IntermediateNode
+    root: IntermediateNode = root
+
+    # assert that this intermediate node is the conjunction, not the disjunction
+    assert root.conjunction == True
