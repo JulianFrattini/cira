@@ -232,7 +232,8 @@ class IntermediateNode(Node):
     def to_dict(self) -> dict:
         return {
             'id': self.id,
-            'conjunction': self.conjunction
+            'conjunction': self.conjunction,
+            'precedence': self.precedence
         }
 
     def __repr__(self):
@@ -345,8 +346,9 @@ def from_dict(dict_graph: dict) -> Graph:
     nodes: list[Node] = []
     for node in dict_graph['nodes']:
         if 'conjunction' in node.keys():
+            precedence = False if ('precedence' not in node) else node['precedence']
             nodes.append(IntermediateNode(
-                id=node['id'], conjunction=node['conjunction']))
+                id=node['id'], conjunction=node['conjunction'], precedence=precedence))
         else:
             nodes.append(EventNode(
                 id=node['id'], variable=node['variable'], condition=node['condition']))
