@@ -73,3 +73,39 @@ def test_junctors():
     assert c1.successor.junctor == 'AND'
     assert c2.successor.junctor == 'OR'
     assert c3.successor.junctor == None
+
+@pytest.mark.integration
+def test_junctors_overruled_precedence1():
+    """Usually, we interpret junctors like logical operators and hence assume that AND has a higher precedence than OR. For example, "A or B and C" is interpreted as "A or (B and C)". However, the precedence can be overruled in a case like "A and either B or C", which is interpreted as "A and (B or C)". The indicator for the overruled precedence is the existence of both a conjunction and disjunction between two events
+    """
+    c1 = EventLabel(id='T1', name='Cause1', begin=0, end=5)
+    # indicator for the overruled precedence: conjunction and disjunction between cause 1 and 2
+    conj = SubLabel(id='T2-1', name='Conjunction', begin=6, end=7)
+    disjp = SubLabel(id='T2-2', name='Disjunction', begin=8, end=9)
+    c2 = EventLabel(id='T3', name='Cause2', begin=10, end=15)
+    disj = SubLabel(id='T4', name='Disjunction', begin=16, end=18)
+    c3 = EventLabel(id='T5', name='Cause2', begin=19, end=24)
+    labels = [c1, conj, disjp, c2, disj, c3]
+
+    connect_labels(labels)
+
+    assert c1.successor.junctor == 'AND'
+    assert c2.successor.junctor == 'POR'
+
+#either A or B and C
+@pytest.mark.integration
+@pytest.mark.skip(reason="UNCLEAR_REQUIREMENT: how this case is to be resolved linguistically is not yet clear.")
+def test_junctors_overruled_precedence2():
+    """Another version of the overruled precedence is if the indicator for the overruling precedence (either) being in the beginning, e.g., "When either A or B and C." It is yet unclear how this case should be resolved."""
+
+    disjp = SubLabel(id='T0', name='Disjunction', begin=8, end=9)
+    c1 = EventLabel(id='T1', name='Cause1', begin=0, end=5)
+    disj = SubLabel(id='T2', name='Disjunction', begin=6, end=7)
+    c2 = EventLabel(id='T3', name='Cause2', begin=10, end=15)
+    conj = SubLabel(id='T4', name='Conjunction', begin=16, end=18)
+    c3 = EventLabel(id='T5', name='Cause2', begin=19, end=24)
+    labels = [disjp, c1, disj, c2, conj, c3]
+
+    connect_labels(labels)
+
+    assert False
