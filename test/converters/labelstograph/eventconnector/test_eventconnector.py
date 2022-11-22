@@ -34,13 +34,13 @@ def test_connection():
     cause2.set_successor(cause3, junctor='AND')
 
     # Events
-    event1 = EventNode(id='E1', label=cause1)
+    event1 = EventNode(id='E1', labels=[cause1])
     event1.variable = 'an error'
     event1.condition = 'is present'
-    event2 = EventNode(id='E2', label=cause2)
+    event2 = EventNode(id='E2', labels=[cause2])
     event2.variable = 'the debugger'
     event2.condition = 'is active'
-    event3 = EventNode(id='E3', label=cause3)
+    event3 = EventNode(id='E3', labels=[cause3])
     event3.variable = 'an exception'
     event3.condition = 'is triggered'
 

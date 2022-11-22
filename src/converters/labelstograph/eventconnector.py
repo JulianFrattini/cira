@@ -30,7 +30,7 @@ def connect_events(events: list[EventNode]) -> Tuple[list[Node], list[Edge]]:
         return (root.flatten(), edgelist)
 
 def get_junctors(events: list[EventNode]) -> dict:
-    """Obtain a map that maps two adjacent event nodes to their respective junctor (conjunction or disjunction). If no explicit junctor is given, take the junctor between the (recursively) next pair of event nodes
+    """Obtain a dictionary that maps two adjacent event nodes to their respective junctor (conjunction or disjunction). If no explicit junctor is given, (recursively) take the junctor between the next pair of event nodes
     
     parameters:
         events -- list of event nodes
@@ -40,14 +40,14 @@ def get_junctors(events: list[EventNode]) -> dict:
     junctor_map = {}
 
     # get the starting node (the cause event node which has no predecessor)
-    current_node: EventNode = [event for event in events if (event.label.predecessor == None)][0]
-    while current_node.label.successor != None:
-        label1 = current_node.label
-        label2 = current_node.label.successor.target
+    current_node: EventNode = [event for event in events if (event.labels[0].predecessor == None)][0]
+    while current_node.labels[-1].successor != None:
+        label1 = current_node.labels[-1]
+        label2 = label1.successor.target
         # only consider junctors between labels of the same type (Cause or effect)
         if label1.is_cause() == label2.is_cause():
             # obtain the node with which the current node is joined and denote the junctor
-            next_node = [event for event in events if event.label==label2][0]
+            next_node = [event for event in events if label2 in event.labels][0]
             junctor_map[(current_node.id, next_node.id)] = label1.successor.junctor
             # continue with that node
             current_node = next_node

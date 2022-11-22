@@ -2,7 +2,7 @@ from abc import abstractmethod
 from dataclasses import dataclass, field
 import itertools
 
-from src.data.labels import EventLabel
+from src.data.labels import EventLabel, SubLabel
 
 
 @dataclass
@@ -53,7 +53,7 @@ class Node:
 
 @dataclass
 class EventNode(Node):
-    label: EventLabel = field(default=None)
+    labels: list[EventLabel] = field(default_factory=list)
     variable: str = field(default="it")
     condition: str = field(default="is present")
 
@@ -61,13 +61,17 @@ class EventNode(Node):
         """Determine whether this node represents a cause.
 
         returns: True, if the event label of this node is a cause label"""
-        return self.label.is_cause()
+        return self.labels[0].is_cause()
 
     def is_negated(self):
         """Determine whether this event node is negated.
 
         returns: True, if the event label of this node has a child label of type Negation"""
-        return len([label for label in self.label.children if label.name == 'Negation']) > 0
+        all_sublabels: list[SubLabel] = []
+        for label in self.labels:
+            all_sublabels = all_sublabels + label.children
+
+        return len([label for label in all_sublabels if label.name == 'Negation']) > 0
 
     def condense(self) -> list['Edge']:
         """In case the event node has more than one outgoing relationship, try to condense these relationships. If they have the same junctor type, merge them. If not, rearrange them according to precedence rules (AND binds stronger than OR)
