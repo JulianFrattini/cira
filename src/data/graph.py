@@ -1,6 +1,7 @@
 from abc import abstractmethod
 from dataclasses import dataclass, field
 import itertools
+from functools import cmp_to_key
 
 from src.data.labels import EventLabel, SubLabel
 
@@ -95,15 +96,26 @@ class EventNode(Node):
                     removable = surviving_parent.merge(parent.target)
                     removable_edges = removable_edges + removable
             else:
-                # complex case: apply precedence rules
-                disjunction_edge = [
-                    parent for parent in self.outgoing if not parent.target.conjunction][0]
-                disjunction_parent: IntermediateNode = disjunction_edge.target
-                edges_to_remove, edge_to_add = disjunction_parent.rewire(
-                    old_child=self, new_child=conjunction_parents[0].target)
+                # complex case: rewire nodes according to precedence rules
+                parents: list[IntermediateNode] = self.get_parents_ordered_by_precedence(
+                )
+
+                # rewire the edge between the lower-precedence parent and this node to the higher-precedence node
+                edges_to_remove, edge_to_add = parents[0].rewire(
+                    old_child=self, new_child=parents[1])
                 removable_edges = removable_edges + edges_to_remove
                 new_edges.append(edge_to_add)
         return (removable_edges, new_edges)
+
+    def get_parents_ordered_by_precedence(self) -> list['IntermediateNode']:
+        """Obtain the list of parents (targets of the outgoing edges) ordered by their precedence value. 
+
+        returns: list of parents sorted by their precedence value in ascending order"""
+        parents: list[IntermediateNode] = [
+            parent_edge.target for parent_edge in self.outgoing]
+        parents_ordered_by_precedence = sorted(parents, key=cmp_to_key(
+            lambda parent1, parent2: parent1.get_precedence_value()-parent2.get_precedence_value()))
+        return parents_ordered_by_precedence
 
     def flatten(self) -> list['Node']:
         return [self]
@@ -130,7 +142,16 @@ class EventNode(Node):
 @dataclass
 class IntermediateNode(Node):
     conjunction: bool = True
-    precedence: bool = False # if conjunction is false but precedence true then this intermediate node has to be resolved before the others
+    # if conjunction is false but precedence true then this intermediate node has to be resolved before the others
+    precedence: bool = False
+
+    def get_precedence_value(self) -> int:
+        """Calculate the precedence value of this intermediate node, i.e., its priority when rewiring edges. The precedence of a standard disjunction is 1, a conjunction is 2 (because conjunctions usually bind stronger than disjunctions), and a disjunction with overruled precedence is 3.
+
+        returns: the precedence value of this node """
+        if self.conjunction:
+            return 2
+        return 3 if self.precedence else 1
 
     def merge(self, other: 'IntermediateNode') -> list['Edge']:
         """Merge this intermediate node with another intermediate node. In the end, all nodes with an incoming connection to the other node, which are not yet connected to this node, will be connected to this node.
