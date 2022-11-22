@@ -8,7 +8,7 @@
             "end": 47,
             "successor": {
                 "id": "T6",
-                "junctor": null
+                "junctor": "AND"
             },
             "children": [
                 "T2",
@@ -50,7 +50,7 @@
             "end": 74,
             "successor": {
                 "id": "T10",
-                "junctor": "OR"
+                "junctor": "POR"
             },
             "children": [
                 "T7",
@@ -143,7 +143,8 @@
             },
             {
                 "id": "N4",
-                "conjunction": false
+                "conjunction": false,
+                "precedence": true
             },
             {
                 "id": "N5",
