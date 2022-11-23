@@ -44,8 +44,32 @@ def test_three_conj_disj(mock_isnegated):
     assert len(intermediates) == 2
     assert len(intermediates[0].incoming) == 2
     assert intermediates[0].conjunction == True
+    assert intermediates[0].precedence == False
     assert len(intermediates[1].incoming) == 2
     assert intermediates[1].conjunction == False
+    assert intermediates[1].precedence == False
+    assert intermediates[0].incoming[0].origin == events[0]
+    assert intermediates[0].incoming[1].origin == events[1]
+    assert intermediates[1].incoming[0].origin == events[1]
+    assert intermediates[1].incoming[1].origin == events[2]
+
+@pytest.mark.unit
+@patch('src.converters.labelstograph.eventconnector.EventNode.is_negated')
+def test_three_conj_disj_overruled_precedence(mock_isnegated):
+    mock_isnegated.return_value == False
+
+    events = [EventNode(id='E1'), EventNode(id='E2'), EventNode(id='E3')]
+    jm = {('E1', 'E2'): 'AND', ('E2', 'E3'): 'POR'}
+
+    intermediates, _ = gin(events=events, junctor_map=jm)
+    
+    assert len(intermediates) == 2
+    assert len(intermediates[0].incoming) == 2
+    assert intermediates[0].conjunction == True
+    assert intermediates[0].precedence == False
+    assert len(intermediates[1].incoming) == 2
+    assert intermediates[1].conjunction == False
+    assert intermediates[1].precedence == True
     assert intermediates[0].incoming[0].origin == events[0]
     assert intermediates[0].incoming[1].origin == events[1]
     assert intermediates[1].incoming[0].origin == events[1]

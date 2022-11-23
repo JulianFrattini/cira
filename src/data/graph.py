@@ -1,6 +1,7 @@
 from abc import abstractmethod
 from dataclasses import dataclass, field
 import itertools
+from functools import cmp_to_key
 
 from src.data.labels import EventLabel, SubLabel
 
@@ -17,14 +18,18 @@ class Node:
         child.outgoing.append(edge)
         return edge
 
-    def remove_incoming(self, child: 'Node'):
+    def remove_incoming(self, child: 'Node') -> list['Edge']:
+        removed = []
         for edge in [edge for edge in self.incoming if edge.origin == child]:
             edge.origin.outgoing.remove(edge)
             self.incoming.remove(edge)
+            removed.append(edge)
+        return removed
 
-    def rewire(self, old_child: 'Node', new_child: 'Node'):
-        self.remove_incoming(old_child)
-        self.add_incoming(new_child)
+    def rewire(self, old_child: 'Node', new_child: 'Node') -> tuple[list['Edge'], 'Edge']:
+        old_edges = self.remove_incoming(old_child)
+        new_edge = self.add_incoming(new_child)
+        return (old_edges, new_edge)
 
     def get_root(self):
         """Assuming that the graph is currently structured like a tree (which the subgraph only containing causes is), return the root node.
@@ -73,11 +78,14 @@ class EventNode(Node):
 
         return len([label for label in all_sublabels if label.name == 'Negation']) > 0
 
-    def condense(self) -> list['Edge']:
+    def condense(self) -> tuple[list['Edge'], list['Edge']]:
         """In case the event node has more than one outgoing relationship, try to condense these relationships. If they have the same junctor type, merge them. If not, rearrange them according to precedence rules (AND binds stronger than OR)
 
-        returns: list of edges that are now removable"""
+        returns: a tuple containing 
+          a list of edges that are now removable,
+          a list of edges that are now new"""
         removable_edges: list[Edge] = []
+        new_edges: list[Edge] = []
         if len(self.outgoing) > 0:
             conjunction_parents = [
                 out for out in self.outgoing if out.target.conjunction]
@@ -88,13 +96,26 @@ class EventNode(Node):
                     removable = surviving_parent.merge(parent.target)
                     removable_edges = removable_edges + removable
             else:
-                # complex case: apply precedence rules
-                disjunction_edge = [
-                    parent for parent in self.outgoing if not parent.target.conjunction][0]
-                disjunction_parent: IntermediateNode = disjunction_edge.target
-                disjunction_parent.rewire(
-                    old_child=self, new_child=conjunction_parents[0].target)
-        return removable_edges
+                # complex case: rewire nodes according to precedence rules
+                parents: list[IntermediateNode] = self.get_parents_ordered_by_precedence(
+                )
+
+                # rewire the edge between the lower-precedence parent and this node to the higher-precedence node
+                edges_to_remove, edge_to_add = parents[0].rewire(
+                    old_child=self, new_child=parents[1])
+                removable_edges = removable_edges + edges_to_remove
+                new_edges.append(edge_to_add)
+        return (removable_edges, new_edges)
+
+    def get_parents_ordered_by_precedence(self) -> list['IntermediateNode']:
+        """Obtain the list of parents (targets of the outgoing edges) ordered by their precedence value. 
+
+        returns: list of parents sorted by their precedence value in ascending order"""
+        parents: list[IntermediateNode] = [
+            parent_edge.target for parent_edge in self.outgoing]
+        parents_ordered_by_precedence = sorted(parents, key=cmp_to_key(
+            lambda parent1, parent2: parent1.get_precedence_value()-parent2.get_precedence_value()))
+        return parents_ordered_by_precedence
 
     def flatten(self) -> list['Node']:
         return [self]
@@ -121,6 +142,16 @@ class EventNode(Node):
 @dataclass
 class IntermediateNode(Node):
     conjunction: bool = True
+    # if conjunction is false but precedence true then this intermediate node has to be resolved before the others
+    precedence: bool = False
+
+    def get_precedence_value(self) -> int:
+        """Calculate the precedence value of this intermediate node, i.e., its priority when rewiring edges. The precedence of a standard disjunction is 1, a conjunction is 2 (because conjunctions usually bind stronger than disjunctions), and a disjunction with overruled precedence is 3.
+
+        returns: the precedence value of this node """
+        if self.conjunction:
+            return 2
+        return 3 if self.precedence else 1
 
     def merge(self, other: 'IntermediateNode') -> list['Edge']:
         """Merge this intermediate node with another intermediate node. In the end, all nodes with an incoming connection to the other node, which are not yet connected to this node, will be connected to this node.
@@ -201,7 +232,8 @@ class IntermediateNode(Node):
     def to_dict(self) -> dict:
         return {
             'id': self.id,
-            'conjunction': self.conjunction
+            'conjunction': self.conjunction,
+            'precedence': self.precedence
         }
 
     def __repr__(self):
@@ -314,8 +346,9 @@ def from_dict(dict_graph: dict) -> Graph:
     nodes: list[Node] = []
     for node in dict_graph['nodes']:
         if 'conjunction' in node.keys():
+            precedence = False if ('precedence' not in node) else node['precedence']
             nodes.append(IntermediateNode(
-                id=node['id'], conjunction=node['conjunction']))
+                id=node['id'], conjunction=node['conjunction'], precedence=precedence))
         else:
             nodes.append(EventNode(
                 id=node['id'], variable=node['variable'], condition=node['condition']))

@@ -19,11 +19,17 @@ def connect_events(events: list[EventNode]) -> Tuple[list[Node], list[Edge]]:
         edgelist: list[Edge] = edges
 
         # ensure that every leaf node has exactly one parent
-        removable_edges: list[Edge] = []
+        all_removable_edges: list[Edge] = []
+        all_new_edges: list[Edge] = []
         for event in events:
-            removable_edges += event.condense()
-        for edge in removable_edges:
+            removable_edges, new_edges = event.condense()
+            all_removable_edges = all_removable_edges + removable_edges
+            all_new_edges = all_new_edges + new_edges
+        # remove the deleted edges from the edgelist
+        for edge in all_removable_edges:
             edgelist.remove(edge)
+        # add the new edges to the edgelist
+        edgelist = edgelist + all_new_edges
         
         # obtain the root node:
         root = events[0].get_root()
@@ -76,7 +82,10 @@ def generate_initial_nodenet(events: list[Node], junctor_map: dict) -> Tuple[lis
     edgelist: list[Edge] = []
 
     for index, junctor in enumerate(junctor_map):
-        intermediate = IntermediateNode(id=f'I{index}', conjunction=(junctor_map[junctor]=='AND'))
+        intermediate = IntermediateNode(
+            id=f'I{index}', 
+            conjunction=(junctor_map[junctor]=='AND'),
+            precedence=(junctor_map[junctor].startswith('P')))
         joined_nodes: list[EventNode] = [event for event in events if (event.id in junctor)]
         for node in joined_nodes:
             is_negated: bool = (bool) (node.is_negated())

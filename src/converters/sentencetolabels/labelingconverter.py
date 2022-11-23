@@ -138,11 +138,27 @@ def connect_labels(labels: list[Label]) -> None:
 
     # assign neighboring event labels as predecessor and successor of each other
     event_labels.sort(key=(lambda l: l.begin), reverse=False)
+    overruled_precedence = False
     for index, _ in enumerate(event_labels[:-1]):
         junctors: list[SubLabel] = get_junctors_between(labels=labels, first=event_labels[index], second=event_labels[index+1])
-        junctor: bool = None
+        junctor: str = None
         if len(junctors) == 1:
             junctor = 'AND' if junctors[0].name == 'Conjunction' else 'OR'
+
+            if overruled_precedence:
+                if junctor == 'OR':
+                    # disjunctions introduced by an overruling precedence get priority
+                    junctor = "POR"
+                else:
+                    # a conjunction ends the overruling precedence
+                    overruled_precedence = False
+        elif len(junctors) > 1:
+            junctor_names = [junctor.name for junctor in junctors]
+            # adapted precedence: in the case of "A and either B or C" the precedence of the disjunction is higher than of the conjunction
+            if 'Conjunction' in junctor_names and 'Disjunction' in junctor_names:
+                # as a result, this junctor will remain AND, but all following disjunctions will be high-precedence ORs
+                junctor = 'AND'
+                overruled_precedence = True
         event_labels[index].set_successor(successor=event_labels[index+1], junctor=junctor)
         
 

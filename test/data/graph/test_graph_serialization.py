@@ -60,7 +60,7 @@ def test_graph_multicause():
         'nodes': [
             {'id': 'c1', 'variable': 'cause1', 'condition': 'occurs'},
             {'id': 'c2', 'variable': 'cause2', 'condition': 'occurs'},
-            {'id': 'i1', 'conjunction': False},
+            {'id': 'i1', 'conjunction': False, 'precedence': False},
             {'id': 'e1', 'variable': 'event', 'condition': 'happens'}
         ],
         'root': 'i1',
@@ -118,7 +118,7 @@ def test_graph_multi():
         'nodes': [
             {'id': 'c1', 'variable': 'cause1', 'condition': 'occurs'},
             {'id': 'c2', 'variable': 'cause2', 'condition': 'occurs'},
-            {'id': 'i1', 'conjunction': False},
+            {'id': 'i1', 'conjunction': False, 'precedence': False},
             {'id': 'e1', 'variable': 'event1', 'condition': 'happens'},
             {'id': 'e2', 'variable': 'event2', 'condition': 'happens'}
         ],
