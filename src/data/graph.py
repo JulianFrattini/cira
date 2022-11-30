@@ -61,6 +61,7 @@ class EventNode(Node):
     labels: list[EventLabel] = field(default_factory=list)
     variable: str = field(default="it")
     condition: str = field(default="is present")
+    exceptive_negation: bool = field(default=False)
 
     def is_cause(self):
         """Determine whether this node represents a cause.
@@ -75,8 +76,9 @@ class EventNode(Node):
         all_sublabels: list[SubLabel] = []
         for label in self.labels:
             all_sublabels = all_sublabels + label.children
+        negated = (len([label for label in all_sublabels if label.name == 'Negation']) > 0)
 
-        return len([label for label in all_sublabels if label.name == 'Negation']) > 0
+        return negated != self.exceptive_negation
 
     def condense(self) -> tuple[list['Edge'], list['Edge']]:
         """In case the event node has more than one outgoing relationship, try to condense these relationships. If they have the same junctor type, merge them. If not, rearrange them according to precedence rules (AND binds stronger than OR)
