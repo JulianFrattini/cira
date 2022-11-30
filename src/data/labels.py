@@ -251,3 +251,21 @@ def get_label_by_id(labels: list[Label], id: str) -> Label:
         print(f'Warning: searching for label {id} in {labels} yielded mulitple results')
     return candidates[0]
 
+def get_label_by_type_and_position(labels: list[Label], type: str, begin: int, end: int) -> Label:
+    """Obtain a label from a list of label by both its type and its position (begin and end).
+    
+    parameters:
+        labels -- list of labels
+        type -- the name of the label (e.g., 'Condition', 'Negation', etc.)
+        begin -- the starting index of the label in the sentence
+        end -- the ending index of the label in the sentence
+        
+    returns:
+        label -- label with the requested id if it exists,
+        None -- otherwise"""
+    candidates = [label for label in labels if (label.name==type and label.begin==begin and label.end==end)]
+    if len(candidates) == 0:
+        return None
+    if len(candidates) > 1:
+        print(f'Warning: searching for a {type} label at position [{begin}, {end}] yielded multiple results.')
+    return candidates[0]
