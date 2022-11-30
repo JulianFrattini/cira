@@ -6,6 +6,8 @@ import re
 from src.data.labels import Label, EventLabel, SubLabel
 import src.util.constants as constants
 
+from src.converters.sentencetolabels.labelrecovery import recover_labels
+
 @dataclass
 class TokenLabel:
     begin: int
@@ -30,6 +32,9 @@ def convert(sentence_tokens: list[str], sentence: str, predictions: Tensor) -> l
 
     # connect first-level and second-level labels with each other
     connect_labels(labels)
+
+    # manually recover all missing labels that the labeler was incapable of adding automatically
+    labels = recover_labels(sentence, labels)
 
     return labels
 
