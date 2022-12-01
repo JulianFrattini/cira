@@ -199,10 +199,10 @@ class IntermediateNode(Node):
             # for a conjunction to be evaluated to false or disjunction to true, generate one configuration per incoming edge, where all other incoming nodes are evaluated to the opposite value (conjunction: true, disjunction: false) and only the respective incoming node is evaluated to the expected value (conjunction: false, disjunction: true) (adjust for negations)
             configurations = []
             for oddone in self.incoming:
-                inc = [inc.origin.get_testcase_configuration((expected_outcome == inc.negated) if (
+                inc_configs = [inc.origin.get_testcase_configuration((expected_outcome == inc.negated) if (
                     inc != oddone) else (expected_outcome != inc.negated)) for inc in self.incoming]
                 configurations = configurations + \
-                    permute_configurations(inc_configs=inc)
+                    permute_configurations(inc_configs=inc_configs)
             return configurations
 
     def is_equal(self, other, incoming: bool) -> bool:
