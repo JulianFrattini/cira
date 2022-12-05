@@ -220,32 +220,32 @@
         "cases": [
             {
                 "P1": false,
-                "P2": true,
-                "P3": false,
-                "P4": true
-            },
-            {
-                "P1": true,
                 "P2": false,
                 "P3": false,
                 "P4": true
             },
             {
                 "P1": true,
-                "P2": true,
-                "P3": false,
-                "P4": false
+                "P2": false,
+                "P3": true,
+                "P4": true
             },
             {
                 "P1": false,
                 "P2": true,
                 "P3": true,
+                "P4": true
+            },
+            {
+                "P1": false,
+                "P2": true,
+                "P3": false,
                 "P4": false
             },
             {
                 "P1": true,
                 "P2": false,
-                "P3": true,
+                "P3": false,
                 "P4": false
             }
         ]

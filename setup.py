@@ -7,7 +7,7 @@ setup(
     name='cira',
     author='Julian Frattini',
     author_email='juf@bth.se',
-    version='0.9.2',
+    version='0.9.3',
     description='Implementation of the Causality in Requirements Artifacts (CiRA) functionality',
     long_description=long_description,
     long_description_content_type='text/markdown',
