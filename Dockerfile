@@ -2,9 +2,9 @@ FROM ghcr.io/julianfrattini/cira-dev:latest
 
 WORKDIR /cira
 
-# Install missing Python dependencies
-COPY requirements.txt .
-RUN pip3 install -r requirements.txt
+# Install Python dependencies and setup cira version
+COPY setup.py .
+RUN pip3 install -e .
 
 COPY ./src ./src
 COPY ./app.py ./app.py
