@@ -56,7 +56,7 @@ def client() -> TestClient:
 
 @pytest.mark.system
 def test_classification(client):
-    response = client.get(
+    response = client.post(
         f'{API_URL}classify', json={"sentence": sentence})
 
     assert response.status_code == status.HTTP_200_OK
@@ -68,7 +68,7 @@ def test_classification(client):
 
 @pytest.mark.system
 def test_classification_empty_sentence(client):
-    response = client.get(
+    response = client.post(
         f'{API_URL}classify', json={"sentence": ""})
 
     assert response.status_code == status.HTTP_200_OK
@@ -80,7 +80,7 @@ def test_classification_empty_sentence(client):
 
 @pytest.mark.system
 def test_classification_missing_sentence(client):
-    response = client.get(
+    response = client.post(
         f'{API_URL}classify', json={})
 
     assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
@@ -88,19 +88,19 @@ def test_classification_missing_sentence(client):
 
 @pytest.mark.system
 def test_classification_missing_sentence_recovery(client):
-    response = client.get(
+    response = client.post(
         f'{API_URL}classify', json={})
     assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
 
     # assert that after a failed request a valid request will succeed
-    response = client.get(
+    response = client.post(
         f'{API_URL}classify', json={"sentence": sentence})
     assert response.status_code == status.HTTP_200_OK
 
 
 @pytest.mark.system
 def test_labeling(client):
-    response = client.get(
+    response = client.post(
         f'{API_URL}label', json={"sentence": sentence})
 
     assert response.status_code == status.HTTP_200_OK
@@ -111,7 +111,7 @@ def test_labeling(client):
 
 @pytest.mark.system
 def test_labeling_emtpy_sentence(client):
-    response = client.get(
+    response = client.post(
         f'{API_URL}label', json={"sentence": ""})
 
     assert response.status_code == status.HTTP_200_OK
@@ -122,7 +122,7 @@ def test_labeling_emtpy_sentence(client):
 
 @pytest.mark.system
 def test_graph(client):
-    response = client.get(
+    response = client.post(
         f'{API_URL}graph', json={"sentence": sentence})
 
     assert response.status_code == status.HTTP_200_OK
@@ -133,7 +133,7 @@ def test_graph(client):
 
 @pytest.mark.system
 def test_suite(client):
-    response = client.get(
+    response = client.post(
         f'{API_URL}testsuite', json={"sentence": sentence, "graph": graph})
 
     assert response.status_code == status.HTTP_200_OK
@@ -144,7 +144,7 @@ def test_suite(client):
 
 @pytest.mark.system
 def test_suite_missing_graph(client):
-    response = client.get(
+    response = client.post(
         f'{API_URL}testsuite', json={"sentence": sentence})
 
     assert response.status_code == status.HTTP_200_OK
