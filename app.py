@@ -5,6 +5,7 @@ import pkg_resources
 import uvicorn
 from fastapi import FastAPI, Request
 from pydantic import BaseModel
+from fastapi.middleware.cors import CORSMiddleware
 
 from src.api.service import CiRAService, CiRAServiceImpl
 
@@ -50,6 +51,15 @@ app = FastAPI(
     openapi_tags=tags_metadata
 )
 PREFIX = "/api"
+
+# add CORS middleware allowing all requests from the same localhost
+app.add_middleware(
+    CORSMiddleware,
+    allow_origin_regex='http://localhost:.*',
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"]
+)
 
 cira: CiRAService = None
 
