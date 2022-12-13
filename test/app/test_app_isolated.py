@@ -42,7 +42,7 @@ def test_health(client):
 
 @pytest.mark.unit
 def test_classification(client):
-    response = client.get(
+    response = client.put(
         f'{API_URL}classify', json={"sentence": sentence})
 
     assert response.status_code == status.HTTP_200_OK
@@ -51,7 +51,7 @@ def test_classification(client):
 
 @pytest.mark.unit
 def test_labels(client):
-    response = client.get(
+    response = client.put(
         f'{API_URL}label', json={"sentence": sentence})
 
     assert response.status_code == status.HTTP_200_OK
@@ -61,7 +61,7 @@ def test_labels(client):
 
 @pytest.mark.unit
 def test_graph(client):
-    response = client.get(
+    response = client.put(
         f'{API_URL}graph', json={"sentence": sentence})
 
     assert response.status_code == status.HTTP_200_OK
@@ -77,7 +77,7 @@ def test_graph(client):
 
 @pytest.mark.unit
 def test_suite(client):
-    response = client.get(
+    response = client.put(
         f'{API_URL}testsuite', json={"sentence": sentence, "graph": None})
 
     assert response.status_code == status.HTTP_200_OK

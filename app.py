@@ -117,25 +117,25 @@ def health():
     }
 
 
-@app.get(PREFIX + '/classify', response_model=ClassificationResponse, tags=['classify'])
+@app.put(PREFIX + '/classify', response_model=ClassificationResponse, tags=['classify'])
 async def create_classification(req: SentenceRequest):
     causal, confidence = cira.classify(req.sentence)
     return ClassificationResponse(causal=causal, confidence=confidence)
 
 
-@app.get(PREFIX + '/label', response_model=LabelingResponse, tags=['label'])
+@app.put(PREFIX + '/label', response_model=LabelingResponse, tags=['label'])
 async def create_labels(req: SentenceRequest):
     labels = cira.sentence_to_labels(sentence=req.sentence)
     return LabelingResponse(labels=labels)
 
 
-@app.get(PREFIX + '/graph', response_model=GraphResponse, tags=['graph'])
+@app.put(PREFIX + '/graph', response_model=GraphResponse, tags=['graph'])
 async def create_graph(req: SentenceRequest):
     graph = cira.sentence_to_graph(sentence=req.sentence, labels=req.labels)
     return GraphResponse(graph=graph)
 
 
-@app.get(PREFIX + '/testsuite', response_model=TestsuiteResponse, tags=['testsuite'])
+@app.put(PREFIX + '/testsuite', response_model=TestsuiteResponse, tags=['testsuite'])
 async def create_testsuite(req: SentenceRequest):
     testsuite = cira.graph_to_test(graph=req.graph, sentence=req.sentence)
     return TestsuiteResponse(suite=testsuite)
