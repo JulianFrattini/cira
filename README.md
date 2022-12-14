@@ -28,7 +28,7 @@ This package is built and tested using [Python 3.10.0](https://www.python.org/do
 
 #### Development inside a Docker Container
 
-You can develop inside a Docker container using a [pre-build image](https://hub.docker.com/r/andib/cira-dev) that contains all dependencies and the recommended classification and labeling models.
+You can develop inside a Docker container using a [pre-build image](https://github.com/JulianFrattini/cira/pkgs/container/cira-dev) that contains all dependencies and the recommended classification and labeling models.
 
 For this setup, you need
 
@@ -53,15 +53,9 @@ Build and run the Docker container via `docker compose up`.
 CiRA's functionality can then be accessed at `localhost:8080`.
 Check `localhost:8080\docs` while the container is running to access the specification of the API.
 
-### Building the cira-dev base image
+### Base image cira-dev
 
-To create and push a new multi-platform (Intel + ARM) base image based on `Dockerfile.dev` you have to run the following command:
-
-```sh
-docker buildx build --push --platform linux/arm64,linux/amd64 --tag andib/cira-dev:latest -f Dockerfile.dev .
-```
-
-Replace `andib/cira-dev:latest` with `YOUR_DOCKER_HUB_ACCOUNT/IMAGE_NAME:TAG` if you want to push the image to a different DockerHub account or change the image name.
+The application Docker image and the development container setup are based on the `cira-dev` image and is present in this repository's [packages section](https://github.com/JulianFrattini?tab=packages&repo_name=cira).
 
 ## Tests
 
