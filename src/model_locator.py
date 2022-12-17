@@ -2,16 +2,24 @@ import os
 import dotenv
 
 
-def __loadModelEnv(model: str) -> str:
+def __load_model_env(model: str) -> str:
     dotenv.load_dotenv()
-    model_env_suffix = '_DEV' if ('DEV_CONTAINER' in os.environ) else ''
-    model_env = model + model_env_suffix
-    return os.environ[model_env]
+
+    path_from_env_file = os.getenv(model)
+    if path_from_env_file is not None:
+        return path_from_env_file
+
+    path_inside_container = os.getenv(model + '_DEV')
+
+    if path_inside_container is None:
+        raise NameError(f'Unable to locate model from env {model}')
+
+    return str(path_inside_container)
 
 
 def labeling() -> str:
-    return __loadModelEnv('MODEL_LABELING')
+    return __load_model_env('MODEL_LABELING')
 
 
 def classification() -> str:
-    return __loadModelEnv('MODEL_CLASSIFICATION')
+    return __load_model_env('MODEL_CLASSIFICATION')
