@@ -1,13 +1,12 @@
 import pytest 
-import os, dotenv
-dotenv.load_dotenv()
 
+import model_locator
 from src.converters.sentencetolabels.labeler import Labeler
 from src.data.labels import Label, SubLabel
 
 @pytest.fixture(scope="module")
 def labeler() -> Labeler:
-    return Labeler(model_path=os.environ['MODEL_LABELING'], useGPU=False)
+    return Labeler(model_path=model_locator.labeling(), useGPU=False)
 
 @pytest.mark.integration
 def test_comma(labeler: Labeler):

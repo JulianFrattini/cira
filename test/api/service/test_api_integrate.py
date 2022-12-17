@@ -1,7 +1,6 @@
-import os
-import dotenv
 import pytest
 
+import model_locator
 from src.api.service import CiRAServiceImpl
 
 sentence: str = "If the button is pressed then the system shuts down."
@@ -34,15 +33,9 @@ suite = {
 
 @pytest.fixture(scope="module")
 def sut() -> CiRAServiceImpl:
-    # determine the location of the classification and labeling model
-    dotenv.load_dotenv()
-    model_env_suffix = '_DEV' if ('DEV_CONTAINER' in os.environ) else ''
-    model_classification = os.environ[f'MODEL_CLASSIFICATION{model_env_suffix}']
-    model_labeling = os.environ[f'MODEL_LABELING{model_env_suffix}']
-
     # create the system under test
     service = CiRAServiceImpl(
-        model_classification=model_classification, model_labeling=model_labeling)
+        model_classification=model_locator.classification(), model_labeling=model_locator.labeling())
     return service
 
 
