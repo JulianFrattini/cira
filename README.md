@@ -22,7 +22,7 @@ This repostitory contains a Python implementation of the functions around the [c
 This package is built and tested using [Python 3.10.0](https://www.python.org/downloads/release/python-3100/). To use the CiRA pipeline locally, perform the following steps:
 
 1. Make sure the [Rust compiler](https://www.rust-lang.org/tools/install) is installed on your system, as the `tokenizer` package depends on it.
-2. Install all required dependencies via `pip3 install -e .` or `pip3 install -r requirements.txt`.
+2. Install all required dependencies via `pip3 install -e ".[dev]"` or `pip3 install -e .` if you only want production dependencies.
 3. Download and unzip the pre-trained [classification and labeling models](https://doi.org/10.5281/zenodo.7186287) or use the `download-models.sh` script.
 4. Create a `.env` file and specify the variables `MODEL_CLASSIFICATION` and `MODEL_LABELING` with the location of the respective models.
 
