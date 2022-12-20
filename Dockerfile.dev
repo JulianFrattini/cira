@@ -15,7 +15,7 @@ ENV MODEL_LABELING_DEV=/app/model/cira-labeler.ckpt
 # Required for Jupyter
 RUN pip3 install ipykernel
 
-# Install Python dependencies
-COPY requirements.txt .
-RUN pip3 install -r requirements.txt
-
+# Install Python dependencies and setup cira version
+COPY setup.py .
+COPY README.md .
+RUN pip3 install --no-cache-dir -e ".[dev]"
