@@ -25,10 +25,12 @@ setup(
         'fastapi==0.85.0',
         'pydantic==1.10.2'
     ],
-    extras_require = {
+    extras_require={
         'dev': [
-            'pytest==7.1',
-            'pytest-cov==3.0'
+            'pytest==7.1.3',
+            'pytest-cov==3.0',
+            'pytest-env==0.8.1'
         ],
     },
 )
+
