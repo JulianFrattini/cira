@@ -40,7 +40,7 @@ suite = {
 def client() -> TestClient:
     # create the system under test
     app.cira = CiRAServiceImpl(
-        model_classification=model_locator.classification(), model_labeling=model_locator.labeling())
+        model_classification=model_locator.CLASSIFICATION, model_labeling=model_locator.LABELING)
 
     client = TestClient(app.app)
     return client

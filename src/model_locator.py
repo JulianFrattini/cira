@@ -3,7 +3,6 @@ import dotenv
 
 
 def __load_model_env(model: str) -> str:
-    dotenv.load_dotenv()
 
     path_from_env_file = os.getenv(model)
     if path_from_env_file is not None:
@@ -17,9 +16,6 @@ def __load_model_env(model: str) -> str:
     return str(path_inside_container)
 
 
-def labeling() -> str:
-    return __load_model_env('MODEL_LABELING')
-
-
-def classification() -> str:
-    return __load_model_env('MODEL_CLASSIFICATION')
+dotenv.load_dotenv()
+LABELING = __load_model_env('MODEL_LABELING')
+CLASSIFICATION = __load_model_env('MODEL_CLASSIFICATION')

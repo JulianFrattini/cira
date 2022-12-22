@@ -6,7 +6,7 @@ from src.data.labels import Label, SubLabel
 
 @pytest.fixture(scope="module")
 def labeler() -> Labeler:
-    return Labeler(model_path=model_locator.labeling(), useGPU=False)
+    return Labeler(model_path=model_locator.LABELING, useGPU=False)
 
 @pytest.mark.integration
 def test_comma(labeler: Labeler):

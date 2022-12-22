@@ -16,7 +16,7 @@ def sentence(id: str):
 
 @pytest.fixture(scope="module")
 def labeler():
-    return Labeler(model_path=model_locator.labeling(), useGPU=False)
+    return Labeler(model_path=model_locator.LABELING, useGPU=False)
 
 # currently excluded: sentence 13 (there is a tripple-labeling on "NO defect" with Cause3, Variable, and Negation)
 @pytest.mark.system

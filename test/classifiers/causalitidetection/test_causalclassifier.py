@@ -5,7 +5,7 @@ from src.classifiers.causalitydetection.causalclassifier import CausalClassifier
 
 @pytest.fixture(scope="module")
 def sut() -> CausalClassifier:
-    return CausalClassifier(model_locator.classification())
+    return CausalClassifier(model_locator.CLASSIFICATION)
 
 @pytest.mark.system
 @pytest.mark.parametrize('sentence, causal', [

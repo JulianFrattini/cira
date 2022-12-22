@@ -66,12 +66,10 @@ cira: CiRAService = None
 def setup_cira():
     global cira
 
-    model_classification = model_locator.classification()
-    model_labeling = model_locator.labeling()
-    print(f'Classification model path: {model_classification}')
-    print(f'Labeling model path: {model_labeling}')
+    print(f'Classification model path: {model_locator.CLASSIFICATION}')
+    print(f'Labeling model path: {model_locator.LABELING}')
     # generate a CiRA service implementation
-    cira = CiRAServiceImpl(model_classification, model_labeling)
+    cira = CiRAServiceImpl(model_locator.CLASSIFICATION, model_locator.LABELING)
 
 
 class SentenceRequest(BaseModel):

@@ -35,7 +35,7 @@ suite = {
 def sut() -> CiRAServiceImpl:
     # create the system under test
     service = CiRAServiceImpl(
-        model_classification=model_locator.classification(), model_labeling=model_locator.labeling())
+        model_classification=model_locator.CLASSIFICATION, model_labeling=model_locator.LABELING)
     return service
 
 
