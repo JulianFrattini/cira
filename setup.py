@@ -29,7 +29,8 @@ setup(
         'dev': [
             'pytest==7.1.3',
             'pytest-cov==3.0',
-            'pytest-env==0.8.1'
+            'pytest-env==0.8.1',
+            'pytest-mock==3.10.0'
         ],
     },
 )
