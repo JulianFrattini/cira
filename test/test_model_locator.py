@@ -1,5 +1,5 @@
 import pytest
-import model_locator
+from src import model_locator
 
 
 @pytest.mark.unit

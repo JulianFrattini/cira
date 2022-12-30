@@ -1,6 +1,6 @@
 import pytest 
 
-import model_locator
+from src import model_locator
 from src.converters.sentencetolabels.labeler import Labeler
 from src.data.labels import Label, SubLabel
 

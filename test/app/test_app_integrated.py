@@ -3,7 +3,7 @@ import pytest
 from fastapi.testclient import TestClient
 from fastapi import status
 
-import model_locator
+from src import model_locator
 import app
 from src.api.service import CiRAServiceImpl
 

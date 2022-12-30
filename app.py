@@ -5,7 +5,7 @@ from fastapi import FastAPI, Request
 from pydantic import BaseModel
 from fastapi.middleware.cors import CORSMiddleware
 
-import model_locator
+from src import model_locator
 from src.api.service import CiRAService, CiRAServiceImpl
 
 cira_version = pkg_resources.require("cira")[0].version

@@ -1,6 +1,6 @@
 import pytest
 
-import model_locator
+from src import model_locator
 from src.classifiers.causalitydetection.causalclassifier import CausalClassifier
 
 @pytest.fixture(scope="module")

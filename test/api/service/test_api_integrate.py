@@ -1,6 +1,6 @@
 import pytest
 
-import model_locator
+from src import model_locator
 from src.api.service import CiRAServiceImpl
 
 sentence: str = "If the button is pressed then the system shuts down."
