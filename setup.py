@@ -7,7 +7,7 @@ setup(
     name='cira',
     author='Julian Frattini',
     author_email='juf@bth.se',
-    version='0.9.3',
+    version='0.9.4',
     description='Implementation of the Causality in Requirements Artifacts (CiRA) functionality',
     long_description=long_description,
     long_description_content_type='text/markdown',
@@ -25,10 +25,13 @@ setup(
         'fastapi==0.85.0',
         'pydantic==1.10.2'
     ],
-    extras_require = {
+    extras_require={
         'dev': [
-            'pytest==7.1',
-            'pytest-cov==3.0'
+            'pytest==7.1.3',
+            'pytest-cov==3.0',
+            'pytest-env==0.8.1',
+            'pytest-mock==3.10.0'
         ],
     },
 )
+

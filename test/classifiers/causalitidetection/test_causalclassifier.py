@@ -1,12 +1,11 @@
 import pytest
-import os, dotenv
-dotenv.load_dotenv()
 
+from src import model_locator
 from src.classifiers.causalitydetection.causalclassifier import CausalClassifier
 
 @pytest.fixture(scope="module")
 def sut() -> CausalClassifier:
-    return CausalClassifier(model_path=os.environ['MODEL_CLASSIFICATION'])
+    return CausalClassifier(model_locator.CLASSIFICATION)
 
 @pytest.mark.system
 @pytest.mark.parametrize('sentence, causal', [

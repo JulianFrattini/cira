@@ -1,5 +1,3 @@
-import os
-import dotenv
 import pkg_resources
 
 import uvicorn
@@ -7,6 +5,7 @@ from fastapi import FastAPI, Request
 from pydantic import BaseModel
 from fastapi.middleware.cors import CORSMiddleware
 
+from src import model_locator
 from src.api.service import CiRAService, CiRAServiceImpl
 
 cira_version = pkg_resources.require("cira")[0].version
@@ -67,14 +66,10 @@ cira: CiRAService = None
 def setup_cira():
     global cira
 
-    # determine the location of the pre-trained models
-    dotenv.load_dotenv()
-    model_env_suffix = '_DEV' if ('DEV_CONTAINER' in os.environ) else ''
-    model_classification = os.environ[f'MODEL_CLASSIFICATION{model_env_suffix}']
-    model_labeling = os.environ[f'MODEL_LABELING{model_env_suffix}']
-
+    print(f'Classification model path: {model_locator.CLASSIFICATION}')
+    print(f'Labeling model path: {model_locator.LABELING}')
     # generate a CiRA service implementation
-    cira = CiRAServiceImpl(model_classification, model_labeling)
+    cira = CiRAServiceImpl(model_locator.CLASSIFICATION, model_locator.LABELING)
 
 
 class SentenceRequest(BaseModel):
