@@ -14,15 +14,15 @@ jobs:
   test:
 
     runs-on: ubuntu-latest
-    container: andib/cira-dev:latest
+    container: ghcr.io/julianfrattini/cira-dev:latest
 
     steps:
     - uses: actions/checkout@v3
-    
+
     - name: Install dependencies
       run: |
         pip install -e ".[dev]"
-        
+
     - name: Test with pytest
       run: |
         pytest
