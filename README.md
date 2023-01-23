@@ -6,12 +6,56 @@
 
 ## Summary of Artifact
 
-This repostitory contains a Python implementation of the functions around the [causality in requirements artifacts (CiRA) initiative](http://www.cira.bth.se/). The initiative is centered around the notion of causal requirements and causality extraction for automatic test case generation. In particular, the main pipeline offers the following functionality:
+This repostitory contains a Python implementation of the functions around the [causality in requirements artifacts (CiRA) initiative](http://www.cira.bth.se/). The initiative is centered around the notion of causal requirements and causality extraction for automatic test case generation. 
+
+### Features
+
+The main pipeline offers the following functionality:
 
 1. Classifying a sentence regarding its causality (binary classification: causal/non-causal)
 2. Labeling the elements of a causal relationship within a causal sentence.
 3. Transforming a labeled sentence into a cause-effect graph representing the causal relationship.
 4. Transforming a cause-effect graph into a minimal set of test cases (test suite) asserting the behavior implied by the sentence.
+
+### Example
+
+The features can be visualized considering the following example sentence:
+
+> If an error is present and the debugger is active or an exception is triggered then a log entry will be created.
+
+#### 1. Classification
+
+This contrived requirement represents a causal relationship between four events, hence the binary classifier will classify it as `causal`. 
+
+#### 2. Labeling
+
+Labeling the sentence will produce a list of labels that can be visualized as follows (visualization using [labviz](https://github.com/JulianFrattini/labviz)):
+
+![Visualization of the labeled causal sentence](./doc/visualization-labels.PNG)
+
+Every label consists of a *type* (e.g., `Cause1`, `Variable`), and a *begin* and *end* index, representing the characters it spans across. These labels make explicit, which role each part of the sentence takes in the causal relationship. 
+
+#### 3. Graph Construction
+
+Based on these labels, the causal relationship can be reconstructed in the form of a cause-effect graph (visualization using [labviz](https://github.com/JulianFrattini/labviz)):
+
+![Visualization of the derived cause-effect graph](./doc/visualization-graph.PNG)
+
+The cause-effect graph represents the causal relationship implied by the natural language sentence, but is much easier to process. 
+
+#### 4. Test Case Generation
+
+A minimal set of test cases covering the requirement can be derived from this cause-effect graph:
+
+| id | an exception | an error | the debugger | **a log entry** |
+|---|---|---|---|---|
+| 1 | is triggered | not is present | is active | will be created |
+| 2 | is triggered | is present | not is active | will be created |
+| 3 | not is triggered | is present | is active | will be created |
+| 4 | not is triggered | not is present | is active | not will be created |
+| 5 | not is triggered | is present | not is active | not will be created |
+
+The first three columns after the index represent the input values and the last column represents the expected outcome. These five test cases completely cover the requirement from a combinatorial standpoint.
 
 ## Development
 
