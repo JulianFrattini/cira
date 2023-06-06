@@ -104,3 +104,9 @@ The application Docker image and the development container setup are based on th
 ## Tests
 
 Run all tests via `pytest`.
+
+## License
+
+Copyright © 2023 Julian Frattini
+
+This work (source code) is licensed under  [Apache License Version 2.0](./LICENSE).
