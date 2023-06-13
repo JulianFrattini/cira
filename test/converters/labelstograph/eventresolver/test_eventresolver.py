@@ -97,3 +97,22 @@ def test_join_two_labels():
 
     assert event.variable == 'The button'
     assert event.condition == 'is pressed'
+
+@pytest.mark.integration
+def test_join_two_sublabels():
+    resolver = SimpleResolver()
+    sentence = "Data transmission is only possible"
+
+    e1_1 = EventLabel(id='L1', name='Effect1', begin=0, end=20)
+    e1_1.add_child(SubLabel(id='L2', name='Variable', begin=0, end=17))
+    e1_1.add_child(SubLabel(id='L3', name='Condition', begin=18, end=20))
+    e1_2 = EventLabel(id='L4', name='Effect1', begin=26, end=34)
+    e1_2.add_child(SubLabel(id='L5', name='Condition', begin=26, end=34))
+
+    e1_1.set_successor(e1_2, junctor='MERGE')
+
+    event = EventNode(id='N1', labels=[e1_1, e1_2])
+    resolver.resolve_event(node=event, sentence=sentence)
+
+    assert event.variable == 'Data transmission'
+    assert event.condition == 'is possible'
