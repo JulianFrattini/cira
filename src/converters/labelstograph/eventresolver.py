@@ -3,34 +3,35 @@ from abc import ABC, abstractmethod
 from src.data.graph import EventNode
 from src.data.labels import EventLabel
 
+
 class EventResolver(ABC):
     @abstractmethod
     def resolve_event(self, node: EventNode, sentence: str):
         pass
 
+
 class SimpleResolver(EventResolver):
     def resolve_event(self, node: EventNode, sentence: str):
         """Determine the variable and the condition of a node dependent on the following conditions: (1) if the EventLabel associated to the EventNode has at least one SubLabel child that is a variable/condition, use the text covered by those labels as variable/condition.
-        
+
         parameters:
             node -- the node where the variable and condition shall be set
             sentence -- the verbatim sentence from which the variable and condition will be taken"""
 
         for attribute in ['Variable', 'Condition']:
-            candidates: list[EventLabel] = node.labels + get_events_in_order(starting_node=node, attribute=attribute)
-            candidates_grouped: list[list[EventLabel]] = join_event_labels(candidates)
+            candidates: list[EventLabel] = node.labels + \
+                get_events_in_order(starting_node=node, attribute=attribute)
+            candidates_grouped: list[list[EventLabel]
+                                     ] = join_event_labels(candidates)
 
             for candidate_group in candidates_grouped:
-                node_attribute_values: list[str] = []
-                for candidate_label in candidate_group:
-                    value = candidate_label.get_attribute(attribute=attribute, sentence=sentence)
-                    if value != None:
-                        node_attribute_values.append(value)
-                
-                if len(node_attribute_values) > 0:
-                    node_attribute: str = " ".join(node_attribute_values)
+                node_attribute: str = get_attribute_of_eventlabel_group(
+                    event_label_group=candidate_group, attribute=attribute, sentence=sentence)
+
+                if node_attribute != None:
                     setattr(node, attribute.lower(), node_attribute)
                     break
+
 
 def get_events_in_order(starting_node: EventNode, attribute: str) -> list[EventLabel]:
     """Obtain a list of EventLabel's in the order of relevance (dominant order for variables is preceeding, because in case of a missing variable (e.g., "the red button is pressed or released") the variable is more likely to be located in the preceeding event, and for conditions is succeeding), preferring events of the same type (cause/effect).
@@ -46,13 +47,17 @@ def get_events_in_order(starting_node: EventNode, attribute: str) -> list[EventL
     # determine the event type of a node (either "Cause" or "Effect")
     event_type_of_node = starting_node.labels[0].name[:-1]
 
-    for event_type in (['Cause', 'Effect'] if event_type_of_node=='Cause' else ['Effect', 'Cause']):
-        for direction in (['predecessor', 'successor'] if attribute=='Variable' else ['successor', 'predecessor']):
+    for event_type in (['Cause', 'Effect'] if event_type_of_node == 'Cause' else ['Effect', 'Cause']):
+        for direction in (['predecessor', 'successor'] if attribute == 'Variable' else ['successor', 'predecessor']):
             # determine the label to start with
-            starting_label = starting_node.labels[0 if direction=='predecessor' else -1]
-            candidates = candidates + get_all_neighbors_of_type(startlabel=starting_label, direction=direction, type=event_type)
+            starting_label = starting_node.labels[0 if direction ==
+                                                  'predecessor' else -1]
+            candidates = candidates + \
+                get_all_neighbors_of_type(
+                    startlabel=starting_label, direction=direction, type=event_type)
 
     return candidates
+
 
 def get_all_neighbors_of_type(startlabel: EventLabel, direction: str, type: str) -> list[EventLabel]:
     """Starting from a given label and going into a specific direction, add all labels of the same type to a list
@@ -69,18 +74,20 @@ def get_all_neighbors_of_type(startlabel: EventLabel, direction: str, type: str)
     next_label = startlabel
     while getattr(next_label, direction) != None:
         neighbor = getattr(next_label, direction)
-        next_label: EventLabel = getattr(neighbor, 'target' if direction=='successor' else 'origin')
+        next_label: EventLabel = getattr(
+            neighbor, 'target' if direction == 'successor' else 'origin')
         if next_label.name.startswith(type):
             result.append(next_label)
 
     return result
 
+
 def join_event_labels(event_labels: list[EventLabel]) -> list[list[EventLabel]]:
     """Given a list of event labels, return a list of list of labels, where every sub-list contains all adjacent labels of the same type (e.g., Cause1).
-    
+
     parameters:
-        event_labels: list of EventLabels in order of relevance
-    
+        event_labels -- list of EventLabels in order of relevance
+
     returns: list of lists, where each sublist contains all adjacent event labels of the same type"""
 
     joined_list: list[list[EventLabel]] = []
@@ -91,10 +98,10 @@ def join_event_labels(event_labels: list[EventLabel]) -> list[list[EventLabel]]:
         if event_label.name != current_type:
             if len(type_list) > 0:
                 joined_list.append(type_list)
-            
+
             # reset the list containing all labels of the current type
             type_list = []
-            
+
             # remember the current type
             current_type = event_label.name
 
@@ -104,3 +111,26 @@ def join_event_labels(event_labels: list[EventLabel]) -> list[list[EventLabel]]:
     joined_list.append(type_list)
 
     return joined_list
+
+
+def get_attribute_of_eventlabel_group(event_label_group: list[EventLabel], attribute: str, sentence: str) -> str:
+    """Given a list of event labels of the same type (e.g., Cause1), determine the attribute (either "Variable" or "Condition") of this event by (1) determining all relevant sublabels (as the list of event labels might be associated with multiple sublabels for that attribute) and (2) extracting the sections of the sentence, which are labeled by these sublabels.
+
+    parameters:
+        event_label_group: list of event labels of the same type
+        attribute -- either "Variable" or "Condition"
+        sentence -- natural language sentence to which the labels apply
+
+    returns:
+        attribute -- a string extracted from the sections of the sentence covered by the attribute labels of the event label group
+        None -- if the event label group contains no sub labels for the attribute"""
+
+    node_attribute_values: list[str] = []
+    for candidate_label in event_label_group:
+        value = candidate_label.get_attribute(attribute, sentence)
+        if value != None:
+            node_attribute_values.append(value)
+
+    if len(node_attribute_values) > 0:
+        return " ".join(node_attribute_values)
+    return None
