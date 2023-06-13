@@ -17,12 +17,19 @@ class SimpleResolver(EventResolver):
             sentence -- the verbatim sentence from which the variable and condition will be taken"""
 
         for attribute in ['Variable', 'Condition']:
-            candidates = node.labels + get_events_in_order(starting_node=node, attribute=attribute)
+            candidates: list[EventLabel] = node.labels + get_events_in_order(starting_node=node, attribute=attribute)
+            candidates_grouped: list[list[EventLabel]] = join_event_labels(candidates)
 
-            for candidate in candidates:
-                value = candidate.get_attribute(attribute=attribute, sentence=sentence)
-                if value != None:
-                    setattr(node, attribute.lower(), value)
+            for candidate_group in candidates_grouped:
+                node_attribute_values: list[str] = []
+                for candidate_label in candidate_group:
+                    value = candidate_label.get_attribute(attribute=attribute, sentence=sentence)
+                    if value != None:
+                        node_attribute_values.append(value)
+                
+                if len(node_attribute_values) > 0:
+                    node_attribute: str = " ".join(node_attribute_values)
+                    setattr(node, attribute.lower(), node_attribute)
                     break
 
 def get_events_in_order(starting_node: EventNode, attribute: str) -> list[EventLabel]:

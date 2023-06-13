@@ -2,8 +2,7 @@ import pytest
 
 from src.converters.labelstograph.eventresolver import join_event_labels
 
-from src.data.graph import EventNode
-from src.data.labels import EventLabel, SubLabel
+from src.data.labels import EventLabel
 
 @pytest.mark.unit
 def test_no_join():
