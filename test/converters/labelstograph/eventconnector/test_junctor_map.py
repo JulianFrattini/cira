@@ -81,5 +81,4 @@ def test_causes_after_events():
         EventNode(id='E3', labels=[c2])]
 
     junctors = get_junctors(events=causes)
-    print(junctors)
     assert junctors[('E2', 'E3')] == 'OR'
