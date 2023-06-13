@@ -1,7 +1,7 @@
 # CiRA Pipeline
 
 [![GitHub](https://img.shields.io/github/license/JulianFrattini/cira)](./LICENSE)
-[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.7186287.svg)](https://doi.org/10.5281/zenodo.7186287)
+[![DOI](https://zenodo.org/badge/456568427.svg)](https://zenodo.org/badge/latestdoi/456568427)
 [![Pytest](https://github.com/JulianFrattini/cira/actions/workflows/pytest.yml/badge.svg)](https://github.com/JulianFrattini/cira/actions/workflows/pytest.yml)
 
 ## Summary of Artifact
