@@ -67,3 +67,33 @@ def get_all_neighbors_of_type(startlabel: EventLabel, direction: str, type: str)
             result.append(next_label)
 
     return result
+
+def join_event_labels(event_labels: list[EventLabel]) -> list[list[EventLabel]]:
+    """Given a list of event labels, return a list of list of labels, where every sub-list contains all adjacent labels of the same type (e.g., Cause1).
+    
+    parameters:
+        event_labels: list of EventLabels in order of relevance
+    
+    returns: list of lists, where each sublist contains all adjacent event labels of the same type"""
+
+    joined_list: list[list[EventLabel]] = []
+
+    current_type: str = ""
+    type_list: list[EventLabel] = []
+    for event_label in event_labels:
+        if event_label.name != current_type:
+            if len(type_list) > 0:
+                joined_list.append(type_list)
+            
+            # reset the list containing all labels of the current type
+            type_list = []
+            
+            # remember the current type
+            current_type = event_label.name
+
+        type_list.append(event_label)
+
+    # add the final list of labels from the last observed type
+    joined_list.append(type_list)
+
+    return joined_list
