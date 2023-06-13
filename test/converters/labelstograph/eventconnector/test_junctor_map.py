@@ -67,3 +67,19 @@ def test_overruled_precedence():
 
     junctors = get_junctors(events=nodes)
     assert junctors[('E2', 'E3')] == 'POR'
+
+@pytest.mark.unit
+def test_causes_after_events():
+    e1 = EventLabel(id='L1', name='Effect1', begin=0, end = 10)
+    c1 = EventLabel(id='L2', name='Cause1', begin=15, end=20)
+    c2 = EventLabel(id='L3', name='Cause2', begin=25, end=30)
+    e1.set_successor(successor=c1, junctor=None)
+    c1.set_successor(successor=c2, junctor='OR')
+
+    causes = [ 
+        EventNode(id='E2', labels=[c1]), 
+        EventNode(id='E3', labels=[c2])]
+
+    junctors = get_junctors(events=causes)
+    print(junctors)
+    assert junctors[('E2', 'E3')] == 'OR'
