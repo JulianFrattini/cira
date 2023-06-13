@@ -17,9 +17,9 @@ labels: list[dict] = [
 ]
 
 graph = {
-    'nodes': [{'id': 'E0', 'variable': 'the button', 'condition': 'is pressed'}, {'id': 'E1', 'variable': 'the system', 'condition': 'shuts down'}],
-    'root': 'E0',
-    'edges': [{'origin': 'E0', 'target': 'E1', 'negated': False}]
+    'nodes': [{'id': 'E1', 'variable': 'the button', 'condition': 'is pressed'}, {'id': 'E0', 'variable': 'the system', 'condition': 'shuts down'}],
+    'root': 'E1',
+    'edges': [{'origin': 'E1', 'target': 'E0', 'negated': False}]
 }
 
 suite = {
