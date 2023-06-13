@@ -45,8 +45,8 @@ def get_junctors(events: list[EventNode]) -> dict:
     
     junctor_map = {}
 
-    # get the starting node (the cause event node which has no predecessor)
-    current_node: EventNode = [event for event in events if (event.labels[0].predecessor == None)][0]
+    # get the starting node (the cause event node associated to the event label with the lowest begin index)
+    current_node: EventNode = sorted(events, key=lambda event: event.labels[0].begin, reverse=False)[0]
     while current_node.labels[-1].successor != None:
         label1 = current_node.labels[-1]
         label2 = label1.successor.target
