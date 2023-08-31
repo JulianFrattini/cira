@@ -54,7 +54,7 @@ PREFIX = "/api"
 # add CORS middleware allowing all requests from the same localhost
 app.add_middleware(
     CORSMiddleware,
-    allow_origin_regex='http://localhost:.*',
+    allow_origins=['*'],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"]
