@@ -70,6 +70,15 @@ This package is built and tested using [Python 3.10.0](https://www.python.org/do
 3. Download and unzip the pre-trained [classification and labeling models](https://doi.org/10.5281/zenodo.7186287) or use the `download-models.sh` script.
 4. Create a `.env` file and specify the variables `MODEL_CLASSIFICATION` and `MODEL_LABELING` with the location of the respective models.
 
+You can use the following command to create a default `.env` file that targets the model files that were downloaded with the `download-models.sh` script:
+
+```sh
+cat <<EOT >> .env         
+MODEL_LABELING=model/cira-labeler.ckpt
+MODEL_CLASSIFICATION=model/cira-classifier.bin
+EOT
+```
+
 #### Development inside a Docker Container
 
 You can develop inside a Docker container using a [pre-build image](https://github.com/JulianFrattini/cira/pkgs/container/cira-dev) that contains all dependencies and the recommended classification and labeling models.
