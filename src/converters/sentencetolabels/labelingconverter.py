@@ -4,7 +4,7 @@ from torch import Tensor
 import re
 
 from src.data.labels import Label, EventLabel, SubLabel
-import src.util.constants as constants
+import src.util.constants as consts
 
 from src.converters.sentencetolabels.labelrecovery import recover_labels
 
@@ -15,18 +15,18 @@ class TokenLabel:
     event: bool
     name: str
 
-def convert(sentence_tokens: list[str], sentence: str, predictions: Tensor) -> list[Label]: 
+def convert(sentence_tokens: list[str], sentence: str, predictions: Tensor) -> list[Label]:
     """Convert the list of sentence tokens and the list of predictions into a list of label objects
-    
-    parameters: 
+
+    parameters:
         sentence_tokens -- list of tokens of the labeled sentence (words) as produced by the labeler
         sentence -- actual sentence
         predictions -- matrix of predictions (valid labels for each token)
-        
+
     returns: list of actual labels on the sentence"""
     # convert the list of sentence tokens, predictions, and labels into a list of token labels, where each token is associated with up to two labels
     token_labels = get_token_labeling(sentence_tokens=sentence_tokens, sentence=sentence, predictions=predictions)
-    
+
     # merge all adjacent labels
     labels: list[Label] = merge_labels(token_labels=token_labels)
 
@@ -40,12 +40,12 @@ def convert(sentence_tokens: list[str], sentence: str, predictions: Tensor) -> l
 
 def get_token_labeling(sentence_tokens: list[str], sentence: str, predictions: Tensor) -> list[TokenLabel]:
     """Convert the list of sentence tokens, predictions, and label ids into a list of tokens associated to all available labels
-    
-    parameters: 
+
+    parameters:
         sentence_tokens -- list of sentence tokens (usually one token per word or special character)
         sentence -- full sentence which comprises of the sentence_tokens
         predictions -- list of predictions for each token, associating each available label with a weight within [0;1]
-    
+
     returns: list of token labels, containing one object for each token label (max 2 per token)
     """
     token_labels: list[TokenLabel] = []
@@ -70,19 +70,19 @@ def get_token_labeling(sentence_tokens: list[str], sentence: str, predictions: T
         # get all labels associated to a token
         for label_prediction_idx, label_prediction in enumerate(token_prediction):
             if label_prediction == 1:
-                #token_predicted_labels.append(label_ids_verbose[label_prediction_idx]) 
-                label = constants.LABEL_IDS_VERBOSE[label_prediction_idx]
-                if label != 'notrelevant':
+                #token_predicted_labels.append(label_ids_verbose[label_prediction_idx])
+                label = consts.LABEL_IDS_VERBOSE[label_prediction_idx]
+                if label != consts.NOTRELEVANT:
                     token_labels.append(TokenLabel(
-                        begin=cursor, 
-                        end=cursor+len(token), 
-                        event = 'Cause' in label or 'Effect' in label, 
+                        begin=cursor,
+                        end=cursor+len(token),
+                        event = consts.is_event(label),
                         name=label))
 
-        # move the cursor to the end of the current token              
+        # move the cursor to the end of the current token
         cursor += len(token)
 
-        
+
     return token_labels
 
 def merge_labels(token_labels: list[TokenLabel]) -> list[Label]:
@@ -93,17 +93,17 @@ def merge_labels(token_labels: list[TokenLabel]) -> list[Label]:
         labels -- list of used labels in order
 
     returns:
-        list of merged labels 
+        list of merged labels
     """
     merged_labels: list[Label] = []
     id_counter = 0
     # keep track of event borders (begin and end of an event label)
     event_borders = []
 
-    for ltype in constants.LABEL_IDS_VERBOSE:
+    for ltype in consts.LABEL_IDS_VERBOSE:
         # get all labels of that type in the list of token labels
         all_of_type = [tl for tl in token_labels if tl.name==ltype]
-        
+
         # merge adjacent token labels with one exception: if two second-level labels (Variable or Condition) are adjacent, but both belong to two different first-level (event) labels (Cause1/2/3, Event1/2/3), don't merge them
         if len(all_of_type) > 1:
             for index in range(len(all_of_type)-1, 0, -1):
@@ -114,11 +114,12 @@ def merge_labels(token_labels: list[TokenLabel]) -> list[Label]:
                     a = all_of_type.pop(index-1)
                     merged = TokenLabel(begin=a.begin, end=b.end, event=a.event, name=a.name)
                     all_of_type.insert(index-1, merged)
-                    
+
         for l in all_of_type:
             idv = f'L{id_counter}'
             label: Label = None
-            if l.name[:-1] in ['Cause', 'Effect']:
+            label_trimmed = l.name[:-1]
+            if consts.is_event(label_trimmed):
                 label = EventLabel(id=idv, name=l.name, begin=l.begin, end=l.end)
                 event_borders.extend([l.begin, l.end])
             else:
@@ -130,12 +131,12 @@ def merge_labels(token_labels: list[TokenLabel]) -> list[Label]:
 
 def connect_labels(labels: list[Label]) -> None:
     """Connect event labels with their connected child labels and their neighbors
-    
+
     parameters:
         labels -- list of unconnected labels (both EventLabels and SubLabels)
     """
     event_labels: list[EventLabel] = [label for label in labels if type(label) == EventLabel]
-    
+
     for event_label in event_labels:
         children = [label for label in labels if (type(label) == SubLabel and label.begin >= event_label.begin and label.end <= event_label.end)]
         for child in children:
@@ -148,36 +149,36 @@ def connect_labels(labels: list[Label]) -> None:
         junctors: list[SubLabel] = get_junctors_between(labels=labels, first=event_labels[index], second=event_labels[index+1])
         junctor: str = None
         if len(junctors) == 1:
-            junctor = 'AND' if junctors[0].name == 'Conjunction' else 'OR'
+            junctor = consts.AND if junctors[0].name == consts.CONJUNCTION else consts.OR
 
             if overruled_precedence:
-                if junctor == 'OR':
+                if junctor == consts.OR:
                     # disjunctions introduced by an overruling precedence get priority
-                    junctor = "POR"
+                    junctor = consts.POR
                 else:
                     # a conjunction ends the overruling precedence
                     overruled_precedence = False
         elif len(junctors) > 1:
             junctor_names = [junctor.name for junctor in junctors]
             # adapted precedence: in the case of "A and either B or C" the precedence of the disjunction is higher than of the conjunction
-            if 'Conjunction' in junctor_names and 'Disjunction' in junctor_names:
+            if consts.CONJUNCTION in junctor_names and consts.DISJUNCTION in junctor_names:
                 # as a result, this junctor will remain AND, but all following disjunctions will be high-precedence ORs
-                junctor = 'AND'
+                junctor = consts.AND
                 overruled_precedence = True
         event_labels[index].set_successor(successor=event_labels[index+1], junctor=junctor)
-        
+
 
 def get_junctors_between(labels: list[Label], first: EventLabel, second: EventLabel) -> list[SubLabel]:
     """Retrieve all junctors between the first and second event label
-    
+
     parameters:
         labels -- list of all labels
         first -- event label from whose end point the search begins
         second -- event label where the search ends
-        
+
     returns: all conjunctions and disjunctions between the two event labels"""
 
-    junctors: list[SubLabel] = [label for label in labels if (label.begin >= first.end and label.end <= second.begin and label.name in ['Conjunction', 'Disjunction'])]
+    junctors: list[SubLabel] = [label for label in labels if (label.begin >= first.end and label.end <= second.begin and consts.is_junctor(label.name))]
 
     return junctors
 
