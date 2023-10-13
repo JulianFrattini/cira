@@ -1,0 +1,106 @@
+{
+    "sentence": "Before access permissions are deactivated, I receive information as to which app functions will no longer work (in full).",
+    "labels": [
+        {
+            "id": "T1",
+            "name": "Cause1",
+            "begin": 7,
+            "end": 41,
+            "successor": {
+                "id": "T5",
+                "junctor": null
+            },
+            "children": [
+                "T2",
+                "T3"
+            ]
+        },
+        {
+            "id": "T2",
+            "name": "Variable",
+            "begin": 7,
+            "end": 25,
+            "parent": "T1"
+        },
+        {
+            "id": "T3",
+            "name": "Condition",
+            "begin": 26,
+            "end": 41,
+            "parent": "T2"
+        },
+        {
+            "id": "T5",
+            "name": "Effect1",
+            "begin": 43,
+            "end": 110,
+            "successor": null,
+            "children": [
+                "T6",
+                "T7"
+            ]
+        },
+        {
+            "id": "T6",
+            "name": "Variable",
+            "begin": 43,
+            "end": 44,
+            "parent": "T5"
+        },
+        {
+            "id": "T7",
+            "name": "Condition",
+            "begin": 45,
+            "end": 110,
+            "parent": "T5"
+        }
+    ],
+    "graph": {
+        "nodes": [
+            {
+                "id": "N1",
+                "variable": "access permissions",
+                "condition": "are deactivated"
+            },
+            {
+                "id": "N2",
+                "variable": "I",
+                "condition": "receive information as to which app functions will no longer work"
+            }
+        ],
+        "root": "N1",
+        "edges": [
+            {
+                "origin": "N1",
+                "target": "N2",
+                "negated": false
+            }
+        ]
+    },
+    "testsuite": {
+        "conditions": [
+            {
+                "id": "P1",
+                "variable": "access permissions",
+                "condition": "are deactivated"
+            }
+        ],
+        "expected": [
+            {
+                "id": "P2",
+                "variable": "I",
+                "condition": "receive information as to which app functions will no longer work"
+            }
+        ],
+        "cases": [
+            {
+                "P1": true,
+                "P2": true
+            },
+            {
+                "P1": false,
+                "P2": false
+            }
+        ]
+    }
+}

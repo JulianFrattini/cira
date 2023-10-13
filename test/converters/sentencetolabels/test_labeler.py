@@ -20,7 +20,7 @@ def labeler():
 
 # currently excluded: sentence 13 (there is a tripple-labeling on "NO defect" with Cause3, Variable, and Negation)
 @pytest.mark.system
-@pytest.mark.parametrize('id', ['1', '1b', '1c', '2', '3', '4', '5', '6', '6b', '7', '8', '10', '11', '12', '14', '16', '17'])
+@pytest.mark.parametrize('id', ['1', '1b', '1c', '2', '3', '4', '5', '6', '6b', '7', '8', '10', '11', '12', '14', '16', '17', '18'])
 def test_labeler(sentence, labeler):
     """Test that the labeler produces the same labels for a given sentence that a manual annotator would. The manually annotated sentences are stored in .json files and contain both the sentence and the list of manually annotated labels. The test for each sentence is successful if every manual label has exactly one unique equivalent in the list of automatically generated labels. Two labels are equivalent if their (1) name, (2) begin, and (3) end attribute are the same."""
     # abort if the labeler could not be created properly
