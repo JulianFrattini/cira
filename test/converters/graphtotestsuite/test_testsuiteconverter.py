@@ -19,7 +19,7 @@ def sentence(id: str):
 
 
 @pytest.mark.system
-@pytest.mark.parametrize('id', ['1', '1b', '1c', '2', '3', '4', '5', '6', '6b', '7', '8', '10', '11', '12', '13', '14', '16', '17'])
+@pytest.mark.parametrize('id', ['1', '1b', '1c', '2', '3', '4', '5', '6', '6b', '7', '8', '10', '11', '12', '13', '14', '16', '17', '18'])
 def test_system(sentence):
     """Automatically generate a test suite from a graph and compare it to a manually generated one."""
     testsuite: Suite = convert(sentence['graph'])
