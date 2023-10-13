@@ -37,7 +37,10 @@
             "successor": null,
             "children": [
                 "T6",
-                "T7"
+                "T7",
+                "T8",
+                "T9",
+                "T10"
             ]
         },
         {
@@ -51,6 +54,27 @@
             "id": "T7",
             "name": "Condition",
             "begin": 45,
+            "end": 76,
+            "parent": "T5"
+        },
+        {
+            "id": "T8",
+            "name": "Variable",
+            "begin": 77,
+            "end": 90,
+            "parent": "T5"
+        },
+        {
+            "id": "T9",
+            "name": "Negation",
+            "begin": 91,
+            "end": 98,
+            "parent": "T5"
+        },
+        {
+            "id": "T10",
+            "name": "Condition",
+            "begin": 99,
             "end": 110,
             "parent": "T5"
         }
@@ -64,8 +88,8 @@
             },
             {
                 "id": "N2",
-                "variable": "I",
-                "condition": "receive information as to which app functions will no longer work"
+                "variable": "I app functions",
+                "condition": "receive information as to which longer work"
             }
         ],
         "root": "N1",
@@ -73,7 +97,7 @@
             {
                 "origin": "N1",
                 "target": "N2",
-                "negated": false
+                "negated": true
             }
         ]
     },
@@ -88,18 +112,18 @@
         "expected": [
             {
                 "id": "P2",
-                "variable": "I",
-                "condition": "receive information as to which app functions will no longer work"
+                "variable": "I app functions",
+                "condition": "receive information as to which longer work"
             }
         ],
         "cases": [
             {
                 "P1": true,
-                "P2": true
+                "P2": false
             },
             {
                 "P1": false,
-                "P2": false
+                "P2": true
             }
         ]
     }
