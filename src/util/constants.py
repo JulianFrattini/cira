@@ -1,5 +1,3 @@
-from enum import Enum, EnumMeta
-
 SENTENCES_PATH = './static/sentences'
 
 LABEL_IDS = ['NOT_RELEVANT', 'CAUSE_1', 'CAUSE_2', 'CAUSE_3', 'EFFECT_1', 'EFFECT_2', 'EFFECT_3', 'AND', 'OR', 'VARIABLE', 'CONDITION', 'NEGATION']
