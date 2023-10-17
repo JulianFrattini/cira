@@ -195,5 +195,5 @@ def position_of_next_token(sentence: str, cursor_pos: int, token: str) -> int:
     if token.startswith('##'):
         return 1
 
-    position_of_token = re.search(token, sentence[cursor_pos:]).start()
+    position_of_token = re.search(re.escape(token), sentence[cursor_pos:]).start()
     return position_of_token
