@@ -3,6 +3,7 @@ from abc import ABC, abstractmethod
 from src.data.graph import EventNode
 from src.data.labels import EventLabel
 
+import src.util.constants as consts
 
 class EventResolver(ABC):
     @abstractmethod
@@ -18,7 +19,7 @@ class SimpleResolver(EventResolver):
             node -- the node where the variable and condition shall be set
             sentence -- the verbatim sentence from which the variable and condition will be taken"""
 
-        for attribute in ['Variable', 'Condition']:
+        for attribute in [consts.VARIABLE, consts.CONDITION]:
             candidates: list[EventLabel] = node.labels + \
                 get_events_in_order(starting_node=node, attribute=attribute)
             candidates_grouped: list[list[EventLabel]
@@ -44,19 +45,31 @@ def get_events_in_order(starting_node: EventNode, attribute: str) -> list[EventL
     """
     candidates: list[EventLabel] = []
 
-    # determine the event type of a node (either "Cause" or "Effect")
-    event_type_of_node = starting_node.labels[0].name[:-1]
+    is_cause = event_is_type_cause(starting_node)
+    events_ordered = [consts.CAUSE, consts.EFFECT] if is_cause else [consts.EFFECT, consts.CAUSE]
 
-    for event_type in (['Cause', 'Effect'] if event_type_of_node == 'Cause' else ['Effect', 'Cause']):
-        for direction in (['predecessor', 'successor'] if attribute == 'Variable' else ['successor', 'predecessor']):
+    for event_type in events_ordered:
+        is_variable = attribute == consts.VARIABLE
+        directions_ordered = [consts.PREDECESSOR, consts.SUCCESSOR] if is_variable else [consts.SUCCESSOR, consts.PREDECESSOR]
+        for direction in directions_ordered:
             # determine the label to start with
-            starting_label = starting_node.labels[0 if direction ==
-                                                  'predecessor' else -1]
+            label_idx = 0 if direction == consts.PREDECESSOR else -1
+            starting_label = starting_node.labels[label_idx]
             candidates = candidates + \
                 get_all_neighbors_of_type(
                     startlabel=starting_label, direction=direction, type=event_type)
 
     return candidates
+
+
+def event_is_type_cause(node: EventNode) -> bool:
+    """Determine wheter an event is from type 'Cause'
+
+    parameters: event -- the EventNode
+
+    return: true if event is 'Cause'
+    """
+    return node.labels[0].name[:-1] == consts.CAUSE
 
 
 def get_all_neighbors_of_type(startlabel: EventLabel, direction: str, type: str) -> list[EventLabel]:
@@ -74,8 +87,10 @@ def get_all_neighbors_of_type(startlabel: EventLabel, direction: str, type: str)
     next_label = startlabel
     while getattr(next_label, direction) != None:
         neighbor = getattr(next_label, direction)
-        next_label: EventLabel = getattr(
-            neighbor, 'target' if direction == 'successor' else 'origin')
+
+        next_direction = consts.TARGET if direction == consts.SUCCESSOR else consts.ORIGIN
+        next_label: EventLabel = getattr( neighbor, next_direction)
+
         if next_label.name.startswith(type):
             result.append(next_label)
 
