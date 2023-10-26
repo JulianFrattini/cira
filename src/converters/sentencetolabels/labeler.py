@@ -1,17 +1,18 @@
-from src.converters.sentencetolabels.model import MultiLabelRoBERTaCustomModel
-from transformers import RobertaTokenizerFast
-from transformers import BatchEncoding
 import torch
+from transformers import BatchEncoding, RobertaTokenizerFast
 
-from src.data.labels import Label
-import src.util.constants as constants
 import src.converters.sentencetolabels.labelingconverter as lconv
+import src.util.constants as consts
+from src.converters.sentencetolabels.model import MultiLabelRoBERTaCustomModel
+from src.data.labels import Label
 
 MODEL_TO_USE = 'roberta-base'
+LABELER_TO_USE = 'bin/multilabel.ckpt'
+DROPOUT_RATE = 0.13780087432114646
 
 class Labeler:
 
-    def __init__(self, model_path: str='bin/multilabel.ckpt', useGPU: bool=False, max_len: int=80, dropout: float=0.13780087432114646):
+    def __init__(self, model_path: str=LABELER_TO_USE, useGPU: bool=False, max_len: int=80, dropout: float=DROPOUT_RATE):
         # set variables
         self.useGPU = useGPU
         self.max_len = max_len
@@ -19,12 +20,12 @@ class Labeler:
         # setup model and tokenizer
         self.tokenizer = RobertaTokenizerFast.from_pretrained(MODEL_TO_USE)
         self.model = MultiLabelRoBERTaCustomModel.load_from_checkpoint(
-            hyperparams={'dropout': dropout}, 
-            training_dataset=None, 
-            validation_dataset=None, 
+            hyperparams={'dropout': dropout},
+            training_dataset=None,
+            validation_dataset=None,
             test_dataset=None,
-            labels=constants.LABEL_IDS, 
-            model_to_use=MODEL_TO_USE, 
+            labels=consts.LABEL_IDS,
+            model_to_use=MODEL_TO_USE,
             checkpoint_path=model_path
         )
 
@@ -35,18 +36,18 @@ class Labeler:
 
     def label(self, sentence: str) -> list[Label]:
         """Label a given sentence with the available label list.
-        
+
         parameters:
             sentence -- Natural language, english sentence that contains a causal relationship.
-            
+
         returns: list of labels assigned to that sentence"""
         # tokenize the sentence
         tokenized_batch: BatchEncoding = self.tokenizer(
-            text=[sentence], 
-            add_special_tokens=True, 
-            max_length=self.max_len, 
-            truncation=True, 
-            padding='max_length' )
+            text=[sentence],
+            add_special_tokens=True,
+            max_length=self.max_len,
+            truncation=True,
+            padding='max_length')
 
         # attention mask
         input_ids = torch.tensor(tokenized_batch.input_ids, dtype=torch.long)
@@ -68,7 +69,8 @@ class Labeler:
 
         # return list of labels
         labels: list[Label] = lconv.convert(
-            sentence_tokens=tokenized_batch[0].tokens, 
+            sentence_tokens=tokenized_batch[0].tokens,
             sentence=sentence,
             predictions=predictions)
         return labels
+

@@ -23,3 +23,5 @@ AND = 'AND'
 POR = 'POR'
 
 NOTRELEVANT = 'notrelevant'
+
+NEGATION = 'Negation'

@@ -1,12 +1,11 @@
-from torch.nn import BCEWithLogitsLoss
-from torch import nn
-from transformers.modeling_outputs import TokenClassifierOutput
-from transformers import RobertaModel
+import abc
 
 import pytorch_lightning as pl
 import torch
-import torch.nn as nn
-import abc
+from torch import nn
+from torch.nn import BCEWithLogitsLoss
+from transformers import RobertaModel
+from transformers.modeling_outputs import TokenClassifierOutput
 
 
 class CustomModel(pl.LightningModule):
