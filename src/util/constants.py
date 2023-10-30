@@ -11,6 +11,8 @@ is_event = lambda s: s == CAUSE or s == EFFECT
 # Direction
 PREDECESSOR = 'predecessor'
 SUCCESSOR = 'successor'
+TARGET = 'target'
+ORIGIN = 'origin'
 
 # Junctor
 CONJUNCTION = 'Conjunction'
@@ -21,5 +23,9 @@ is_junctor = lambda s: s == CONJUNCTION or s == DISJUNCTION
 OR  = 'OR'
 AND = 'AND'
 POR = 'POR'
+
+# Attribute
+VARIABLE = 'Variable'
+CONDITION = 'Condition'
 
 NOTRELEVANT = 'notrelevant'
