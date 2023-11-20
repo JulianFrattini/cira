@@ -1,8 +1,9 @@
-from src.data.labels import Label, EventLabel
-from src.data.graph import Edge, Graph, Node, EventNode
-
-from src.converters.labelstograph.eventresolver import EventResolver
+import src.util.constants as consts
 from src.converters.labelstograph.eventconnector import connect_events
+from src.converters.labelstograph.eventresolver import EventResolver
+from src.data.graph import EventNode, Graph, Node
+from src.data.labels import EventLabel, Label
+
 
 class GraphConverter:
     def __init__(self, eventresolver: EventResolver):
@@ -10,11 +11,11 @@ class GraphConverter:
 
     def generate_graph(self, sentence: str, labels: list[Label]) -> Graph:
         """Convert a sentence and a list of labels into a graph
-        
+
         parameters:
             sentence -- literal sentence
             labels -- list of interconnected labels
-            
+
         returns: a graph representing the semantic structure of the sentence and labels"""
 
         # generate events
@@ -35,8 +36,9 @@ class GraphConverter:
         effects = [event for event in events if not event.is_cause()]
         for effect in effects:
             # check for double-negation
-            double_negative = (len(causes) == 1) and (causes[0].is_negated())
-            edge = effect.add_incoming(child=cause_root, negated=(effect.is_negated() != double_negative))
+            is_double_negative = (len(causes) == 1) and (causes[0].is_negated())
+            is_negated=effect.is_negated() != is_double_negative
+            edge = effect.add_incoming(child=cause_root, negated=is_negated)
             edgelist.append(edge)
 
         return Graph(nodes=causes+effects, root=cause_root, edges=edgelist)
@@ -51,16 +53,16 @@ def generate_events(labels: list[Label]) -> list[EventNode]:
     """
     events: list[EventNode] = []
 
+    only_event_labels_not_unique = [label.name for label in labels if consts.is_event(label.name[:-1])]
     # obtain the unique event label names (e.g., Cause1, Effect2)
-    event_labels_names: list[str] = []
-    for label_name in [label.name for label in labels if label.name[:-1] in ['Cause', 'Effect']]:
-        if label_name not in event_labels_names:
-            event_labels_names.append(label_name)
+    unique_event_labels_names: list[str] = []
+    for label_name in only_event_labels_not_unique:
+        if label_name not in unique_event_labels_names:
+            unique_event_labels_names.append(label_name)
 
-    for event_counter, event_label_name in enumerate(event_labels_names):
+    for event_counter, event_label_name in enumerate(unique_event_labels_names):
         event_labels = [label for label in labels if label.name==event_label_name]
         events.append(EventNode(id=f'E{event_counter}', labels=event_labels))
-    
     return events
 
 def resolve_exceptive_negations(labels: list[Label]) -> list[EventLabel]:
@@ -68,9 +70,9 @@ def resolve_exceptive_negations(labels: list[Label]) -> list[EventLabel]:
 
     parameters:
         labels -- list of labels generated from the sentence
-    
+
     returns: list of labels that are affected by an exceptive negation and hence need to be additionally negated"""
-    exceptive_negations = [label for label in labels if label.name=='Negation' and label.parent==None]
+    exceptive_negations = [label for label in labels if label.name==consts.NEGATION and label.parent is None]
 
     all_events: list[EventLabel] = [label for label in labels if type(label)==EventLabel]
     all_events.sort(key=(lambda event: event.begin))
@@ -80,7 +82,7 @@ def resolve_exceptive_negations(labels: list[Label]) -> list[EventLabel]:
     for negation in exceptive_negations:
         affected_event = [label for label in all_events if label.begin > negation.end][0]
         negated_events.append(affected_event)
-        while affected_event.successor != None and affected_event.successor.junctor == 'AND':
+        while affected_event.successor is not None and affected_event.successor.junctor == consts.AND:
             affected_event = affected_event.successor.target
             negated_events.append(affected_event)
 

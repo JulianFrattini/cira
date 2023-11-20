@@ -29,3 +29,5 @@ VARIABLE = 'Variable'
 CONDITION = 'Condition'
 
 NOTRELEVANT = 'notrelevant'
+
+NEGATION = 'Negation'
