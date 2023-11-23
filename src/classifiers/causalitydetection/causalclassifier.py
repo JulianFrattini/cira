@@ -5,9 +5,7 @@ import torch
 import torch.nn.functional as F
 from transformers import BertTokenizer
 
-from src.classifiers.causalitydetection.classificationmodel import (
-    CausalClassificationModel,
-)
+from src.classifiers.causalitydetection.classificationmodel import CausalClassificationModel
 
 RANDOM_SEED = 42
 np.random.seed(RANDOM_SEED)
