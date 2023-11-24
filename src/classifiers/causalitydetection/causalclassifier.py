@@ -1,10 +1,9 @@
 from typing import Tuple
 
 import numpy as np
-
-from transformers import BertTokenizer
 import torch
 import torch.nn.functional as F
+from transformers import BertTokenizer
 
 from src.classifiers.causalitydetection.classificationmodel import CausalClassificationModel
 
@@ -12,33 +11,38 @@ RANDOM_SEED = 42
 np.random.seed(RANDOM_SEED)
 torch.manual_seed(RANDOM_SEED)
 
-CLASS_NAMES = ['not causal', 'causal']
+CAUSAL = 'causal'
+NOT_CAUSAL = 'not causal'
+CLASS_NAMES = [NOT_CAUSAL, CAUSAL]
 PRE_TRAINED_MODEL_NAME = 'bert-base-cased'
+DEVICE_CPU = 'cpu'
+DEVICE_GPU = 'cuda:0'
+TENSOR_TYPE_PYTORCH = 'pt'
 
 class CausalClassifier:
     def __init__(self, model_path: str):
         """Create a causal detector which wraps the pre-trained classification model.
-        
+
         parameters:
             path -- path to the binary file of the pre-trained model"""
 
-        self.device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+        self.device = torch.device(DEVICE_GPU if torch.cuda.is_available() else DEVICE_CPU)
         self.tokenizer = BertTokenizer.from_pretrained(PRE_TRAINED_MODEL_NAME)
 
         self.model = CausalClassificationModel(len(CLASS_NAMES))
         if torch.cuda.is_available():
             self.model.load_state_dict(torch.load(model_path))
         else:
-            self.model.load_state_dict(torch.load(model_path, map_location='cpu'))
+            self.model.load_state_dict(torch.load(model_path, map_location=DEVICE_CPU))
 
         self.model = self.model.to(self.device)
 
     def classify(self, sentence: str) -> Tuple[bool, float]:
         """Classify a natural language sentence regarding whether it is causal or not.
-        
+
         parameters:
             sentence -- natural language sentence in English
-            
+
         returns: the classification whether the sentence is causal and the confidence of the classifier"""
 
         # encode input text
@@ -49,7 +53,7 @@ class CausalClassifier:
             return_token_type_ids=False,
             padding='max_length',
             return_attention_mask=True,
-            return_tensors='pt',
+            return_tensors=TENSOR_TYPE_PYTORCH,
             truncation=True
         )
 
@@ -61,6 +65,7 @@ class CausalClassifier:
         probs = F.softmax(output, dim=1)
 
         # return both the classification and the confidence
-        is_causal = (CLASS_NAMES[prediction] == "causal")
+        is_causal = (CLASS_NAMES[prediction] == CAUSAL)
         confidence = torch.max(probs, dim=1)[0].item()
         return (is_causal, confidence)
+

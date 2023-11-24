@@ -1,6 +1,6 @@
-
-from transformers import BertModel
 import torch
+from transformers import BertModel
+
 
 class CausalClassificationModel(torch.nn.Module):
     def __init__(self, n_classes: int, pre_trained_model_name: str='bert-base-cased'):
@@ -13,3 +13,4 @@ class CausalClassificationModel(torch.nn.Module):
         _, pooled_output = self.bert(input_ids=input_ids, attention_mask=attention_mask, return_dict=False)
         output = self.drop(pooled_output)
         return self.out(output)
+
