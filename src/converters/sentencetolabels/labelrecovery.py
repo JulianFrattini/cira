@@ -13,7 +13,6 @@ def recover_labels(sentence: str, labels: list[Label]) -> list[Label]:
 
     return labels
 
-EXCEPTIVE_CLAUSES = ['unless']
 def label_exceptive_clauses(sentence: str, labels: list[Label]) -> list[SubLabel]:
     """Identify all instances of exceptive clauses (determined by the list of words above) that have not been labeled. Because exceptive clauses like this are very rare they have apparently not been picked up by the BERT-based labeler. Because they convey important information ("Unless A then B" translates to "If not A then B") they need to be recovered. This method generates a negation for each exceptive clause that does not yet contain one.
 
@@ -26,7 +25,7 @@ def label_exceptive_clauses(sentence: str, labels: list[Label]) -> list[SubLabel
     additional_labels: list[SubLabel] = []
 
     exceptive_instances = []
-    for exclause in EXCEPTIVE_CLAUSES:
+    for exclause in consts.EXCEPTIVE_CLAUSES:
         iter = re.finditer(exclause, sentence.lower())
         exceptive_instances += [m.span() for m in iter]
 
