@@ -1,7 +1,7 @@
 from typing import Tuple
 from src.data.graph import  Node, EventNode, IntermediateNode, Edge
 
-import util.constants as consts
+import src.util.constants as consts
 
 def connect_events(events: list[EventNode]) -> Tuple[list[Node], list[Edge]]:
     """Connect a list of events based on the relationships between them to a tree, where the leaf nodes represent events and all intermediate nodes represent junctors
