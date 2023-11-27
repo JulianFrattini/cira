@@ -112,7 +112,10 @@ The application Docker image and the development container setup are based on th
 
 ## Tests
 
-Run all tests via `pytest`.
+This repository contains tests written using the [pytest](https://docs.pytest.org/en/7.4.x/) framework.
+All test cases are located in the [test/](./test/) folder and structured according to the file structure in the [src/](./src/) folder.
+To run the test cases, make sure you have all necessary development packages installed via `pip3 install -e ".[dev]"`.
+Then, run all tests via `pytest`.
 
 ## License
 
