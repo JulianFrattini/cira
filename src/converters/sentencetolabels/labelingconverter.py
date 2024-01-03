@@ -1,12 +1,15 @@
+import re
 from dataclasses import dataclass
 
 from torch import Tensor
-import re
 
-from src.data.labels import Label, EventLabel, SubLabel
 import src.util.constants as consts
-
 from src.converters.sentencetolabels.labelrecovery import recover_labels
+from src.data.labels import EventLabel, Label, SubLabel
+
+TOKEN_PREFIX = 'Ġ'
+TOKEN_INIT = '<s>'
+TOKENS_END = ['</s>', '<pad>', '<sep>']
 
 @dataclass
 class TokenLabel:
@@ -54,13 +57,14 @@ def get_token_labeling(sentence_tokens: list[str], sentence: str, predictions: T
     for token_prediction_idx, token_prediction in enumerate(predictions[0]):
         # get the current token and clean it of the RoBERTa-specific prefix
         token: str = sentence_tokens[token_prediction_idx]
-        token = token.replace("Ġ", "")
+        token = token.replace(TOKEN_PREFIX, "")
 
         # skip the initializing token
-        if token == '<s>':
+        if token == TOKEN_INIT:
             continue
+
         # stop once a finalizing token is reached
-        if token in ['</s>', '<pad>', '<sep>']:
+        if token in TOKENS_END:
             break
 
         # advance the cursor to the position of this token in the sentence
@@ -69,19 +73,21 @@ def get_token_labeling(sentence_tokens: list[str], sentence: str, predictions: T
 
         # get all labels associated to a token
         for label_prediction_idx, label_prediction in enumerate(token_prediction):
-            if label_prediction == 1:
-                #token_predicted_labels.append(label_ids_verbose[label_prediction_idx])
-                label = consts.LABEL_IDS_VERBOSE[label_prediction_idx]
-                if label != consts.NOTRELEVANT:
-                    token_labels.append(TokenLabel(
-                        begin=cursor,
-                        end=cursor+len(token),
-                        event = consts.is_event(label),
-                        name=label))
+            if label_prediction != 1:
+                continue
+
+            label = consts.LABEL_IDS_VERBOSE[label_prediction_idx]
+            if label == consts.NOTRELEVANT:
+                continue
+
+            token_labels.append(TokenLabel(
+                begin=cursor,
+                end=cursor+len(token),
+                event = consts.is_event(label),
+                name=label))
 
         # move the cursor to the end of the current token
         cursor += len(token)
-
 
     return token_labels
 
