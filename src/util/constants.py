@@ -1,15 +1,14 @@
 SENTENCES_PATH = './static/sentences'
 
-LABEL_IDS = ['NOT_RELEVANT', 'CAUSE_1', 'CAUSE_2', 'CAUSE_3', 'EFFECT_1', 'EFFECT_2', 'EFFECT_3', 'AND', 'OR', 'VARIABLE', 'CONDITION', 'NEGATION']
-LABEL_IDS_VERBOSE = ['notrelevant', 'Cause1', 'Cause2', 'Cause3', 'Effect1', 'Effect2', 'Effect3', 'Conjunction', 'Disjunction', 'Variable', 'Condition', 'Negation']
-
 UNLESS = 'unless'
 EXCEPTIVE_CLAUSES = [UNLESS]
 
 # Event
 CAUSE = 'Cause'
 EFFECT = 'Effect'
-is_event = lambda s: s == CAUSE or s == EFFECT
+
+def is_event(s):
+    return s in (CAUSE, EFFECT)
 
 # Direction
 PREDECESSOR = 'predecessor'
@@ -20,7 +19,9 @@ ORIGIN = 'origin'
 # Junctor
 CONJUNCTION = 'Conjunction'
 DISJUNCTION = 'Disjunction'
-is_junctor = lambda s: s == CONJUNCTION or s == DISJUNCTION
+
+def is_junctor(s):
+    return s in (CONJUNCTION, DISJUNCTION)
 
 # Logic
 OR  = 'OR'
@@ -34,3 +35,16 @@ CONDITION = 'Condition'
 NOTRELEVANT = 'notrelevant'
 
 NEGATION = 'Negation'
+
+LABEL_IDS = ['NOT_RELEVANT',
+             CAUSE.upper()+'_1', CAUSE.upper()+'_2', CAUSE.upper()+'_3',
+             EFFECT.upper()+'_1', EFFECT.upper()+'_2', EFFECT.upper()+'_3',
+             AND, OR,
+             VARIABLE.upper(), CONDITION.upper(), NEGATION.upper()]
+
+LABEL_IDS_VERBOSE = [NOTRELEVANT,
+                     CAUSE+'1', CAUSE+'2', CAUSE+'3',
+                     EFFECT+'1', EFFECT+'2', EFFECT+'3',
+                     CONJUNCTION, DISJUNCTION,
+                     VARIABLE, CONDITION,
+                     NEGATION]
